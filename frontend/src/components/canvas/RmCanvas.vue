@@ -20,6 +20,7 @@ interface RoadmapItem extends BoundingBox {
   editing?: boolean;
 }
 
+const svg = ref<SVGSVGElement>();
 
 const lastEvent = ref<PointerEvent>();
 const selectedItem = ref<RoadmapItem>();
@@ -55,16 +56,26 @@ const roadmap = ref<Record<string, RoadmapItem[]>>({
   ],
 });
 
-function onWheel(e: WheelEvent) {
-  e.preventDefault();
-  const scaleFactor = 0.2;
+function onWheel(evt: WheelEvent) {   
+  if (!svg.value) {
+    return;
+  }
 
-  if (e.deltaY < 0 && scale.value + scaleFactor < 2) {
-    scale.value += scaleFactor;
-  }
-  else if (e.deltaY > 0 && scale.value - scaleFactor > 0.4) {
-    scale.value -= scaleFactor;
-  }
+  const delta = evt.deltaY / 500;
+  const point = svg.value.createSVGPoint();
+  point.x = evt.clientX;
+  point.y = evt.clientY;
+
+  const scaleBefore = scale.value;
+  const scaleAfter = Math.max(0.1, Math.min(10, scale.value - delta));
+
+  scale.value = scaleAfter;
+
+  const scalePoint = point.matrixTransform(svg.value.getScreenCTM()?.inverse());
+  const scaleDelta = (scaleAfter / scaleBefore) - 1;
+
+  grid.x -= (scalePoint.x - grid.x) * scaleDelta;
+  grid.y -= (scalePoint.y - grid.y) * scaleDelta;
 }
 
 function startGridMove(e: PointerEvent) {
@@ -96,24 +107,19 @@ onBeforeUnmount(() => {
   document.removeEventListener('pointerup', stopGridMove);
 });
 
-const mouse = ref({
-  x: 0,
-  y: 0,
-});
-
 provide('canvas', { scale });
 </script>
 
 <template>
   <svg
+    ref="svg"
     class="block select-none"
     width="100%"
     height="100%"
     xmlns="http://www.w3.org/2000/svg"
     @pointerdown.middle="startGridMove"
     @pointerdown.left="startGridMove"
-    @wheel="onWheel"
-    @pointermove="mouse = { x: $event.x, y: $event.y }"
+    @wheel.prevent="onWheel"
     @pointerdown="selectedItem = undefined"
   >
   
