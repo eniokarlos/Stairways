@@ -24,8 +24,8 @@ const { scale } = inject('canvas') as {
   scale: Ref<number>
 };
   
-const widthToGrid = computed(() => alignToGrid(width.value));
-const heightToGrid = computed(() => alignToGrid(height.value));
+const widthToGrid = computed(() => alignToGrid(width.value * scale.value));
+const heightToGrid = computed(() => alignToGrid(height.value * scale.value));
 
 const halfCornerBoxSize = computed(() => props.cornerBoxSize / 2);
 const cornerA = computed(() => ({
@@ -164,7 +164,7 @@ function startResize(event: PointerEvent, corner: string) {
 </script>
 <template>
   <g
-    :transform="`translate(${alignToGrid(x)},${alignToGrid(y)})`"
+    :transform="`translate(${alignToGrid(x)* scale},${alignToGrid(y)* scale})`"
     style="pointer-events: bounding-box"
     @pointerdown.stop="startMove"
     @dblclick="isEditing = true"
@@ -184,6 +184,7 @@ function startResize(event: PointerEvent, corner: string) {
       fill="white"
       stroke="#009FB7"
       stroke-width="1"
+      cursor="nwse-resize"
       @pointerdown.stop="startResize($event, 'a')"
     />
 
@@ -194,6 +195,7 @@ function startResize(event: PointerEvent, corner: string) {
       fill="white"
       stroke="#009FB7"
       stroke-width="1"
+      cursor="ns-resize"
       @pointerdown.stop="startResize($event, 'b')"
     />
 
@@ -204,6 +206,7 @@ function startResize(event: PointerEvent, corner: string) {
       fill="white"
       stroke="#009FB7"
       stroke-width="1"
+      cursor="nesw-resize"
       @pointerdown.stop="startResize($event, 'c')"
     />
 
@@ -214,6 +217,7 @@ function startResize(event: PointerEvent, corner: string) {
       fill="white"
       stroke="#009FB7"
       stroke-width="1"
+      cursor="ew-resize"
       @pointerdown.stop="startResize($event, 'd')"
     />
 
@@ -224,6 +228,7 @@ function startResize(event: PointerEvent, corner: string) {
       fill="white"
       stroke="#009FB7"
       stroke-width="1"
+      cursor="ew-resize"
       @pointerdown.stop="startResize($event, 'e')"
     />
 
@@ -234,6 +239,7 @@ function startResize(event: PointerEvent, corner: string) {
       fill="white"
       stroke="#009FB7"
       stroke-width="1"
+      cursor="nesw-resize"
       @pointerdown.stop="startResize($event, 'f')"
     />
     <rect
@@ -243,6 +249,7 @@ function startResize(event: PointerEvent, corner: string) {
       fill="white"
       stroke="#009FB7"
       stroke-width="1"
+      cursor="ns-resize"
       @pointerdown.stop="startResize($event, 'g')"
     />
     <rect
@@ -252,6 +259,7 @@ function startResize(event: PointerEvent, corner: string) {
       fill="white"
       stroke="#009FB7"
       stroke-width="1"
+      cursor="nwse-resize"
       @pointerdown.stop="startResize($event, 'h')"
     />
   </g>

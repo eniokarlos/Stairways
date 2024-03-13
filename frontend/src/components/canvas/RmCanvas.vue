@@ -76,8 +76,8 @@ function moveGrid(e: PointerEvent) {
     const dx = e.clientX - lastEvent.value.clientX;
     const dy = e.clientY - lastEvent.value.clientY;
 
-    grid.x += dx / scale.value;
-    grid.y += dy / scale.value;
+    grid.x += dx;
+    grid.y += dy;
     lastEvent.value = e;
   }
 }
@@ -136,8 +136,13 @@ provide('canvas', { scale });
           @pointerdown.stop="selectedItem = item, selectionEvent = $event"
         />
       </template>
+    </g>
+    <g
+      v-if="selectedItem"
+      :transform="`translate(${grid.x}, ${grid.y})`"
+    >
       <RmSelectedBox
-        v-if="selectedItem"
+        
         v-model:x="selectedItem.x"
         v-model:y="selectedItem.y"
         v-model:width="selectedItem.width"
