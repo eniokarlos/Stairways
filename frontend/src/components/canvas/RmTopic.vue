@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, watch, nextTick } from 'vue';
+import { ref, watch, nextTick, computed } from 'vue';
+import { alignToGrid } from './util';
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     x: number,
     y: number,
@@ -18,8 +19,10 @@ withDefaults(
 
 const text = defineModel<string>('text');
 
-const isEditing = ref(false);
+const isEditing = defineModel<boolean>('editing');
 const textArea = ref<HTMLTextAreaElement>();
+const widthAligned = computed(() => alignToGrid(props.width));
+const heightAligned = computed(() => alignToGrid(props.height));
 
 watch(isEditing, (editing) => {
   if (editing && textArea.value) {
@@ -30,18 +33,17 @@ watch(isEditing, (editing) => {
 </script>
 <template>
   <g
-    :transform="`translate(${x},${y})`"
-    @dblclick="isEditing = true"
+    :transform="`translate(${alignToGrid(x)},${alignToGrid(y)})`"
   >
     <rect
-      :width="width"
-      :height="height"
+      :width="widthAligned"
+      :height="heightAligned"
       fill="#FF8811"
     />
     <foreignObject
       v-if="isEditing"
-      :width="width"
-      :height="height"
+      :width="widthAligned"
+      :height="heightAligned"
       x="0"
       y="0"
     >
@@ -62,8 +64,8 @@ watch(isEditing, (editing) => {
       font-size="18px"
       fill="white"
       font-weight="500"
-      :x="width / 2"
-      :y="height / 2"
+      :x="widthAligned / 2"
+      :y="heightAligned / 2"
     >
       {{ text }}
     </text>

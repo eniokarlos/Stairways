@@ -1,29 +1,33 @@
 <script setup lang="tsx">
-import { onBeforeUnmount, ref, reactive } from 'vue';
+import { onBeforeUnmount, ref, reactive, provide } from 'vue';
 import RmGrid from './RmGrid.vue';
 import RmTopic from './RmTopic.vue';
-import CanvasSelectedBox from './selectedBox';
+import RmSelectedBox from './RmSelectedBox.vue';
 
-type RoadmapItem = {
-  id: string;
-  type: string;
+interface Point {
   x: number;
   y: number;
-  width?: number;
-  height?: number;
-};
-
-interface RoadmapEvent {
-  item: RoadmapItem;
-  event: PointerEvent;
 }
 
-const lastEvent = ref<RoadmapEvent | undefined>(undefined);
-const selectedItem = ref<RoadmapItem | undefined>(undefined);
+interface BoundingBox extends Point {
+  width: number;
+  height: number;
+}
+
+interface RoadmapItem extends BoundingBox {
+  id: string;
+  type: string;
+  editing?: boolean;
+}
+
+
+const lastEvent = ref<PointerEvent>();
+const selectedItem = ref<RoadmapItem>();
+const selectionEvent = ref<PointerEvent>();
 
 const scale = ref(1);
 
-const grid = reactive<RoadmapItem>({
+const grid = reactive({
   id: '9',
   type: 'grid',
   x: 0,
@@ -37,12 +41,16 @@ const roadmap = ref<Record<string, RoadmapItem[]>>({
       type: 'topic',
       x: 510,
       y: 63,
+      width: 256,
+      height: 64,
     },
     {
       id: '1',
       type: 'topic',
       x: 702,
       y: 314,
+      width: 256,
+      height: 64,
     },
   ],
 });
@@ -59,33 +67,33 @@ function onWheel(e: WheelEvent) {
   }
 }
 
-function onPointerDown(e: RoadmapEvent) {
+function startGridMove(e: PointerEvent) {
   lastEvent.value = e;
 }
 
-function onPointerMove(e: PointerEvent) {
+function moveGrid(e: PointerEvent) {
   if (lastEvent.value) {
-    const dx = e.clientX - lastEvent.value.event.clientX;
-    const dy = e.clientY - lastEvent.value.event.clientY;
+    const dx = e.clientX - lastEvent.value.clientX;
+    const dy = e.clientY - lastEvent.value.clientY;
 
-    lastEvent.value.item.x += dx / scale.value;
-    lastEvent.value.item.y += dy / scale.value;
-    lastEvent.value.event = e;
+    grid.x += dx / scale.value;
+    grid.y += dy / scale.value;
+    lastEvent.value = e;
   }
 }
 
-function onPointerUp() {
+function stopGridMove() {
   if (lastEvent.value) {
     lastEvent.value = undefined;
   }
 }
 
-document.addEventListener('pointermove', onPointerMove);
-document.addEventListener('pointerup', onPointerUp);
+document.addEventListener('pointermove', moveGrid);
+document.addEventListener('pointerup', stopGridMove);
 
 onBeforeUnmount(() => {
-  document.removeEventListener('pointermove', onPointerMove);
-  document.removeEventListener('pointerup', onPointerUp);
+  document.removeEventListener('pointermove', moveGrid);
+  document.removeEventListener('pointerup', stopGridMove);
 });
 
 const mouse = ref({
@@ -93,50 +101,50 @@ const mouse = ref({
   y: 0,
 });
 
-function startMove(event: PointerEvent, item: RoadmapItem) {
-  onPointerDown({
-    item,
-    event, 
-  });
-  selectedItem.value = item;
-}
+provide('canvas', { scale });
 </script>
 
 <template>
   <svg
-    class="block"
+    class="block select-none"
     width="100%"
     height="100%"
     xmlns="http://www.w3.org/2000/svg"
-    @pointerdown.middle="(e) => onPointerDown({ event: e, item: grid })"
+    @pointerdown.middle="startGridMove"
+    @pointerdown.left="startGridMove"
     @wheel="onWheel"
     @pointermove="mouse = { x: $event.x, y: $event.y }"
     @pointerdown="selectedItem = undefined"
   >
+  
     <RmGrid
       grid-id="grid"
       :x="grid.x"
       :y="grid.y"
       :scale="scale"
     />
-
     <g :transform="`translate(${grid.x}, ${grid.y}) scale(${scale})`">
       <template v-for="item in roadmap.items">
         <RmTopic
           v-if="item.type === 'topic'"
           :key="item.id"
+          v-model:editing="item.editing"
           :x="item.x"
           :y="item.y"
-          @pointerdown.stop="startMove($event, item)"
+          :width="item.width"
+          :height="item.height"
+          @pointerdown.stop="selectedItem = item, selectionEvent = $event"
         />
       </template>
-      <CanvasSelectedBox
+      <RmSelectedBox
         v-if="selectedItem"
-        :x="selectedItem.x"
-        :y="selectedItem.y"
-        :width="256"
-        :height="64"
-        @corner-click="(e) => console.log(e.offsetX)"
+        v-model:x="selectedItem.x"
+        v-model:y="selectedItem.y"
+        v-model:width="selectedItem.width"
+        v-model:height="selectedItem.height"
+        v-model:editing="selectedItem.editing"
+        :event="selectionEvent"
+        @delete="roadmap.items = roadmap.items.filter((item) => item.id !== selectedItem?.id), selectedItem = undefined"
       />
     </g>
   </svg>
