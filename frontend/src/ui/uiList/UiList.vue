@@ -40,7 +40,7 @@
 
 <template>
   <div class="ui-list mt-50px px-30px">
-    <span v-color="pickRandomColor()" class="ui-list__title relative pb-5px ml-20px font-size-34px font-600">{{ title }}</span>
+    <span v-color="pickRandomColor()" class="ui-list__title relative pb-5px ml-20px font-size-28px font-600">{{ title }}</span>
 
     <div class="ui-list__wrapper mt-10px relative flex m-auto">
       <div class="h-100% absolute left-0 z-2 flex items-center">
@@ -64,7 +64,7 @@
     content: '';
     display: block;
     background-color: var(--current-color);
-    width: 350px;
+    width: 320px;
     height: 3px;
     border-radius: 4px;
     position: absolute;

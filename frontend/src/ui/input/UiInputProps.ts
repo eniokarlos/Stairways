@@ -1,33 +1,33 @@
-import { PropType } from "vue";
+import { PropType } from 'vue';
 
 export default {
   color: {
     type: String,
-    default: 'foreground'
+    default: 'foreground',
   },
   large: Boolean,
   error: {
     type: String,
-    default: undefined
+    default: undefined,
   },
   type: {
     type: String,
-    default: 'text'
+    default: 'text',
   },
   variant: {
-    type: String as PropType<'rounded' | 'default'>,
-    default: 'default'
+    type: String as PropType<'rounded' | 'default' | 'transparent'>,
+    default: 'default',
   },
   placeholder: {
     type: String,
-    default: ''
+    default: '',
   },
   prependIcon: {
     type: String,
-    default: undefined
+    default: undefined,
   },
   appendIcon: {
     type: String,
-    default: undefined
-  }
-} as const
+    default: undefined,
+  },
+} as const;

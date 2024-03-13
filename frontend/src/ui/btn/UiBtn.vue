@@ -28,15 +28,17 @@ defineProps({
     </div>
     <slot/>
   </button>
+
   <button v-else
     v-color="color"
     :class="[`ui-btn--${variant}`, {
       'ui-btn--large': large
     }]"
-    class="border-0 cursor-pointer w-140px h-42px rd-10px
-    font-size-15px font-500">
+    class="border-0 w-140px h-42px rd-10px
+    font-size-15px font-500 cursor-pointer">
     <slot/>
   </button>
+
 </template>
 
 <style lang="css" scoped>
@@ -56,10 +58,10 @@ defineProps({
   }
 
   .ui-btn--large {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 500;
-    width: 615px !important;
-    height: 70px !important;
+    width: 550px !important;
+    height: 60px !important;
   }
 
   .ui-btn--draggable {

@@ -1,32 +1,32 @@
-import { PropType } from "vue";
+import { PropType } from 'vue';
 
 export default {
   title: {
     type: String,
-    default: ''
+    default: '',
   },
   description: {
     type: String,
-    default: ''
+    default: '',
   },
   userName: {
     type: String,
-    default: ''
+    default: '',
   },
   rating: {
     type: Number,
-    default: 0
+    default: 0,
   },
   userPicture: {
     type: String,
-    default: undefined
+    default: undefined,
   },
   cardPicture: {
     type: String,
-    default: undefined
+    default: undefined,
   },
   level: {
     type: String as PropType<'beginner' | 'intermediate' | 'advanced'>,
-    default: 'beginner'
-  }
-}
+    default: 'beginner',
+  },
+};

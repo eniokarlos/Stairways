@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <footer class="flex justify-center w-100% mt-20px fg-gray text-center">
+  <footer class="flex justify-center w-100% mt-20px mb-20px fg-gray text-center">
     Stairways &copy; 2024 
   </footer>
 </template>

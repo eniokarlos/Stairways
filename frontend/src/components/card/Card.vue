@@ -35,7 +35,7 @@
 </script>/
 
 <template>
-  <div v-color="cardColors[level]" class="card relative w-250px h-360px flex flex-col justify-between 
+  <div v-color="cardColors[level]" class="card relative w-250px h-350px flex flex-col justify-between 
     rd-15px bg-card-bg">
 
     <div>
@@ -43,7 +43,7 @@
         <img v-if="userPicture" :src="userPicture" class="w-28px h-28px rd-100% ">
         <UiIcon v-else name="account" class="bg-light-gray w-25px h-25px font-size-20px rd-100%"></UiIcon>
         <span class="font-500 pl-10px pt-5px">{{ userName }}</span>
-        <div class="card-header__side w-37px h-12px absolute right-0">&nbsp;</div>
+        <div class="card-header__side w-30px h-10px absolute right-0">&nbsp;</div>
       </div>
 
       <div class="card__body flex flex-col items-center gap-10px">
@@ -76,7 +76,7 @@
   .card {
     box-shadow: 0 4px 4px rgba(0,0,0,25%);
     min-width: 250px;
-    min-height: 360px;
+    min-height: 320px;
     user-select: none;
   }
 

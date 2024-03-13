@@ -1,0 +1,13 @@
+{
+  "files.eol": "\n",
+  "editor.stickyScroll.enabled": false,
+  "workbench.tree.enableStickyScroll": false,
+  "editor.tabSize": 2,
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+  "eslint.format.enable": true,
+  "editor.formatOnSave": true,
+  "files.autoSave": "onFocusChange",
+  "[vue]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+  }
+}

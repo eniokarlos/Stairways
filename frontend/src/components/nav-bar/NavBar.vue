@@ -7,7 +7,7 @@
 <template>
   <nav class="nav-bar h-70px flex items-center justify-center gap-8">
 
-    <RouterLink to="/" class="h-40px">
+    <RouterLink to="/" class="h-32px">
       <img class="block h-inherit" src="../../assets/logo.svg">
     </RouterLink>
 
