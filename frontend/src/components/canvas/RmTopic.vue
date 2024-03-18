@@ -39,6 +39,8 @@ watch(isEditing, (editing) => {
       :width="widthAligned"
       :height="heightAligned"
       fill="#FF8811"
+      stroke="black"
+      rx="5"
     />
     <foreignObject
       v-if="isEditing"
@@ -60,8 +62,7 @@ watch(isEditing, (editing) => {
       alignment-baseline="middle"
       dominant-baseline="middle"
       text-anchor="middle"
-      font-family="Fredoka"
-      font-size="18px"
+      font-size="20px"
       fill="white"
       font-weight="500"
       :x="widthAligned / 2"

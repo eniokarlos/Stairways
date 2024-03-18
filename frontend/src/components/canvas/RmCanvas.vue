@@ -2,6 +2,7 @@
 import { onBeforeUnmount, ref, reactive, provide } from 'vue';
 import RmGrid from './RmGrid.vue';
 import RmTopic from './RmTopic.vue';
+import RmEdge from './RmEdge.vue';
 import RmSelectedBox from './RmSelectedBox.vue';
 
 interface Point {
@@ -20,8 +21,15 @@ interface RoadmapItem extends BoundingBox {
   editing?: boolean;
 }
 
-const svg = ref<SVGSVGElement>();
+interface RoadmapEdge{
+  start: {x:number,y:number},
+  end: {x:number,y:number},
+  format?: 'line' | 'curve',
+  style?: 'solid' | 'dashed' | 'dotted',
+  direction: 'lineX' | 'lineY'
+}
 
+const svg = ref<SVGSVGElement>();
 const lastEvent = ref<PointerEvent>();
 const selectedItem = ref<RoadmapItem>();
 const selectionEvent = ref<PointerEvent>();
@@ -35,7 +43,10 @@ const grid = reactive({
   y: 0,
 });
 
-const roadmap = ref<Record<string, RoadmapItem[]>>({
+const roadmap = ref<{
+  items: RoadmapItem[],
+  edges: RoadmapEdge[]
+}>({
   items: [
     {
       id: '0',
@@ -54,6 +65,7 @@ const roadmap = ref<Record<string, RoadmapItem[]>>({
       height: 64,
     },
   ],
+  edges: [],
 });
 
 function onWheel(evt: WheelEvent) {   
@@ -61,13 +73,13 @@ function onWheel(evt: WheelEvent) {
     return;
   }
 
-  const delta = evt.deltaY / 500;
+  const delta = 0.4 * Math.sign(evt.deltaY);
   const point = svg.value.createSVGPoint();
   point.x = evt.clientX;
   point.y = evt.clientY;
 
   const scaleBefore = scale.value;
-  const scaleAfter = Math.max(0.1, Math.min(10, scale.value - delta));
+  const scaleAfter = Math.max(0.2, Math.min(5, scale.value - delta));
 
   scale.value = scaleAfter;
 
@@ -118,18 +130,22 @@ provide('canvas', { scale });
     height="100%"
     xmlns="http://www.w3.org/2000/svg"
     @pointerdown.middle="startGridMove"
-    @pointerdown.left="startGridMove"
     @wheel.prevent="onWheel"
     @pointerdown="selectedItem = undefined"
   >
-  
+    
     <RmGrid
       grid-id="grid"
       :x="grid.x"
       :y="grid.y"
       :scale="scale"
     />
+
     <g :transform="`translate(${grid.x}, ${grid.y}) scale(${scale})`">
+      <template v-for="edge in roadmap.edges">
+        <RmEdge />
+      </template>
+
       <template v-for="item in roadmap.items">
         <RmTopic
           v-if="item.type === 'topic'"
@@ -139,7 +155,7 @@ provide('canvas', { scale });
           :y="item.y"
           :width="item.width"
           :height="item.height"
-          @pointerdown.stop="selectedItem = item, selectionEvent = $event"
+          @pointerdown.left.stop="selectedItem = item, selectionEvent = $event"
         />
       </template>
     </g>
@@ -148,7 +164,6 @@ provide('canvas', { scale });
       :transform="`translate(${grid.x}, ${grid.y})`"
     >
       <RmSelectedBox
-        
         v-model:x="selectedItem.x"
         v-model:y="selectedItem.y"
         v-model:width="selectedItem.width"

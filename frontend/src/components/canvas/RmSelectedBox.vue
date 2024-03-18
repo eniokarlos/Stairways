@@ -4,10 +4,14 @@ import { alignToGrid } from './util';
 
 const props = withDefaults(
   defineProps<{
-    cornerBoxSize?: number;
+    cornerBoxSize?: number,
+    cornerCircleSize?: number
     event?: PointerEvent
   }>(),
-  { cornerBoxSize: 10 },
+  {
+    cornerBoxSize: 10,
+    cornerCircleSize: 12,
+  }, 
 );
 
 const x = defineModel<number>('x', { default: 0 });
@@ -15,6 +19,7 @@ const y = defineModel<number>('y', { default: 0 });
 const width = defineModel<number>('width', { default: 64 });
 const height = defineModel<number>('height', { default: 64 });
 const isEditing = defineModel<boolean>('editing');
+// const isAddingEdge = defineModel<boolean>('adding-edge');
 
 const emit = defineEmits<{
   (name: 'delete'): void
@@ -28,6 +33,7 @@ const widthToGrid = computed(() => alignToGrid(width.value * scale.value));
 const heightToGrid = computed(() => alignToGrid(height.value * scale.value));
 
 const halfCornerBoxSize = computed(() => props.cornerBoxSize / 2);
+const halfCircleSize = computed(() => props.cornerCircleSize / 2);
 const cornerA = computed(() => ({
   x: -halfCornerBoxSize.value,
   y: -halfCornerBoxSize.value,
@@ -45,8 +51,8 @@ const cornerD = computed(() => ({
   y: ((heightToGrid.value - props.cornerBoxSize) / 2),
 }));
 const cornerE = computed(() => ({
-  x: widthToGrid.value - halfCornerBoxSize.value,
-  y: ((heightToGrid.value - props.cornerBoxSize) / 2),
+  x: widthToGrid.value - halfCircleSize.value,
+  y: ((heightToGrid.value - props.cornerCircleSize) / 2),
 }));
 const cornerF = computed(() => ({
   x: -halfCornerBoxSize.value,
@@ -69,6 +75,7 @@ let resizeCorner: string | undefined;
 watchEffect(() => {
   lastMoveEvent = props.event;
 });
+
 
 function startMove(event: PointerEvent) {
   lastMoveEvent = event;
@@ -99,23 +106,25 @@ function onMove(event: PointerEvent) {
 }
 
 function resize(dx: number, dy: number) {
-  if (resizeCorner === 'a' || resizeCorner === 'b' || resizeCorner === 'c') {
+  
+  if (resizeCorner === 'a' || resizeCorner === 'c') {
     y.value += dy;
     height.value -= dy;
   }
-
-  if (resizeCorner === 'a' || resizeCorner === 'd' || resizeCorner === 'f') {
+  
+  if (resizeCorner === 'a' || resizeCorner === 'f') {
     x.value += dx;
     width.value -= dx;
   }
-
-  if (resizeCorner === 'c' || resizeCorner === 'e' || resizeCorner === 'h') {
+  
+  if (resizeCorner === 'c' || resizeCorner === 'h') {
     width.value += dx;
   }
-
-  if (resizeCorner === 'f' || resizeCorner === 'g' || resizeCorner === 'h') {
+  
+  if (resizeCorner === 'f' || resizeCorner === 'h') {
     height.value += dy;
   }
+
 }
 
 document.addEventListener('pointermove', onMove);
@@ -159,14 +168,13 @@ function startResize(event: PointerEvent, corner: string) {
   lastMoveEvent = event;
   resizeCorner = corner;
 }
-
-
 </script>
+
 <template>
   <g
-    :transform="`translate(${alignToGrid(x)* scale},${alignToGrid(y)* scale})`"
+    :transform="`translate(${alignToGrid(x) * scale},${alignToGrid(y) * scale})`"
     style="pointer-events: bounding-box"
-    @pointerdown.stop="startMove"
+    @pointerdown.left.stop="startMove"
     @dblclick="isEditing = true"
   >
     <rect
@@ -190,13 +198,14 @@ function startResize(event: PointerEvent, corner: string) {
 
     <rect
       v-bind="cornerB"
-      :width="cornerBoxSize"
-      :height="cornerBoxSize"
+      :width="cornerCircleSize"
+      :height="cornerCircleSize"
+      :rx="cornerCircleSize"
       fill="white"
       stroke="#009FB7"
       stroke-width="1"
-      cursor="ns-resize"
-      @pointerdown.stop="startResize($event, 'b')"
+      cursor="pointer"
+      @pointerdown.stop="startResize($event, 'e')"
     />
 
     <rect
@@ -212,23 +221,25 @@ function startResize(event: PointerEvent, corner: string) {
 
     <rect
       v-bind="cornerD"
-      :width="cornerBoxSize"
-      :height="cornerBoxSize"
+      :width="cornerCircleSize"
+      :height="cornerCircleSize"
+      :rx="cornerCircleSize"
       fill="white"
       stroke="#009FB7"
       stroke-width="1"
-      cursor="ew-resize"
-      @pointerdown.stop="startResize($event, 'd')"
+      cursor="pointer"
+      @pointerdown.stop="startResize($event, 'e')"
     />
 
     <rect
       v-bind="cornerE"
-      :width="cornerBoxSize"
-      :height="cornerBoxSize"
+      :width="cornerCircleSize"
+      :height="cornerCircleSize"
+      :rx="cornerCircleSize"
       fill="white"
       stroke="#009FB7"
       stroke-width="1"
-      cursor="ew-resize"
+      cursor="pointer"
       @pointerdown.stop="startResize($event, 'e')"
     />
 
@@ -242,16 +253,19 @@ function startResize(event: PointerEvent, corner: string) {
       cursor="nesw-resize"
       @pointerdown.stop="startResize($event, 'f')"
     />
+
     <rect
       v-bind="cornerG"
-      :width="cornerBoxSize"
-      :height="cornerBoxSize"
+      :width="cornerCircleSize"
+      :height="cornerCircleSize"
+      :rx="cornerCircleSize"
       fill="white"
       stroke="#009FB7"
       stroke-width="1"
-      cursor="ns-resize"
-      @pointerdown.stop="startResize($event, 'g')"
+      cursor="pointer"
+      @pointerdown.stop="startResize($event, 'e')"
     />
+
     <rect
       v-bind="cornerH"
       :width="cornerBoxSize"

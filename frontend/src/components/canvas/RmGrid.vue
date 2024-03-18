@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
 withDefaults(
   defineProps<{
     gridId: string;
@@ -17,21 +18,23 @@ withDefaults(
     width: '100%',
     height: '100%',
     color: '#0000003F',
-    size: ({ scale = 1 }) =>  64 * scale,
-    subGridSize: ({ scale = 1 }) => 8 * scale,
+    size: 64,
+    subGridSize: 8,
   },
 );
 </script>
+
 <template>
   <defs>
     <pattern
+      v-if="scale > 0.2"
       :id="subGridId"
-      :width="subGridSize"
-      :height="subGridSize"
+      :width="subGridSize * scale"
+      :height="subGridSize * scale"
       patternUnits="userSpaceOnUse"
     >
       <path
-        :d="`M0,0 v${subGridSize} h${subGridSize}`"
+        :d="`M0,0 v${subGridSize * scale} h${subGridSize * scale}`"
         stroke-width="1"
         :stroke="color"
         fill="none"
@@ -40,10 +43,10 @@ withDefaults(
 
     <pattern
       :id="gridId"
-      :x="x % size"
-      :y="y % size"
-      :width="size"
-      :height="size"
+      :x="x % (size * scale)"
+      :y="y % (size * scale)"
+      :width="(size * scale)"
+      :height="(size * scale)"
       patternUnits="userSpaceOnUse"
     >
       <rect
@@ -52,7 +55,7 @@ withDefaults(
         :fill="`url(#${subGridId})`"
       />
       <path
-        :d="`M0,0 v${size} h${size}`"
+        :d="`M0,0 v${size * scale} h${size * scale}`"
         stroke-width="1"
         :stroke="color"
         fill="none"
