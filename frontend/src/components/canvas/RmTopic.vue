@@ -1,14 +1,10 @@
 <script setup lang="ts">
 import { ref, watch, nextTick, computed } from 'vue';
-import { alignToGrid } from './util';
+import { alignToGrid } from './Util/alignToGrid';
+import { RoadmapItem } from './Util/roadmap.interfaces';
 
 const props = withDefaults(
-  defineProps<{
-    x: number,
-    y: number,
-    width?: number
-    height?: number,
-  }>(),
+  defineProps<RoadmapItem>(),
   {
     x: 0,
     y: 0,
@@ -18,11 +14,11 @@ const props = withDefaults(
 );
 
 const text = defineModel<string>('text');
-
 const isEditing = defineModel<boolean>('editing');
 const textArea = ref<HTMLTextAreaElement>();
 const widthAligned = computed(() => alignToGrid(props.width));
 const heightAligned = computed(() => alignToGrid(props.height));
+const paddingOffset = 70;
 
 watch(isEditing, (editing) => {
   if (editing && textArea.value) {
@@ -44,8 +40,8 @@ watch(isEditing, (editing) => {
     />
     <foreignObject
       v-if="isEditing"
-      :width="widthAligned"
-      :height="heightAligned"
+      :width="width"
+      :height="height"
       x="0"
       y="0"
     >
@@ -70,5 +66,13 @@ watch(isEditing, (editing) => {
     >
       {{ text }}
     </text>
+    <rect
+      :x="-paddingOffset / 2"
+      :y="-paddingOffset/2"
+      :width="widthAligned + paddingOffset"
+      :height="heightAligned + paddingOffset"
+      fill="transparent"
+      stroke="red"
+    />
   </g>
 </template>
