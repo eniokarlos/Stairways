@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 
-withDefaults(
+
+const props = withDefaults(
   defineProps<{
     gridId: string;
     subGridId?: string;
@@ -22,6 +24,11 @@ withDefaults(
     subGridSize: 8,
   },
 );
+
+const scaledSize = computed(() => props.size * props.scale);
+const scaledSubSize = computed(() => props.subGridSize * props.scale);
+
+
 </script>
 
 <template>
@@ -29,12 +36,12 @@ withDefaults(
     <pattern
       v-if="scale > 0.2"
       :id="subGridId"
-      :width="subGridSize * scale"
-      :height="subGridSize * scale"
+      :width="scaledSubSize"
+      :height="scaledSubSize"
       patternUnits="userSpaceOnUse"
     >
       <path
-        :d="`M0,0 v${subGridSize * scale} h${subGridSize * scale}`"
+        :d="`M0,0 v${scaledSubSize} h${scaledSubSize}`"
         stroke-width="1"
         :stroke="color"
         fill="none"
@@ -43,19 +50,19 @@ withDefaults(
 
     <pattern
       :id="gridId"
-      :x="x % (size * scale)"
-      :y="y % (size * scale)"
-      :width="(size * scale)"
-      :height="(size * scale)"
+      :x="x % scaledSize"
+      :y="y % scaledSize"
+      :width="scaledSize"
+      :height="scaledSize"
       patternUnits="userSpaceOnUse"
     >
       <rect
-        :width="width"
-        :height="height"
+        :width="scaledSize"
+        :height="scaledSize"
         :fill="`url(#${subGridId})`"
       />
       <path
-        :d="`M0,0 v${size * scale} h${size * scale}`"
+        :d="`M0,0 v${scaledSize} h${scaledSize}`"
         stroke-width="1"
         :stroke="color"
         fill="none"

@@ -2,43 +2,50 @@
 import { PropType } from 'vue';
   
 defineProps({
-    color: {
-      type: String,
-      default: "brand-blue"
-    },
-    large: Boolean,
-    rounded: Boolean,
-    draggable: Boolean,
-    variant: {
-      type: String as PropType<'outline' | 'default' | 'spherical'>,
-      default: 'default'
-    }
-  })
+  color: {
+    type: String,
+    default: 'brand-blue',
+  },
+  large: Boolean,
+  rounded: Boolean,
+  draggable: Boolean,
+  variant: {
+    type: String as PropType<'outline' | 'default' | 'spherical'>,
+    default: 'default',
+  },
+});
 </script>
 
 <template>
-  <button v-if="draggable"
+  <button
+    v-if="draggable"
     v-color="color"
     class="relative ui-btn--draggable fg-foreground border-0 cursor-grabbing w-160px h-45px rd-4px 
     font-size-16px font-600 overflow-hidden"
   >
-    <div class="ui-btn__side absolute w-5px h-100% top-0 left-0">&nbsp;</div>
-    <div class="absolute h-100% top-0 left-0 flex box-border py-14px px-15px">
-      <img src="../../assets/draggable-icon.svg" class="block">
+    <div class="ui-btn__side absolute w-5px h-100% top-0 left-0">
+      &nbsp;
     </div>
-    <slot/>
+    <div class="absolute h-100% top-0 left-0 flex box-border py-14px px-15px">
+      <img
+        src="../../assets/draggable-icon.svg"
+        class="block pointer-events-none"
+      >
+    </div>
+    <slot />
   </button>
 
-  <button v-else
+  <button
+    v-else
     v-color="color"
     :class="[`ui-btn--${variant}`, {
       'ui-btn--large': large
     }]"
     class="border-0 w-140px h-42px rd-10px
-    font-size-15px font-500 cursor-pointer">
-    <slot/>
+    font-size-15px font-500 cursor-pointer"
+  >
+    <slot />
   </button>
-
 </template>
 
 <style lang="css" scoped>

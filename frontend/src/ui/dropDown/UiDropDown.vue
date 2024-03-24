@@ -12,6 +12,10 @@ const props = defineProps({
 const selected = ref(props.items[0]);
 var isOpened = ref(false);
 
+const emit = defineEmits<{
+  (name: 'selected', data: {item: string, index: number}): void
+}>();
+
 function closeOpenedMenus() {
   const openedMenus = document.querySelectorAll('.opened');
   
@@ -19,6 +23,7 @@ function closeOpenedMenus() {
   
   isOpened.value = false;
 }
+
 
 document.addEventListener('click', closeOpenedMenus);
 
@@ -47,12 +52,12 @@ onBeforeUnmount(() => {
       <ul class="list-none">
         <li
           v-for="item,i in items" 
-          :key="i"
+          :key="item"
           class="drop-down__item cursor-pointer 
-        pl-24px pr-58px h-40px flex items-center"
+          pl-24px pr-58px h-40px flex items-center"
           @click.stop="selected = item;
                        isOpened = false
-                       $emit('selected', {item, index:i})"
+                       emit('selected', {item, index:i})"
         >
           {{ item }}
         </li>

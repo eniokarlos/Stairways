@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, nextTick, computed } from 'vue';
+import { computed } from 'vue';
 import { alignToGrid } from './Util/alignToGrid';
 import { RoadmapItem } from './Util/roadmap.interfaces';
 
@@ -14,23 +14,22 @@ const props = withDefaults(
 );
 
 const text = defineModel<string>('text');
-const isEditing = defineModel<boolean>('editing');
-const textArea = ref<HTMLTextAreaElement>();
 const widthAligned = computed(() => alignToGrid(props.width));
 const heightAligned = computed(() => alignToGrid(props.height));
 const paddingOffset = 70;
 
-watch(isEditing, (editing) => {
-  if (editing && textArea.value) {
-    textArea.value.focus();
-    nextTick(() => textArea.value?.select());
-  }
-}, { flush: 'post' });
 </script>
 <template>
   <g
     :transform="`translate(${alignToGrid(x)},${alignToGrid(y)})`"
   >
+    <rect
+      :x="-paddingOffset / 2"
+      :y="-paddingOffset/2"
+      :width="widthAligned + paddingOffset"
+      :height="heightAligned + paddingOffset"
+      fill="transparent"
+    />
     <rect
       :width="widthAligned"
       :height="heightAligned"
@@ -38,41 +37,18 @@ watch(isEditing, (editing) => {
       stroke="black"
       rx="5"
     />
-    <foreignObject
-      v-if="isEditing"
-      :width="width"
-      :height="height"
-      x="0"
-      y="0"
-    >
-      <textarea
-        ref="textArea"
-        v-model="text"
-        placeholder="Digite..."
-        class="bg-transparent text-white w-full h-full text-center font-sans text-5 resize-none"
-        @blur="isEditing = false"
-      />
-    </foreignObject>
     <text
-      v-else
+      style="font-family: 'Fredoka'"
       alignment-baseline="middle"
       dominant-baseline="middle"
       text-anchor="middle"
-      font-size="20px"
+      font-size="28px"
+      font-weight="400"
       fill="white"
-      font-weight="500"
       :x="widthAligned / 2"
       :y="heightAligned / 2"
     >
       {{ text }}
     </text>
-    <rect
-      :x="-paddingOffset / 2"
-      :y="-paddingOffset/2"
-      :width="widthAligned + paddingOffset"
-      :height="heightAligned + paddingOffset"
-      fill="transparent"
-      stroke="red"
-    />
   </g>
 </template>

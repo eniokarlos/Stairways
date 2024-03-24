@@ -1,3 +1,8 @@
+export type Anchor = 'top' | 'right' | 'bottom' | 'left'
+export type EdgeStyle = 'solid' | 'dashed' | 'dotted'
+export type EdgeFormat = 'line' | 'curve' | 'diagonal' 
+export type EdgeDirection = 'lineX' | 'lineY' | 'lineXY'
+
 export interface User {
   name?: string
   photo?: string
@@ -35,7 +40,6 @@ export interface RoadmapItem extends BoundingBox {
   editing?: boolean;
 }
 
-export type Anchor = 'top' | 'right' | 'bottom' | 'left'
 
 export interface RoadmapEdge{
   id: string,
@@ -43,7 +47,7 @@ export interface RoadmapEdge{
   endItemId: string,
   startItemAnchor: Anchor,
   endItemAnchor: Anchor
-  format?: 'line' | 'curve',
-  style?: 'solid' | 'dashed' | 'dotted',
-  direction: 'lineX' | 'lineY'
+  format?: EdgeFormat,
+  style?: EdgeStyle,
+  direction?: EdgeDirection
 }

@@ -2,9 +2,9 @@
 import UiIcon from '@/ui/icon/UiIcon.vue';
 import UiDropDown from '@/ui/dropDown/UiDropDown.vue';
 import UiBtn from '@/ui/btn/UiBtn.vue';
-import RmCanvas from '@/components/canvas/RmCanvas.vue';
-import { ref } from 'vue';
-
+import RmCanvas, { GridMoveEvent } from '@/components/canvas/RmCanvas.vue';
+import { reactive, ref } from 'vue';
+import { RoadmapItem } from '@/components/canvas/Util/roadmap.interfaces';
 
 const levelColors = [
   'brand-blue',
@@ -26,13 +26,70 @@ const privacity = [
 const selectedPrivacity = ref(0);
 const selectedLevel = ref(0);
 
+const roadmapItems = reactive<RoadmapItem[]>([]);
+const scale = ref<number>(1);
+const newItem = ref<RoadmapItem>();
+const defaultItemSize = {
+  w: 256,
+  h: 64, 
+};
+
+let isGrabbing: boolean = false;
+let lastItemType: string;
+let lastMoveEvent: GridMoveEvent;
+
+function onGrab(itemType: string) {
+  lastItemType = itemType;
+  isGrabbing = true;
+}
+
+function onEnter(e: GridMoveEvent) {
+  if (isGrabbing) {
+    lastMoveEvent = e;
+    newItem.value = {
+      id: crypto.randomUUID(),
+      width: defaultItemSize.w,
+      height: defaultItemSize.h,
+      x: (e.event.offsetX - lastMoveEvent.grid.x) / scale.value,
+      y: (e.event.offsetY - lastMoveEvent.grid.y) / scale.value,
+      type: lastItemType,
+    };
+    roadmapItems.push(newItem.value);
+  }
+}
+
+function onMove(e: GridMoveEvent) {
+  if (newItem.value && isGrabbing) {
+
+    const dx = e.event.x - lastMoveEvent.event.x;
+    const dy = e.event.y - lastMoveEvent.event.y;
+
+    newItem.value.x += dx / scale.value;
+    newItem.value.y += dy / scale.value;    
+
+    lastMoveEvent.event = e.event;
+  }
+}
+
+function onLeave() {
+  if (newItem.value && isGrabbing) {
+    roadmapItems.pop();
+  }
+}
+
+function stopAddElement() {
+  isGrabbing = false;
+  newItem.value = undefined;
+}
+
+
 </script>
 
 <template>
-  <section class="h-screen">
+  <section class="h-screen flex flex-col">
     <nav
-      class="rm-creation__nav flex h-8% relative justify-between
-    items-center b-1px-solid-light-gray"
+      class="rm-creation__nav flex w-full h-62px relative justify-between
+    items-center b-1px-solid-light-gray "
     >
       <RouterLink
         to="/"
@@ -44,7 +101,7 @@ const selectedLevel = ref(0);
         />
       </RouterLink>
 
-      <div class="rm-creation__title absolute z-0 w-full flex flex-col items-center">
+      <div class="rm-creation__title absolute z-1 w-full flex flex-col items-center">
         <input
           type="text"
           class="block bg-transparent b-0 font-size-20px w-460px
@@ -84,14 +141,36 @@ const selectedLevel = ref(0);
       </div>
     </nav>  
 
-    <div class="rm-creation__body h-92% flex">
-      <div class="rm-creation__side-menu w-10% b-1px-solid-light-gray w-230px h-100%">
-        <span class="w-70% block m-auto text-center fg-gray font-500 mt-20px">
+    <div 
+      class="rm-creation__body flex flex-grow-1"
+      :class="{grabbing: isGrabbing}"
+      @pointerup="stopAddElement"
+    >
+      <div
+        class="rm-creation__side-menu w-250px h-full
+      b-1px-solid-light-gray flex flex-col items-center" 
+      >
+        <span class="w-68% block my-20px text-center fg-gray font-500">
           Componentes (arrastar e soltar)
         </span>
+        <UiBtn
+          draggable
+          color="brand-orange"
+          @pointerdown.left="onGrab('topic')"
+        >
+          Tópico
+        </UiBtn>
       </div>
-      <div class="rm-creation__canvas w-90% h-100%">
-        <RmCanvas />
+      <div 
+        class="rm-creation__canvas w-full h-full"
+        @pointerleave="onLeave"
+      >
+        <RmCanvas
+          v-model:scale="scale"
+          :items="roadmapItems"
+          @on-move="onMove"
+          @on-enter="onEnter"
+        />
       </div>
     </div>
   </section>
@@ -99,7 +178,9 @@ const selectedLevel = ref(0);
 
 
 <style scoped>
-
+  .grabbing {
+    cursor: grabbing;
+  }
 
   .rm-creation__title::placeholder {
     color: var(--foreground);

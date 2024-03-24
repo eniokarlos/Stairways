@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { alignToGrid } from './alignToGrid';
+import { alignToGrid } from './Util/alignToGrid';
 import { Ref, computed, inject, onBeforeUnmount, watchEffect } from 'vue';
-import { RoadmapItem } from './roadmap.interfaces';
+import { RoadmapItem } from './Util/roadmap.interfaces';
 import RmAnchors, { AnchorClickEvent, AnchorDropEvent } from './RmAnchors.vue';
 
 const props = withDefaults(
@@ -19,6 +19,7 @@ const emit = defineEmits<{
   (name: 'delete'): void,
   (name: 'anchor-click', value: AnchorClickEvent): void,
   (name: 'anchor-hover', value: AnchorDropEvent): void,
+  (name: 'anchor-leave'): void
 }>();
 
 const { scale } = inject('scale') as {
@@ -173,6 +174,7 @@ onBeforeUnmount(() => {
     <RmAnchors
       v-model:item="alignedBox"
       @anchor-hover="emit('anchor-hover', $event)"
+      @anchor-leave="emit('anchor-leave')"
     />
   </g>
   <g

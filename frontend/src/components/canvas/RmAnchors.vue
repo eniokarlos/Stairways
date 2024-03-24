@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Ref, computed, inject, ref } from 'vue';
-import { RoadmapItem, Anchor } from './roadmap.interfaces';
+import { RoadmapItem, Anchor } from './Util/roadmap.interfaces';
 
 export interface AnchorClickEvent {
   event: PointerEvent,
@@ -24,7 +24,8 @@ const { scale } = inject('scale') as {
 const item = defineModel<RoadmapItem>('item', { required: true });
 const emit = defineEmits<{
   (name: 'anchor-click', value: AnchorClickEvent): void,
-  (name: 'anchor-hover', value: AnchorDropEvent): void 
+  (name: 'anchor-hover', value: AnchorDropEvent): void,
+  (name: 'anchor-leave'): void
 }>();
 
 const scaledItem = computed(() => ({
@@ -75,7 +76,9 @@ const leftAnchor = computed(() => ({
 </script>
 
 <template>
-  <g>
+  <g
+    @mouseleave="emit('anchor-leave')"
+  >
     <circle
       v-bind="topAnchor"
       stroke="#009FB7"

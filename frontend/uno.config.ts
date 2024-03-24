@@ -9,7 +9,13 @@ export default defineConfig({
       fonts: {
         sans: {
           name: 'Fredoka',
-          weights: [500], 
+          weights: [
+            300,
+            400,
+            500,
+            600,
+            700,
+          ], 
         }, 
       }, 
     }),
@@ -22,6 +28,7 @@ export default defineConfig({
       'fg-inverted': '#fff',
       'foreground': '#2E2E2E',
       'light-gray': '#BFBFBF',
+      'light-gray-alfa': '#BFBFBF60',
       'dropdown-hover': '#f6f6f6',
       'gray': '#8F8F8F',
       'card-bg': '#E6E6E6',

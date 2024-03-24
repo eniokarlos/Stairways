@@ -1,58 +1,83 @@
 <script setup lang="ts">
 
-  import UiIcon from '../icon/UiIcon.vue';
+import { ref } from 'vue';
+import UiIcon from '../icon/UiIcon.vue';
 
-  defineProps({
-    title: {
-      type: String,
-      default: 'Insert a title'
-    }
-  })
+defineProps({
+  title: {
+    type: String,
+    default: 'Insert a title',
+  },
+});
 
-  var scrollPos: number;
+let scrollPos: number;
+const list = ref<Element>();
 
-  function scrollTo(direction: 'left' | 'right', el: any) {
-    const list = el.target.parentNode.parentNode.getElementsByClassName('ui-list__items')[0];
+function scrollTo(direction: 'left' | 'right') {
+  if (list.value) {
     const scrollOffset = 300;
-    scrollPos = list.scrollLeft;
-  
+    scrollPos = list.value.scrollLeft;
+
     if (direction === 'right') {
-      list.scrollTo({
+      list.value.scrollTo({
         left: scrollPos + scrollOffset,
-        behavior: 'smooth'
-      })
+        behavior: 'smooth',
+      });
     }
+
     else {
-      list.scrollTo({
+      list.value.scrollTo({
         left: scrollPos - scrollOffset,
-        behavior: 'smooth'
-      })
+        behavior: 'smooth',
+      });
     }
-
   }
+}
 
-  function pickRandomColor() {
-    const colors = ['brand-blue', 'brand-orange', 'brand-magenta'];
-    let random = Math.floor(Math.random() * 3);
-    return colors[random]
-  }
+function pickRandomColor() {
+  const colors = [
+    'brand-blue',
+    'brand-orange',
+    'brand-magenta',
+  ];
+  const random = Math.floor(Math.random() * 3);
+  return colors[random];
+}
 </script>
 
 <template>
   <div class="ui-list mt-50px px-30px">
-    <span v-color="pickRandomColor()" class="ui-list__title relative pb-5px ml-20px font-size-28px font-600">{{ title }}</span>
+    <span
+      v-color="pickRandomColor()"
+      class="ui-list__title relative pb-5px ml-20px font-size-28px font-600"
+    >{{ title }}</span>
 
     <div class="ui-list__wrapper mt-10px relative flex m-auto">
       <div class="h-100% absolute left-0 z-2 flex items-center">
-        <UiIcon @click="(el) => scrollTo('left', el)" pointer name="chevron-left" color="foreground" class="ui-list__arrow bg-white rd-100% font-size-38px w-48px h-48px"/>
+        <UiIcon
+          pointer
+          name="chevron-left"
+          color="foreground"
+          class="ui-list__arrow bg-white rd-100% font-size-38px w-48px h-48px"
+          @pointerdown="scrollTo('left')"
+        />
       </div>
 
-      <div class="ui-list__items flex w-98% m-auto  py-10px gap-20px">
-        <slot></slot>
+      <div
+        ref="list"
+        class="ui-list__items flex w-98% m-auto  py-10px gap-20px"
+      >
+        <slot />
       </div>
 
       <div class="h-100% absolute right-0 z-2 flex items-center">
-        <UiIcon @click="(el) => scrollTo('right', el)" pointer name="chevron-right" color="foreground" class="ui-list__arrow bg-white rd-100% font-size-38px w-48px h-48px"/>
+        <UiIcon
+          pointer
+          name="chevron-right"
+          color="foreground"
+          class="ui-list__arrow bg-white rd-100% font-size-38px w-48px h-48px"
+          @click="scrollTo('right')"
+        />
       </div>
     </div>
   </div>
