@@ -2,6 +2,7 @@ export type Anchor = 'top' | 'right' | 'bottom' | 'left'
 export type EdgeStyle = 'solid' | 'dashed' | 'dotted'
 export type EdgeFormat = 'line' | 'curve' | 'diagonal' 
 export type EdgeDirection = 'lineX' | 'lineY' | 'lineXY'
+export type ItemType = 'topic' | 'subTopic' | 'link'
 
 export interface User {
   name?: string
@@ -36,8 +37,9 @@ export interface BoundingBox extends Point {
 
 export interface RoadmapItem extends BoundingBox {
   id: string;
-  type?: string;
+  type?: ItemType;
   editing?: boolean;
+  linkTo?: string
 }
 
 

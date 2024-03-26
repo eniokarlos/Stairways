@@ -1,8 +1,8 @@
 <script setup lang="tsx">
 import { RoadmapItem, RoadmapEdge, Point, Anchor, EdgeDirection } from './Util/roadmap.interfaces';
-import { onBeforeUnmount, ref, reactive, provide, PropType } from 'vue';
+import { onBeforeUnmount, ref, reactive, provide } from 'vue';
 import RmGrid from './RmGrid.vue';
-import RmTopic from './RmTopic.vue';
+import RmItem from './RmItem.vue';
 import RmEdge from './RmEdge.vue';
 import RmSelectedBox from './RmSelectedBox.vue';
 import RmEditingMenu from './RmEditingMenu.vue';
@@ -23,13 +23,6 @@ export interface GridMoveEvent{
   event: PointerEvent,
   grid: Point
 }
-
-const props = defineProps({
-  items: {
-    type: Array as PropType<RoadmapItem[]>,
-    required: true, 
-  },
-});
 
 const svg = ref<SVGSVGElement>();
 const selectedItem = ref<RoadmapItem>();
@@ -55,21 +48,16 @@ const grid = reactive({
   y: 0,
 });
 
-const roadmap = ref<{
-  items: RoadmapItem[],
-  edges: RoadmapEdge[]
-}>({
-  items: props.items,
-  edges: [],
-});
+const roadmapItems = defineModel<RoadmapItem[]>('items', { required: true });
 
+const roadmapEdges = ref<RoadmapEdge[]>([]);
 
 function onWheel(evt: WheelEvent) {   
   if (!svg.value) {
     return;
   }
   
-  const delta = 0.5 * Math.sign(evt.deltaY);
+  const delta = 0.2 * Math.sign(evt.deltaY);
   const point = svg.value.createSVGPoint();
   point.x = evt.clientX;
   point.y = evt.clientY;
@@ -148,7 +136,7 @@ function stopAddEdge() {
   if (addEdgeEvent.value?.endItemId && 
   addEdgeEvent.value?.endItemAnchor) {
     
-    roadmap.value.edges.push({
+    roadmapEdges.value.push({
       id: crypto.randomUUID(),
       startItemId: addEdgeEvent.value.startItemId,
       endItemId: addEdgeEvent.value.endItemId,
@@ -171,7 +159,7 @@ onBeforeUnmount(() => {
 });
 
 provide('scale', { scale });
-provide('roadmap', { roadmap });
+provide('items', roadmapItems);
 </script>
 
 <template>
@@ -221,7 +209,7 @@ provide('roadmap', { roadmap });
         </g>
 
         <template
-          v-for="edge in roadmap.edges"
+          v-for="edge in roadmapEdges"
           :key="edge.id"
         >
           <RmEdge
@@ -233,21 +221,23 @@ provide('roadmap', { roadmap });
             :direction="edge.direction"
             :style="edge.style"
           />
+          
         </template>
         <template
-          v-for="item in roadmap.items"
+          v-for="item in roadmapItems"
           :key="item.id"
         >
-          <RmTopic
-            v-if="item.type === 'topic'"
+          <RmItem
             :id="item.id"
             :x="item.x"
             :y="item.y"
+            :type="item.type"
             :width="item.width"
             :height="item.height"
             @pointerdown.left.stop="selectedItem = item, selectionEvent = $event"
             @mouseenter="hoveredItem = item"
           />
+
         </template>
       </g>
       <g
@@ -257,7 +247,7 @@ provide('roadmap', { roadmap });
         <RmSelectedBox
           v-model:item="selectedItem"
           :event="selectionEvent"
-          @delete="roadmap.items = roadmap.items.filter((item) => item.id !== selectedItem?.id), selectedItem = undefined"
+          @delete="roadmapItems = roadmapItems.filter((item) => item.id !== selectedItem?.id), selectedItem = undefined"
           @anchor-click="startAddEdge"
         />
 
@@ -266,7 +256,6 @@ provide('roadmap', { roadmap });
             && addEdgeEvent"
           v-model:item="hoveredItem"
           anchors-only
-
           @anchor-leave="if (addEdgeEvent) {
             addEdgeEvent.endItemId = undefined;
             addEdgeEvent.endItemAnchor = undefined;
@@ -280,7 +269,7 @@ provide('roadmap', { roadmap });
       </g>
     </svg>
     <div 
-      class="canvas-scale absolute bottom-20px right-20px fg-foreground font-500 text-right"
+      class="canvas-scale absolute bottom-20px left-20px fg-foreground font-500 text-right"
     >
       Zoom: {{ scale.toFixed(2) }}X 
     </div>

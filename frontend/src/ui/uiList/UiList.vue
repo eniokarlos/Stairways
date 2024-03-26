@@ -53,7 +53,7 @@ function pickRandomColor() {
     >{{ title }}</span>
 
     <div class="ui-list__wrapper mt-10px relative flex m-auto">
-      <div class="h-100% absolute left-0 z-2 flex items-center">
+      <div class="top-50% translate-y--50% absolute left-0 z-2 flex items-center">
         <UiIcon
           pointer
           name="chevron-left"
@@ -70,7 +70,7 @@ function pickRandomColor() {
         <slot />
       </div>
 
-      <div class="h-100% absolute right-0 z-2 flex items-center">
+      <div class="top-50% translate-y--50% absolute right-0 z-2 flex items-center">
         <UiIcon
           pointer
           name="chevron-right"

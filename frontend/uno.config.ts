@@ -25,6 +25,7 @@ export default defineConfig({
       'brand-orange': '#FF8811',
       'brand-blue': '#009FB7',
       'brand-magenta': '#DB2763',
+      'sub-topic': '#FFE599',
       'fg-inverted': '#fff',
       'foreground': '#2E2E2E',
       'light-gray': '#BFBFBF',

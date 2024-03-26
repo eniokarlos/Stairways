@@ -34,7 +34,7 @@ const scaledSubSize = computed(() => props.subGridSize * props.scale);
 <template>
   <defs>
     <pattern
-      v-if="scale > 0.2"
+      v-if="scale > 0.21"
       :id="subGridId"
       :width="scaledSubSize"
       :height="scaledSubSize"

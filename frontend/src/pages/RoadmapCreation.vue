@@ -3,8 +3,9 @@ import UiIcon from '@/ui/icon/UiIcon.vue';
 import UiDropDown from '@/ui/dropDown/UiDropDown.vue';
 import UiBtn from '@/ui/btn/UiBtn.vue';
 import RmCanvas, { GridMoveEvent } from '@/components/canvas/RmCanvas.vue';
-import { reactive, ref } from 'vue';
-import { RoadmapItem } from '@/components/canvas/Util/roadmap.interfaces';
+import { ref } from 'vue';
+import { RoadmapItem, ItemType } from '@/components/canvas/Util/roadmap.interfaces';
+import { RoadmapDefaults } from '@/components/canvas/Util/roadmap.defaults.ts';
 
 const levelColors = [
   'brand-blue',
@@ -26,19 +27,15 @@ const privacity = [
 const selectedPrivacity = ref(0);
 const selectedLevel = ref(0);
 
-const roadmapItems = reactive<RoadmapItem[]>([]);
+const roadmapItems = ref<RoadmapItem[]>([]);
 const scale = ref<number>(1);
 const newItem = ref<RoadmapItem>();
-const defaultItemSize = {
-  w: 256,
-  h: 64, 
-};
 
 let isGrabbing: boolean = false;
-let lastItemType: string;
+let lastItemType: ItemType;
 let lastMoveEvent: GridMoveEvent;
 
-function onGrab(itemType: string) {
+function onGrab(itemType: ItemType) {
   lastItemType = itemType;
   isGrabbing = true;
 }
@@ -48,13 +45,13 @@ function onEnter(e: GridMoveEvent) {
     lastMoveEvent = e;
     newItem.value = {
       id: crypto.randomUUID(),
-      width: defaultItemSize.w,
-      height: defaultItemSize.h,
+      width: RoadmapDefaults[lastItemType].width,
+      height: RoadmapDefaults[lastItemType].height,
       x: (e.event.offsetX - lastMoveEvent.grid.x) / scale.value,
       y: (e.event.offsetY - lastMoveEvent.grid.y) / scale.value,
       type: lastItemType,
     };
-    roadmapItems.push(newItem.value);
+    roadmapItems.value.push(newItem.value);
   }
 }
 
@@ -73,7 +70,7 @@ function onMove(e: GridMoveEvent) {
 
 function onLeave() {
   if (newItem.value && isGrabbing) {
-    roadmapItems.pop();
+    roadmapItems.value.pop();
   }
 }
 
@@ -93,7 +90,7 @@ function stopAddElement() {
     >
       <RouterLink
         to="/"
-        class="z-1 fg-foreground decoration-none"
+        class="z-2 fg-foreground decoration-none"
       >
         <UiIcon
           name="arrow-left"
@@ -147,10 +144,10 @@ function stopAddElement() {
       @pointerup="stopAddElement"
     >
       <div
-        class="rm-creation__side-menu w-250px h-full
-      b-1px-solid-light-gray flex flex-col items-center" 
+        class="rm-creation__side-menu select-none w-250px h-full
+      b-1px-solid-light-gray flex flex-col items-center gap-15px" 
       >
-        <span class="w-68% block my-20px text-center fg-gray font-500">
+        <span class="w-68% block mt-15px text-center fg-gray font-500">
           Componentes (arrastar e soltar)
         </span>
         <UiBtn
@@ -160,6 +157,22 @@ function stopAddElement() {
         >
           Tópico
         </UiBtn>
+
+        <UiBtn
+          draggable
+          color="sub-topic"
+          @pointerdown.left="onGrab('subTopic')"
+        >
+          SubTópico
+        </UiBtn>
+
+        <UiBtn
+          draggable
+          color="brand-magenta"
+          @pointerdown.left="onGrab('link')"
+        >
+          Link
+        </UiBtn>
       </div>
       <div 
         class="rm-creation__canvas w-full h-full"
@@ -167,7 +180,7 @@ function stopAddElement() {
       >
         <RmCanvas
           v-model:scale="scale"
-          :items="roadmapItems"
+          v-model:items="roadmapItems"
           @on-move="onMove"
           @on-enter="onEnter"
         />

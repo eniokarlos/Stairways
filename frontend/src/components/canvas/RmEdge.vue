@@ -6,18 +6,12 @@ import { alignToGrid } from './Util/alignToGrid';
 const props = withDefaults(
   defineProps<RoadmapEdge>(),
   {
-    format: 'curve',
-    style: 'dotted',
+    format: 'line',
+    style: 'solid',
   },
 );
 
-
-const { roadmap } = inject('roadmap') as {
-  roadmap: Ref<{
-    items: RoadmapItem[],
-    edges: RoadmapEdge[]
-  }>
-};
+const roadmapItems = inject('items') as Ref<RoadmapItem[]>;
 
 const styleProps: Record<EdgeStyle, object> = {
   solid: { 'stroke-width': '4' },
@@ -53,7 +47,7 @@ const anchorsCords = {
 };
 
 const start = computed(() => {
-  const res = roadmap.value.items.find(item => item.id === props.startItemId);
+  const res = roadmapItems.value.find(item => item.id === props.startItemId);
 
   if (res) {
     const cords = anchorsCords[props.startItemAnchor](res);
@@ -66,7 +60,7 @@ const start = computed(() => {
 });
 
 const end = computed(() => {
-  const res =  roadmap.value.items.find(item => item.id === props.endItemId);
+  const res =  roadmapItems.value.find(item => item.id === props.endItemId);
 
   if (res) {
     const cords = anchorsCords[props.endItemAnchor](res);
@@ -137,6 +131,8 @@ function getLinePath(start: Point, end: Point) {
       :d="getLinePath(start,end)"
       v-bind="styleProps[style]"
       fill="none"
+      stroke-linecap="round"
+      stroke-linejoin="round"
       stroke="#009FB7"
     />
   </g>
