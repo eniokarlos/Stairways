@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Ref, computed, inject } from 'vue';
+import { computed } from 'vue';
 import { EdgeStyle, Point, Anchor, RoadmapEdge, RoadmapItem } from './Util/roadmap.interfaces';
 import { alignToGrid } from './Util/alignToGrid';
 
@@ -10,8 +10,6 @@ const props = withDefaults(
     style: 'solid',
   },
 );
-
-const roadmapItems = inject('items') as Ref<RoadmapItem[]>;
 
 const styleProps: Record<EdgeStyle, object> = {
   solid: { 'stroke-width': '4' },
@@ -47,29 +45,17 @@ const anchorsCords = {
 };
 
 const start = computed(() => {
-  const res = roadmapItems.value.find(item => item.id === props.startItemId);
-
-  if (res) {
-    const cords = anchorsCords[props.startItemAnchor](res);
-    cords.x = alignToGrid(cords.x);
-    cords.y = alignToGrid(cords.y);
-    return cords;
-  }
-
-  return undefined;
+  const cords = anchorsCords[props.startItemAnchor](props.startItem);
+  cords.x = alignToGrid(cords.x);
+  cords.y = alignToGrid(cords.y);
+  return cords;
 });
 
 const end = computed(() => {
-  const res =  roadmapItems.value.find(item => item.id === props.endItemId);
-
-  if (res) {
-    const cords = anchorsCords[props.endItemAnchor](res);
-    cords.x = alignToGrid(cords.x);
-    cords.y = alignToGrid(cords.y);
-    return cords;
-  }
-
-  return undefined;
+  const cords = anchorsCords[props.endItemAnchor](props.endItem);
+  cords.x = alignToGrid(cords.x);
+  cords.y = alignToGrid(cords.y);
+  return cords;
 });
 
 function getLinePath(start: Point, end: Point) {
@@ -126,7 +112,7 @@ function getLinePath(start: Point, end: Point) {
 </script>
 
 <template>
-  <g v-if="start && end">
+  <g>
     <path
       :d="getLinePath(start,end)"
       v-bind="styleProps[style]"

@@ -1,20 +1,20 @@
-<script setup lang="tsx">
-import { RoadmapItem, RoadmapEdge, Point, Anchor, EdgeDirection } from './Util/roadmap.interfaces';
+<script setup lang="ts">
+import { RoadmapItem, RoadmapEdge, Point, Anchor } from './Util/roadmap.interfaces';
 import { onBeforeUnmount, ref, reactive, provide } from 'vue';
 import RmGrid from './RmGrid.vue';
 import RmItem from './RmItem.vue';
 import RmEdge from './RmEdge.vue';
 import RmSelectedBox from './RmSelectedBox.vue';
-import RmEditingMenu from './RmEditingMenu.vue';
+import RmEditingMenu from './RmItemMenu.vue';
 import { AnchorClickEvent } from './RmAnchors.vue';
+
 
 export interface AddEdgeEvent{
   lastEvent?: PointerEvent
-  start: Point,
-  end: Point,
-  direction?: EdgeDirection
-  startItemId: string,
-  endItemId?: string,
+  sketchLineStart: Point,
+  sketchLineEnd: Point,
+  startItem: RoadmapItem,
+  endItem?: RoadmapItem,
   startItemAnchor: Anchor
   endItemAnchor?: Anchor
 }
@@ -49,7 +49,6 @@ const grid = reactive({
 });
 
 const roadmapItems = defineModel<RoadmapItem[]>('items', { required: true });
-
 const roadmapEdges = ref<RoadmapEdge[]>([]);
 
 function onWheel(evt: WheelEvent) {   
@@ -84,15 +83,15 @@ function startAddEdge(e: AnchorClickEvent) {
   }
   
   addEdgeEvent.value = {
-    start: {
+    sketchLineStart: {
       x: e.anchor.cx / scale.value,
       y: e.anchor.cy / scale.value,
     },
-    end: {
+    sketchLineEnd: {
       x: e.anchor.cx / scale.value,
       y: e.anchor.cy / scale.value,
     },
-    startItemId: selectedItem.value.id,
+    startItem: selectedItem.value,
     startItemAnchor: e.anchor.id,
   };
   
@@ -119,8 +118,8 @@ function onMove(e: PointerEvent) {
     const dx = e.clientX - addEdgeEvent.value.lastEvent.clientX;
     const dy = e.clientY - addEdgeEvent.value.lastEvent.clientY;
     
-    addEdgeEvent.value.end.x += dx / scale.value;
-    addEdgeEvent.value.end.y += dy / scale.value;
+    addEdgeEvent.value.sketchLineEnd.x += dx / scale.value;
+    addEdgeEvent.value.sketchLineEnd.y += dy / scale.value;
     
     addEdgeEvent.value.lastEvent = e;
   }
@@ -133,20 +132,33 @@ function stopGridMove() {
 }
 
 function stopAddEdge() {
-  if (addEdgeEvent.value?.endItemId && 
+  if (addEdgeEvent.value?.endItem && 
   addEdgeEvent.value?.endItemAnchor) {
     
     roadmapEdges.value.push({
       id: crypto.randomUUID(),
-      startItemId: addEdgeEvent.value.startItemId,
-      endItemId: addEdgeEvent.value.endItemId,
+      startItem: addEdgeEvent.value.startItem,
+      endItem: addEdgeEvent.value.endItem,
       startItemAnchor: addEdgeEvent.value.startItemAnchor,
       endItemAnchor: addEdgeEvent.value.endItemAnchor,
-      direction: addEdgeEvent.value.direction,
     });
   }
   
   addEdgeEvent.value = undefined;
+}
+
+function deleteItem() {
+  roadmapEdges.value = roadmapEdges.value.filter(
+    edge => edge.startItem.id !== selectedItem.value?.id &&
+    edge.endItem.id !== selectedItem.value?.id,
+  );
+
+  roadmapItems.value = roadmapItems.value.filter(
+    (item) => item.id !== selectedItem.value?.id,
+  );
+
+  selectedItem.value = undefined;
+
 }
 
 document.addEventListener('pointermove', onMove);
@@ -156,10 +168,10 @@ document.addEventListener('pointerup', stopAddEdge);
 onBeforeUnmount(() => {
   document.removeEventListener('pointermove', onMove);
   document.removeEventListener('pointerup', stopGridMove);
+  document.removeEventListener('pointerup', stopAddEdge);
 });
 
 provide('scale', { scale });
-provide('items', roadmapItems);
 </script>
 
 <template>
@@ -187,21 +199,10 @@ provide('items', roadmapItems);
 
         <g v-if="addEdgeEvent">
           <path
-            v-if="addEdgeEvent.direction === 'lineY'"
-            :d="`M${addEdgeEvent.start.x},${addEdgeEvent.start.y} 
-          C${addEdgeEvent.start.x},${(addEdgeEvent.start.y + addEdgeEvent.end.y) / 2} 
-          ${addEdgeEvent.end.x},${(addEdgeEvent.end.y + addEdgeEvent.end.y) / 2} 
-          ${addEdgeEvent.end.x},${addEdgeEvent.end.y}`"
-            fill="none"
-            stroke="#009FB780"
-            stroke-width="4"
-          />
-          <path 
-            v-else
-            :d="`M${addEdgeEvent.start.x},${addEdgeEvent.start.y} 
-          C${(addEdgeEvent.start.x + addEdgeEvent.end.x) / 2},${addEdgeEvent.start.y} 
-          ${(addEdgeEvent.start.x + addEdgeEvent.end.x) / 2},${addEdgeEvent.end.y} 
-          ${addEdgeEvent.end.x},${addEdgeEvent.end.y}`"
+            :d="`M${addEdgeEvent.sketchLineStart.x},${addEdgeEvent.sketchLineStart.y} 
+          C${addEdgeEvent.sketchLineStart.x},${(addEdgeEvent.sketchLineStart.y + addEdgeEvent.sketchLineEnd.y) / 2} 
+          ${addEdgeEvent.sketchLineEnd.x},${(addEdgeEvent.sketchLineEnd.y + addEdgeEvent.sketchLineEnd.y) / 2} 
+          ${addEdgeEvent.sketchLineEnd.x},${addEdgeEvent.sketchLineEnd.y}`"
             fill="none"
             stroke="#009FB780"
             stroke-width="4"
@@ -213,13 +214,7 @@ provide('items', roadmapItems);
           :key="edge.id"
         >
           <RmEdge
-            :id="edge.id"
-            :start-item-id="edge.startItemId"
-            :end-item-id="edge.endItemId" 
-            :start-item-anchor="edge.startItemAnchor"
-            :end-item-anchor="edge.endItemAnchor"
-            :direction="edge.direction"
-            :style="edge.style"
+            v-bind="edge"
           />
           
         </template>
@@ -228,12 +223,7 @@ provide('items', roadmapItems);
           :key="item.id"
         >
           <RmItem
-            :id="item.id"
-            :x="item.x"
-            :y="item.y"
-            :type="item.type"
-            :width="item.width"
-            :height="item.height"
+            v-bind="item"
             @pointerdown.left.stop="selectedItem = item, selectionEvent = $event"
             @mouseenter="hoveredItem = item"
           />
@@ -247,7 +237,7 @@ provide('items', roadmapItems);
         <RmSelectedBox
           v-model:item="selectedItem"
           :event="selectionEvent"
-          @delete="roadmapItems = roadmapItems.filter((item) => item.id !== selectedItem?.id), selectedItem = undefined"
+          @delete="deleteItem"
           @anchor-click="startAddEdge"
         />
 
@@ -257,12 +247,12 @@ provide('items', roadmapItems);
           v-model:item="hoveredItem"
           anchors-only
           @anchor-leave="if (addEdgeEvent) {
-            addEdgeEvent.endItemId = undefined;
+            addEdgeEvent.endItem = undefined;
             addEdgeEvent.endItemAnchor = undefined;
           };"
 
           @anchor-hover="if (addEdgeEvent) {
-            addEdgeEvent.endItemId = hoveredItem.id;
+            addEdgeEvent.endItem = hoveredItem;
             addEdgeEvent.endItemAnchor = $event.anchorId
           };"
         />
@@ -273,6 +263,9 @@ provide('items', roadmapItems);
     >
       Zoom: {{ scale.toFixed(2) }}X 
     </div>
-    <RmEditingMenu />
+    <RmEditingMenu
+      v-if="selectedItem" 
+      v-model:item="selectedItem"
+    />
   </div>
 </template>

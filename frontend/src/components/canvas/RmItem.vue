@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { alignToGrid } from './Util/alignToGrid';
 import { ItemType, RoadmapItem } from './Util/roadmap.interfaces';
-import { RoadmapDefaults } from './Util/roadmap.defaults';
+import RoadmapDefaults from './Util/roadmap.defaults';
 
 const props = withDefaults(
   defineProps<RoadmapItem>(),
@@ -15,7 +15,6 @@ const props = withDefaults(
   },
 );
 
-const text = defineModel<string>('text');
 const widthAligned = computed(() => alignToGrid(props.width));
 const heightAligned = computed(() => alignToGrid(props.height));
 const paddingOffset = 40;
@@ -34,13 +33,6 @@ const typeColors: Record<ItemType, {bg:string, fg:string}> = {
     fg: '#FFF',
   },
 };
-
-const fontSizes: Record<ItemType, string> = {
-  topic: '26',
-  subTopic: '18',
-  link: '26',
-};
-
 
 </script>
 <template>
@@ -66,13 +58,13 @@ const fontSizes: Record<ItemType, string> = {
       alignment-baseline="middle"
       dominant-baseline="middle"
       text-anchor="middle"
-      :font-size="fontSizes[type]"
-      font-weight="400"
+      :font-size="labelSize"
+      :font-weight="labelWidth"
       :fill="typeColors[type].fg"
       :x="widthAligned / 2"
       :y="heightAligned / 2"
     >
-      {{ text }}
+      {{ label }}
     </text>
   </g>
 </template>

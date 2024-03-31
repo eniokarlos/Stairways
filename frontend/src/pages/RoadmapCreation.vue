@@ -5,7 +5,7 @@ import UiBtn from '@/ui/btn/UiBtn.vue';
 import RmCanvas, { GridMoveEvent } from '@/components/canvas/RmCanvas.vue';
 import { ref } from 'vue';
 import { RoadmapItem, ItemType } from '@/components/canvas/Util/roadmap.interfaces';
-import { RoadmapDefaults } from '@/components/canvas/Util/roadmap.defaults.ts';
+import RoadmapDefaults from '@/components/canvas/Util/roadmap.defaults.ts';
 
 const levelColors = [
   'brand-blue',
@@ -45,8 +45,15 @@ function onEnter(e: GridMoveEvent) {
     lastMoveEvent = e;
     newItem.value = {
       id: crypto.randomUUID(),
+      content: {
+        title: '',
+        description: '',
+        links: [],
+      },
       width: RoadmapDefaults[lastItemType].width,
       height: RoadmapDefaults[lastItemType].height,
+      labelSize: RoadmapDefaults[lastItemType].labelSize,
+      labelWidth: 400,
       x: (e.event.offsetX - lastMoveEvent.grid.x) / scale.value,
       y: (e.event.offsetY - lastMoveEvent.grid.y) / scale.value,
       type: lastItemType,
@@ -86,7 +93,7 @@ function stopAddElement() {
   <section class="h-screen flex flex-col">
     <nav
       class="rm-creation__nav flex w-full h-62px relative justify-between
-    items-center b-1px-solid-light-gray "
+    items-center b-1px-solid-light-gray"
     >
       <RouterLink
         to="/"
@@ -114,9 +121,12 @@ function stopAddElement() {
         >
           <span>nível: </span>
           <UiDropDown
-            :items="['iniciante', 'intermediário', 'avançado']"
+            v-model="selectedLevel"
+            :items="[
+              {title: 'iniciante', value: 0}, 
+              {title: 'intermediário', value: 1}, 
+              {title: 'avançado', value: 2}]"
             class="mb-4px"
-            @selected="data => selectedLevel = data.index"
           />
         </div>
       </div>
@@ -128,9 +138,12 @@ function stopAddElement() {
           class="font-size-20px mr-8px"
         />
         <UiDropDown
-          class="font-size-14px font-500 mr-20px" 
-          :items="['todos podem ver', 'somente eu']"
-          @selected="data => selectedPrivacity = data.index"
+          v-model="selectedPrivacity" 
+          class="font-size-16px font-500 mr-20px"
+          :items="[
+            {title: 'todos podem ver', value: 0},
+            {title: 'somente eu', value: 1}
+          ]"
         />
         <UiBtn class="font-size-16px">
           Publicar

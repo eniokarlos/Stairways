@@ -15,7 +15,7 @@ export default {
     default: 'text',
   },
   variant: {
-    type: String as PropType<'rounded' | 'default' | 'transparent'>,
+    type: String as PropType<'rounded' | 'default'>,
     default: 'default',
   },
   placeholder: {

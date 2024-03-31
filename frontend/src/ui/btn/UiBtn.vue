@@ -7,7 +7,6 @@ defineProps({
     default: 'brand-blue',
   },
   large: Boolean,
-  rounded: Boolean,
   draggable: Boolean,
   variant: {
     type: String as PropType<'outline' | 'default' | 'spherical'>,
@@ -41,7 +40,7 @@ defineProps({
     :class="[`ui-btn--${variant}`, {
       'ui-btn--large': large
     }]"
-    class="border-0 w-140px h-42px rd-10px
+    class="border-0 min-w-140px h-40px rd-10px
     font-size-15px font-500 cursor-pointer"
   >
     <slot />
@@ -51,7 +50,7 @@ defineProps({
 <style lang="css" scoped>
   .ui-btn--default {
     background: var(--current-color) !important; 
-    color: var(--fg-inverted)
+    color: var(--fg-inverted);
   }
 
   .ui-btn--outline {

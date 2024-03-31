@@ -30,6 +30,8 @@ export default defineConfig({
       'foreground': '#2E2E2E',
       'light-gray': '#BFBFBF',
       'light-gray-alfa': '#BFBFBF60',
+      'pink': '#ffe4e8',
+      'red': '#FF0000',
       'dropdown-hover': '#f6f6f6',
       'gray': '#8F8F8F',
       'card-bg': '#E6E6E6',
