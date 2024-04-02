@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Ref, computed, inject, ref } from 'vue';
-import { RoadmapItem } from './RmItem.vue';
+import { computed, ref } from 'vue';
+import { BoundingBox } from './RmItem.vue';
 
 export type Anchor = 'top' | 'right' | 'bottom' | 'left';
 
@@ -15,27 +15,22 @@ export interface AnchorClickEvent {
 }
 
 export interface AnchorDropEvent {
-  itemId: string,
   anchorId: Anchor,
 }
 
-const { scale } = inject('scale') as {
-  scale: Ref<number>
-};
-
-const item = defineModel<RoadmapItem>('item', { required: true });
+const box = defineModel<BoundingBox>('box', { required: true });
 const emit = defineEmits<{
   (name: 'anchor-click', value: AnchorClickEvent): void,
   (name: 'anchor-hover', value: AnchorDropEvent): void,
   (name: 'anchor-leave'): void
 }>();
 
-const scaledItem = computed(() => ({
-  x: item.value.x * scale.value,
-  y: item.value.y * scale.value,
-  width: item.value.width * scale.value,
-  height: item.value.height * scale.value,
-}));
+// const scaledItem = computed(() => ({
+//   x: item.value.x * scale.value,
+//   y: item.value.y * scale.value,
+//   width: item.value.width * scale.value,
+//   height: item.value.height * scale.value,
+// }));
 
 const initialRadius = 7;
 const r = ref({
@@ -49,29 +44,29 @@ const hoverAnchorOffset = 3;
 
 const topAnchor = computed(() => ({
   id: 'top' as Anchor,
-  cx: scaledItem.value.x + scaledItem.value.width/2,
-  cy: scaledItem.value.y + (initialRadius/4),
+  cx: box.value.x + box.value.width/2,
+  cy: box.value.y + (initialRadius/4),
   r: r.value.top,
 }));
 
 const rightAnchor = computed(() => ({
   id: 'right' as Anchor,
-  cx: scaledItem.value.x + scaledItem.value.width,
-  cy: scaledItem.value.y + scaledItem.value.height/ 2,
+  cx: box.value.x + box.value.width,
+  cy: box.value.y + box.value.height/ 2,
   r: r.value.right,
 }));
 
 const bottomAnchor = computed(() => ({
   id: 'bottom' as Anchor,
-  cx: scaledItem.value.x + scaledItem.value.width/2,
-  cy: scaledItem.value.y + scaledItem.value.height,
+  cx: box.value.x + box.value.width/2,
+  cy: box.value.y + box.value.height,
   r: r.value.bottom,
 }));
 
 const leftAnchor = computed(() => ({
   id: 'left' as Anchor,
-  cx: scaledItem.value.x,
-  cy: scaledItem.value.y + scaledItem.value.height / 2,
+  cx: box.value.x,
+  cy: box.value.y + box.value.height / 2,
   r: r.value.left,
 }));
 
@@ -95,7 +90,6 @@ const leftAnchor = computed(() => ({
       })"
 
       @mouseover.stop="emit('anchor-hover', {
-        itemId: item.id,
         anchorId: 'top'
       })"
     />
@@ -114,7 +108,6 @@ const leftAnchor = computed(() => ({
       })"
 
       @mouseover.stop="emit('anchor-hover', {
-        itemId: item.id,
         anchorId: 'right'
       })"
     />
@@ -133,7 +126,6 @@ const leftAnchor = computed(() => ({
       })"
 
       @mouseover.stop="emit('anchor-hover', {
-        itemId: item.id,
         anchorId: 'bottom'
       })"
     />
@@ -152,7 +144,6 @@ const leftAnchor = computed(() => ({
       })"
 
       @mouseover.stop="emit('anchor-hover', {
-        itemId: item.id,
         anchorId: 'left'
       })"
     />

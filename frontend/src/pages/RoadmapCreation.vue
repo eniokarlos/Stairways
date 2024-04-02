@@ -4,8 +4,7 @@ import UiDropDown from '@/ui/dropDown/UiDropDown.vue';
 import UiBtn from '@/ui/btn/UiBtn.vue';
 import RmCanvas, { GridMoveEvent } from '@/components/canvas/RmCanvas.vue';
 import { ref } from 'vue';
-import { RoadmapItem, ItemType } from '@/components/canvas/Util/roadmap.interfaces';
-import RoadmapDefaults from '@/components/canvas/Util/roadmap.defaults.ts';
+import { ItemType, RoadmapItem } from '@/components/canvas/RmItem.vue';
 
 const levelColors = [
   'brand-blue',
@@ -29,7 +28,29 @@ const selectedLevel = ref(0);
 
 const roadmapItems = ref<RoadmapItem[]>([]);
 const scale = ref<number>(1);
-const newItem = ref<RoadmapItem>();
+const newItem = ref<Required<RoadmapItem>>();
+  
+const roadmapItemsDefaults: Record<ItemType, {
+  width: number,
+  height: number,
+  labelSize: number,
+}> = {
+  topic: {
+    width: 256,
+    height: 64,
+    labelSize: 24,
+  }, 
+  subTopic: {
+    width: 192,
+    height: 48,
+    labelSize: 18,
+  },
+  link: {
+    width: 288,
+    height: 48,
+    labelSize: 24,
+  },
+};
 
 let isGrabbing: boolean = false;
 let lastItemType: ItemType;
@@ -50,13 +71,15 @@ function onEnter(e: GridMoveEvent) {
         description: '',
         links: [],
       },
-      width: RoadmapDefaults[lastItemType].width,
-      height: RoadmapDefaults[lastItemType].height,
-      labelSize: RoadmapDefaults[lastItemType].labelSize,
+      width: roadmapItemsDefaults[lastItemType].width,
+      height: roadmapItemsDefaults[lastItemType].height,
+      labelSize: roadmapItemsDefaults[lastItemType].labelSize,
       labelWidth: 400,
       x: (e.event.offsetX - lastMoveEvent.grid.x) / scale.value,
       y: (e.event.offsetY - lastMoveEvent.grid.y) / scale.value,
       type: lastItemType,
+      label: '',
+      linkTo: '',
     };
     roadmapItems.value.push(newItem.value);
   }
@@ -119,13 +142,13 @@ function stopAddElement() {
           class="rm-creation__level
         font-400 font-size-16px"
         >
-          <span>nível: </span>
+          <span>Nível: </span>
           <UiDropDown
             v-model="selectedLevel"
             :items="[
-              {title: 'iniciante', value: 0}, 
-              {title: 'intermediário', value: 1}, 
-              {title: 'avançado', value: 2}]"
+              {title: 'Iniciante', value: 0}, 
+              {title: 'Intermediário', value: 1}, 
+              {title: 'Avançado', value: 2}]"
             class="mb-4px"
           />
         </div>
@@ -141,8 +164,8 @@ function stopAddElement() {
           v-model="selectedPrivacity" 
           class="font-size-16px font-500 mr-20px"
           :items="[
-            {title: 'todos podem ver', value: 0},
-            {title: 'somente eu', value: 1}
+            {title: 'Todos podem ver', value: 0},
+            {title: 'Somente eu', value: 1}
           ]"
         />
         <UiBtn class="font-size-16px">

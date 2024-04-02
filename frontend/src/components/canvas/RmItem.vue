@@ -3,7 +3,6 @@ import { computed } from 'vue';
 import { alignToGrid } from './Util/alignToGrid';
 
 export type ItemType = 'topic' | 'subTopic' | 'link';
-
 export type ItemContent = {
   title: string,
   description: string,
@@ -13,12 +12,15 @@ export type ItemContent = {
   >
 }
 
-export interface RoadmapItem {
-  id: string;
+export interface BoundingBox {
   x: number,
   y: number,
   width: number,
-  height: number,
+  height: number
+}
+
+export interface RoadmapItem extends BoundingBox{
+  id: string;
   content: ItemContent;
   type?: ItemType;
   linkTo?: string;
@@ -27,12 +29,10 @@ export interface RoadmapItem {
   labelSize?: number;
 }
 
-
 const props = defineProps<{item: RoadmapItem}>();
 const widthAligned = computed(() => alignToGrid(props.item.width));
 const heightAligned = computed(() => alignToGrid(props.item.height));
 const paddingOffset = 40;
-
 const typeColors: Record<ItemType, {bg:string, fg:string}> = {
   topic: {
     bg: '#FF8811',
@@ -47,7 +47,6 @@ const typeColors: Record<ItemType, {bg:string, fg:string}> = {
     fg: '#FFF',
   },
 };
-
 </script>
 <template>
   <g

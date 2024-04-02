@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { alignToGrid } from './Util/alignToGrid';
-import { Ref, computed, inject, onBeforeUnmount, watchEffect } from 'vue';
-import { RoadmapItem } from './Util/roadmap.interfaces';
+import { Ref, computed, inject, onBeforeUnmount, watch, watchEffect } from 'vue';
+import { BoundingBox, RoadmapItem } from './RmItem.vue';
 import RmAnchors, { AnchorClickEvent, AnchorDropEvent } from './RmAnchors.vue';
 
 const props = withDefaults(
@@ -29,39 +29,31 @@ const { scale } = inject('scale') as {
 const scaledCornerBoxSize = computed(() => props.cornerBoxSize);
 const halfCornerBoxSize = computed(() => scaledCornerBoxSize.value/2);
 
-const alignedBox = computed(() => ({
-  id: item.value.id,
-  x: alignToGrid(item.value.x),
-  y: alignToGrid(item.value.y),
-  width: alignToGrid(item.value.width),
-  height: alignToGrid(item.value.height),
-}));
-
-const scaledBox = computed(() => ({
-  x: alignedBox.value.x * scale.value,
-  y: alignedBox.value.y * scale.value,
-  width: alignedBox.value.width * scale.value,
-  height: alignedBox.value.height * scale.value,
+const alignedBox = computed<BoundingBox>(() => ({
+  x: alignToGrid(item.value.x) * scale.value,
+  y: alignToGrid(item.value.y) * scale.value,
+  width: alignToGrid(item.value.width) * scale.value,
+  height: alignToGrid(item.value.height) * scale.value,
 }));
 
 const cornerA = computed(() => ({
-  x: scaledBox.value.x - halfCornerBoxSize.value,
-  y: scaledBox.value.y - halfCornerBoxSize.value,
+  x: alignedBox.value.x - halfCornerBoxSize.value,
+  y: alignedBox.value.y - halfCornerBoxSize.value,
 }));
 
 const cornerB = computed(() => ({
-  x: scaledBox.value.x + scaledBox.value.width - halfCornerBoxSize.value,
-  y: scaledBox.value.y - halfCornerBoxSize.value,
+  x: alignedBox.value.x + alignedBox.value.width - halfCornerBoxSize.value,
+  y: alignedBox.value.y - halfCornerBoxSize.value,
 }));
 
 const cornerC = computed(() => ({
-  x: scaledBox.value.x - halfCornerBoxSize.value,
-  y: scaledBox.value.y + scaledBox.value.height - halfCornerBoxSize.value,
+  x: alignedBox.value.x - halfCornerBoxSize.value,
+  y: alignedBox.value.y + alignedBox.value.height - halfCornerBoxSize.value,
 }));
 
 const cornerD = computed(() => ({
-  x: scaledBox.value.x + scaledBox.value.width - halfCornerBoxSize.value,
-  y: scaledBox.value.y + scaledBox.value.height - halfCornerBoxSize.value,
+  x: alignedBox.value.x + alignedBox.value.width - halfCornerBoxSize.value,
+  y: alignedBox.value.y + alignedBox.value.height - halfCornerBoxSize.value,
 }));
 
 let lastMoveEvent: PointerEvent | undefined;
@@ -69,6 +61,23 @@ let resizeCorner: string | undefined;
 
 watchEffect(() => {
   lastMoveEvent = props.event;
+});
+
+watch(() => ({
+  height: alignedBox.value.height,
+  width: alignedBox.value.width,
+}),
+(newValue, oldValue) => {
+  if (resizeCorner === 'a') {
+    item.value.y -= newValue.height - oldValue.height;
+    item.value.x -= newValue.width - oldValue.width;
+  }
+  else if (resizeCorner === 'b') {
+    item.value.y -= newValue.height - oldValue.height;
+  }
+  else if (resizeCorner === 'c') {
+    item.value.x -= newValue.width - oldValue.width;
+  }
 });
 
 function startMove(event: PointerEvent) {
@@ -100,15 +109,18 @@ function onMove(event: PointerEvent) {
   lastMoveEvent = event;
 }
 
+function startResize(event: PointerEvent, corner: string) {
+  lastMoveEvent = event;
+  resizeCorner = corner;
+}
+
 function resize(dx: number, dy: number) {
   
   if (resizeCorner === 'a' || resizeCorner === 'b') {
-    item.value.y += dy;
     item.value.height -= dy;
   }
   
   if (resizeCorner === 'a' || resizeCorner === 'c') {
-    item.value.x += dx;
     item.value.width -= dx;
   }
   
@@ -122,49 +134,12 @@ function resize(dx: number, dy: number) {
 
 }
 
-function onKeyDown(e: KeyboardEvent) {
-
-  const setEditingToFalse = () => item.value.editing = false;
-
-  
-  const actions = {
-    Escape: () => setEditingToFalse(),
-    Enter: () => setEditingToFalse(),
-    Delete: () => emit('delete'),
-  };
-  
-  const arrowActions = {
-    ArrowUp: () => item.value.y -= 8 / scale.value,
-    ArrowDown: () => item.value.y += 8 / scale.value,
-    ArrowLeft: () => item.value.x -= 8 / scale.value,
-    ArrowRight: () => item.value.x += 8 / scale.value,
-  };
-
-  try {    
-    actions[e.key as keyof typeof actions]();
-
-    if (!item.value.editing){
-      arrowActions[e.key as keyof typeof arrowActions]();
-    }
-  }
-  catch {
-    return;
-  }
-}
-
-function startResize(event: PointerEvent, corner: string) {
-  lastMoveEvent = event;
-  resizeCorner = corner;
-}
-
 document.addEventListener('pointermove', onMove);
 document.addEventListener('pointerup', stopMove);
-document.addEventListener('keydown', onKeyDown);
 
 onBeforeUnmount(() => {
   document.removeEventListener('pointermove', onMove);
   document.removeEventListener('pointerup', stopMove);
-  document.removeEventListener('keydown', onKeyDown);
 });
 
 </script>
@@ -172,7 +147,7 @@ onBeforeUnmount(() => {
 <template>
   <g v-if="anchorsOnly">
     <RmAnchors
-      v-model:item="alignedBox"
+      v-model:box="alignedBox"
       @anchor-hover="emit('anchor-hover', $event)"
       @anchor-leave="emit('anchor-leave')"
     />
@@ -181,19 +156,18 @@ onBeforeUnmount(() => {
     v-else
     style="pointer-events: bounding-box"
     @pointerdown.left.stop="startMove"
-    @dblclick="item.editing = true"
   >
     <rect
-      :width="alignedBox.width * scale"
-      :height="alignedBox.height * scale"
-      :x="alignedBox.x * scale"
-      :y="alignedBox.y * scale"
+      :width="alignedBox.width"
+      :height="alignedBox.height"
+      :x="alignedBox.x"
+      :y="alignedBox.y"
       fill="none"
       stroke="#009FB7"
       stroke-width="3"
     />
     <RmAnchors
-      v-model:item="alignedBox"
+      v-model:box="alignedBox"
       @anchor-click="emit('anchor-click', $event)"
       @anchor-hover="emit('anchor-hover', $event)"
     />

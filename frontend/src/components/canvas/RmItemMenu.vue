@@ -136,7 +136,7 @@ function toggleGridAlign() {
               type="checkbox"
               name="checkbox"
             >
-            Alinhar ao grid
+            Alinhar à grade
           </label>
         </div>
       </section>
@@ -160,9 +160,8 @@ function toggleGridAlign() {
                 pl-10px py-6px"
                 large
                 :items="[
-                  {title: 'light', value: 400},
-                  {title: 'medium', value: 500},
-                  {title: 'bold', value: 600}
+                  {title: 'normal', value: 400},
+                  {title: 'negrito', value: 500}
                 ]"
               />
               <UiDropDown
