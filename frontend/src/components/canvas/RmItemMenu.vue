@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { RoadmapItem } from './Util/roadmap.interfaces';
 import { useGridAlignment } from './Util/gridAlignment';
 import UiDropDown from '@/ui/dropDown/UiDropDown.vue';
 import UiBtn from '@/ui/btn/UiBtn.vue';
 import UiIcon from '@/ui/icon/UiIcon.vue';
+import { RoadmapItem } from './RmItem.vue';
 
 const tabs = ref([
   'Design',
@@ -12,7 +12,7 @@ const tabs = ref([
 ]);
 
 const activeTab = ref(0);
-const item = defineModel<RoadmapItem>('item', { required: true });
+const item = defineModel<RoadmapItem>({ required: true });
 const gridStore = useGridAlignment();
 const inputStep = ref(gridStore.state.value ? 8 : 1);
 
@@ -144,7 +144,7 @@ function toggleGridAlign() {
         <div class="flex flex-col gap-15px">
           <div>
             <label class="fg-foreground font-500">
-              Legenda<br>
+              Legenda
               <input
                 v-model="item.label" 
                 class="prop-wrapper fg-foreground font-500
@@ -195,6 +195,18 @@ function toggleGridAlign() {
               ]"
             />
           </div>
+          <div v-if="item.type === 'link'">
+            <label class="fg-foreground font-500">
+              url
+              <input
+                v-model="item.linkTo" 
+                class="prop-wrapper fg-foreground font-500
+                font-size-16px mt-4px py-6px pl-8px w-full"
+                type="text"
+                maxlength="35"
+              >
+            </label>
+          </div>
         </div>
       </section>
     </main>
@@ -218,6 +230,7 @@ function toggleGridAlign() {
         <label class="fg-foreground font-500">
           Descrição
           <textarea
+            v-model="item.content.description"
             class="prop-wrapper resize-none w-full h-full mt-4px 
           pa-8px font-500 fg-foreground font-size-16px"
           />

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Ref, computed, inject, ref } from 'vue';
-import { RoadmapItem, Anchor } from './Util/roadmap.interfaces';
+import { RoadmapItem } from './RmItem.vue';
+
+export type Anchor = 'top' | 'right' | 'bottom' | 'left';
 
 export interface AnchorClickEvent {
   event: PointerEvent,

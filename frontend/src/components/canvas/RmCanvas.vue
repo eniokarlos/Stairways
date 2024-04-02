@@ -1,13 +1,17 @@
 <script setup lang="ts">
-import { RoadmapItem, RoadmapEdge, Point, Anchor } from './Util/roadmap.interfaces';
 import { onBeforeUnmount, ref, reactive, provide } from 'vue';
 import RmGrid from './RmGrid.vue';
-import RmItem from './RmItem.vue';
-import RmEdge from './RmEdge.vue';
+import RmItem, { RoadmapItem } from './RmItem.vue';
+import RmEdge, { RoadmapEdge } from './RmEdge.vue';
 import RmSelectedBox from './RmSelectedBox.vue';
-import RmEditingMenu from './RmItemMenu.vue';
-import { AnchorClickEvent } from './RmAnchors.vue';
+import RmItemMenu from './RmItemMenu.vue';
+import RmEdgeMenu from './RmEdgeMenu.vue';
+import { Anchor, AnchorClickEvent } from './RmAnchors.vue';
 
+export interface Point {
+  x: number,
+  y: number,
+}
 
 export interface AddEdgeEvent{
   lastEvent?: PointerEvent
@@ -27,6 +31,7 @@ export interface GridMoveEvent{
 const svg = ref<SVGSVGElement>();
 const selectedItem = ref<RoadmapItem>();
 const hoveredItem = ref<RoadmapItem>();
+const selectedEdge = ref<RoadmapEdge>();
 const lastEvent = ref<PointerEvent>();
 const selectionEvent = ref<PointerEvent>();
 const addEdgeEvent = ref<AddEdgeEvent| undefined>();
@@ -135,13 +140,17 @@ function stopAddEdge() {
   if (addEdgeEvent.value?.endItem && 
   addEdgeEvent.value?.endItemAnchor) {
     
-    roadmapEdges.value.push({
+    const newEdge: RoadmapEdge = {
       id: crypto.randomUUID(),
       startItem: addEdgeEvent.value.startItem,
       endItem: addEdgeEvent.value.endItem,
       startItemAnchor: addEdgeEvent.value.startItemAnchor,
       endItemAnchor: addEdgeEvent.value.endItemAnchor,
-    });
+      format: 'curve',
+      style: 'solid',
+    };
+    
+    roadmapEdges.value.push(newEdge); 
   }
   
   addEdgeEvent.value = undefined;
@@ -185,7 +194,7 @@ provide('scale', { scale });
       @pointerdown.middle="startGridMove"
       @wheel.prevent="onWheel"
       @pointerenter="emit('on-enter', {event: $event, grid: {x: grid.x, y: grid.y}})"
-      @pointerdown="selectedItem = undefined"
+      @pointerdown="selectedItem = undefined; selectedEdge = undefined"
     >
     
       <RmGrid
@@ -214,7 +223,8 @@ provide('scale', { scale });
           :key="edge.id"
         >
           <RmEdge
-            v-bind="edge"
+            :edge="edge"
+            @pointerdown.left.stop="selectedItem = undefined; selectedEdge = edge;"
           />
           
         </template>
@@ -223,8 +233,10 @@ provide('scale', { scale });
           :key="item.id"
         >
           <RmItem
-            v-bind="item"
-            @pointerdown.left.stop="selectedItem = item, selectionEvent = $event"
+            :item="item"
+            @pointerdown.left.stop="
+              selectedItem = item; 
+              selectedEdge = undefined; selectionEvent = $event;"
             @mouseenter="hoveredItem = item"
           />
 
@@ -263,9 +275,13 @@ provide('scale', { scale });
     >
       Zoom: {{ scale.toFixed(2) }}X 
     </div>
-    <RmEditingMenu
+    <RmItemMenu
       v-if="selectedItem" 
-      v-model:item="selectedItem"
+      v-model="selectedItem"
+    />
+    <RmEdgeMenu 
+      v-if="selectedEdge"
+      v-model="selectedEdge"
     />
   </div>
 </template>

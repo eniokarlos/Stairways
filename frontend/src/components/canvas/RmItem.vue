@@ -1,22 +1,36 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { alignToGrid } from './Util/alignToGrid';
-import { ItemType, RoadmapItem } from './Util/roadmap.interfaces';
-import RoadmapDefaults from './Util/roadmap.defaults';
 
-const props = withDefaults(
-  defineProps<RoadmapItem>(),
-  {
-    x: 0,
-    y: 0,
-    type: 'topic',
-    width: RoadmapDefaults.topic.width,
-    height: RoadmapDefaults.topic.height,
-  },
-);
+export type ItemType = 'topic' | 'subTopic' | 'link';
 
-const widthAligned = computed(() => alignToGrid(props.width));
-const heightAligned = computed(() => alignToGrid(props.height));
+export type ItemContent = {
+  title: string,
+  description: string,
+  links: Array<
+  {text: string,
+    url: string}
+  >
+}
+
+export interface RoadmapItem {
+  id: string;
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  content: ItemContent;
+  type?: ItemType;
+  linkTo?: string;
+  label?: string;
+  labelWidth?: number;
+  labelSize?: number;
+}
+
+
+const props = defineProps<{item: RoadmapItem}>();
+const widthAligned = computed(() => alignToGrid(props.item.width));
+const heightAligned = computed(() => alignToGrid(props.item.height));
 const paddingOffset = 40;
 
 const typeColors: Record<ItemType, {bg:string, fg:string}> = {
@@ -37,10 +51,10 @@ const typeColors: Record<ItemType, {bg:string, fg:string}> = {
 </script>
 <template>
   <g
-    :transform="`translate(${alignToGrid(x)},${alignToGrid(y)})`"
+    :transform="`translate(${alignToGrid(item.x)},${alignToGrid(item.y)})`"
   >
     <rect
-      :x="-paddingOffset / 2"
+      :x="-paddingOffset/2"
       :y="-paddingOffset/2"
       :width="widthAligned + paddingOffset"
       :height="heightAligned + paddingOffset"
@@ -49,7 +63,7 @@ const typeColors: Record<ItemType, {bg:string, fg:string}> = {
     <rect
       :width="widthAligned"
       :height="heightAligned"
-      :fill="typeColors[type].bg"
+      :fill="typeColors[item.type ?? 'topic'].bg"
       stroke="black"
       rx="5"
     />
@@ -58,13 +72,13 @@ const typeColors: Record<ItemType, {bg:string, fg:string}> = {
       alignment-baseline="middle"
       dominant-baseline="middle"
       text-anchor="middle"
-      :font-size="labelSize"
-      :font-weight="labelWidth"
-      :fill="typeColors[type].fg"
+      :font-size="item.labelSize"
+      :font-weight="item.labelWidth"
+      :fill="typeColors[item.type ?? 'topic'].fg"
       :x="widthAligned / 2"
       :y="heightAligned / 2"
     >
-      {{ label }}
+      {{ item.label }}
     </text>
   </g>
 </template>

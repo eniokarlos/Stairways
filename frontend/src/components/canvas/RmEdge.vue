@@ -1,15 +1,23 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { EdgeStyle, Point, Anchor, RoadmapEdge, RoadmapItem } from './Util/roadmap.interfaces';
 import { alignToGrid } from './Util/alignToGrid';
+import { Anchor } from './RmAnchors.vue';
+import { RoadmapItem } from './RmItem.vue';
+import { Point } from './RmCanvas.vue';
 
-const props = withDefaults(
-  defineProps<RoadmapEdge>(),
-  {
-    format: 'line',
-    style: 'solid',
-  },
-);
+export type EdgeStyle = 'solid' | 'dashed' | 'dotted';
+export type EdgeFormat = 'line' | 'curve' | 'straight';
+export interface RoadmapEdge {
+  id: string;
+  startItem: RoadmapItem;
+  endItem: RoadmapItem;
+  startItemAnchor: Anchor;
+  endItemAnchor: Anchor;
+  format?: EdgeFormat;
+  style?: EdgeStyle;
+}
+
+const props = defineProps<{edge: RoadmapEdge}>();
 
 const styleProps: Record<EdgeStyle, object> = {
   solid: { 'stroke-width': '4' },
@@ -45,14 +53,14 @@ const anchorsCords = {
 };
 
 const start = computed(() => {
-  const cords = anchorsCords[props.startItemAnchor](props.startItem);
+  const cords = anchorsCords[props.edge.startItemAnchor](props.edge.startItem);
   cords.x = alignToGrid(cords.x);
   cords.y = alignToGrid(cords.y);
   return cords;
 });
 
 const end = computed(() => {
-  const cords = anchorsCords[props.endItemAnchor](props.endItem);
+  const cords = anchorsCords[props.edge.endItemAnchor](props.edge.endItem);
   cords.x = alignToGrid(cords.x);
   cords.y = alignToGrid(cords.y);
   return cords;
@@ -60,7 +68,7 @@ const end = computed(() => {
 
 function getLinePath(start: Point, end: Point) {
   
-  let format = props.format === 'curve' ? 'C' : 'L';
+  let format = props.edge.format === 'curve' ? 'C' : 'L';
   const halfX = (start.x + end.x)/2;
   const halfY = (start.y + end.y)/2;
 
@@ -72,21 +80,21 @@ function getLinePath(start: Point, end: Point) {
     return anchor === 'left' || anchor === 'right';
   }
 
-  if (props.format === 'diagonal') {
+  if (props.edge.format === 'straight') {
     return `M${start.x},${start.y} L${end.x},${end.y}`;
   }
 
   if (
-    isOnHorizontalAxis(props.startItemAnchor) &&
-    isOnHorizontalAxis(props.endItemAnchor)
+    isOnHorizontalAxis(props.edge.startItemAnchor) &&
+    isOnHorizontalAxis(props.edge.endItemAnchor)
   ){
     return `M${start.x},${start.y} ${format}${halfX},${start.y} 
     ${halfX},${end.y} ${end.x},${end.y}`;
   }
 
   if (
-    isOnVerticalAxis(props.startItemAnchor) &&
-    isOnVerticalAxis(props.endItemAnchor)
+    isOnVerticalAxis(props.edge.startItemAnchor) &&
+    isOnVerticalAxis(props.edge.endItemAnchor)
   ) {
     return `M${start.x},${start.y} ${format}${start.x},${halfY} 
     ${end.x},${halfY} ${end.x},${end.y}`;
@@ -97,8 +105,8 @@ function getLinePath(start: Point, end: Point) {
   }
 
   if (
-    isOnHorizontalAxis(props.startItemAnchor) &&
-    isOnVerticalAxis(props.endItemAnchor)
+    isOnHorizontalAxis(props.edge.startItemAnchor) &&
+    isOnVerticalAxis(props.edge.endItemAnchor)
   ){
     return `M${start.x},${start.y} ${format}${end.x},${start.y} 
     ${end.x},${end.y}`;
@@ -112,10 +120,18 @@ function getLinePath(start: Point, end: Point) {
 </script>
 
 <template>
-  <g>
+  <g v-if="edge">
     <path
       :d="getLinePath(start,end)"
-      v-bind="styleProps[style]"
+      fill="none"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke="transparent"
+      stroke-width="40"
+    />
+    <path
+      :d="getLinePath(start,end)"
+      v-bind="styleProps[edge.style ?? 'solid']"
       fill="none"
       stroke-linecap="round"
       stroke-linejoin="round"
