@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import { alignToGrid } from './Util/alignToGrid';
+import { computed, ref, watchEffect } from 'vue';
 import { Anchor } from './RmAnchors.vue';
 import { RoadmapItem } from './RmItem.vue';
 import { Point } from './RmCanvas.vue';
@@ -15,6 +14,7 @@ export interface RoadmapEdge {
   endItemAnchor: Anchor;
   format?: EdgeFormat;
   style?: EdgeStyle;
+  selected?: boolean;
 }
 
 const props = defineProps<{edge: RoadmapEdge}>();
@@ -54,16 +54,17 @@ const anchorsCords = {
 
 const start = computed(() => {
   const cords = anchorsCords[props.edge.startItemAnchor](props.edge.startItem);
-  cords.x = alignToGrid(cords.x);
-  cords.y = alignToGrid(cords.y);
   return cords;
 });
 
 const end = computed(() => {
-  const cords = anchorsCords[props.edge.endItemAnchor](props.edge.endItem);
-  cords.x = alignToGrid(cords.x);
-  cords.y = alignToGrid(cords.y);
-  return cords;
+  return anchorsCords[props.edge.endItemAnchor](props.edge.endItem);
+});
+const shadow = ref<string>();
+
+watchEffect(() => {
+  shadow.value = props.edge.selected ?
+    'drop-shadow(3px 3px 2px rgb(0 0 0 / 0.7))' : '';
 });
 
 function getLinePath(start: Point, end: Point) {
@@ -136,6 +137,7 @@ function getLinePath(start: Point, end: Point) {
       stroke-linecap="round"
       stroke-linejoin="round"
       stroke="#009FB7"
+      :filter="shadow"
     />
   </g>
 </template>

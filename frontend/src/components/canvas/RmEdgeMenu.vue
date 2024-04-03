@@ -1,8 +1,16 @@
 <script setup lang="ts">
 import UiDropDown from '@/ui/dropDown/UiDropDown.vue';
 import { RoadmapEdge } from './RmEdge.vue';
+import { watch } from 'vue';
 
 const edge = defineModel<RoadmapEdge>({ required: true });
+
+watch(edge, (newValue, oldValue) => {
+  if (oldValue) {
+    oldValue.selected = false;
+  }
+  newValue.selected = true;
+}, { immediate: true });
 </script>
 
 <template>

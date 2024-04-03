@@ -29,54 +29,66 @@ const { scale } = inject('scale') as {
 const scaledCornerBoxSize = computed(() => props.cornerBoxSize);
 const halfCornerBoxSize = computed(() => scaledCornerBoxSize.value/2);
 
-const alignedBox = computed<BoundingBox>(() => ({
-  x: alignToGrid(item.value.x) * scale.value,
-  y: alignToGrid(item.value.y) * scale.value,
-  width: alignToGrid(item.value.width) * scale.value,
-  height: alignToGrid(item.value.height) * scale.value,
+const scaledBox = computed<BoundingBox>(() => ({
+  x: item.value.x * scale.value,
+  y: item.value.y * scale.value,
+  width: item.value.width * scale.value,
+  height: item.value.height * scale.value,
 }));
 
 const cornerA = computed(() => ({
-  x: alignedBox.value.x - halfCornerBoxSize.value,
-  y: alignedBox.value.y - halfCornerBoxSize.value,
+  x: scaledBox.value.x - halfCornerBoxSize.value,
+  y: scaledBox.value.y - halfCornerBoxSize.value,
 }));
 
 const cornerB = computed(() => ({
-  x: alignedBox.value.x + alignedBox.value.width - halfCornerBoxSize.value,
-  y: alignedBox.value.y - halfCornerBoxSize.value,
+  x: scaledBox.value.x + scaledBox.value.width - halfCornerBoxSize.value,
+  y: scaledBox.value.y - halfCornerBoxSize.value,
 }));
 
 const cornerC = computed(() => ({
-  x: alignedBox.value.x - halfCornerBoxSize.value,
-  y: alignedBox.value.y + alignedBox.value.height - halfCornerBoxSize.value,
+  x: scaledBox.value.x - halfCornerBoxSize.value,
+  y: scaledBox.value.y + scaledBox.value.height - halfCornerBoxSize.value,
 }));
 
 const cornerD = computed(() => ({
-  x: alignedBox.value.x + alignedBox.value.width - halfCornerBoxSize.value,
-  y: alignedBox.value.y + alignedBox.value.height - halfCornerBoxSize.value,
+  x: scaledBox.value.x + scaledBox.value.width - halfCornerBoxSize.value,
+  y: scaledBox.value.y + scaledBox.value.height - halfCornerBoxSize.value,
 }));
 
 let lastMoveEvent: PointerEvent | undefined;
 let resizeCorner: string | undefined;
+
+const alignedMoveEvent = () => {
+  if (lastMoveEvent) {
+    return {
+      x: alignToGrid(lastMoveEvent.x / scale.value),
+      y: alignToGrid(lastMoveEvent.y / scale.value),
+    };
+  }
+};
 
 watchEffect(() => {
   lastMoveEvent = props.event;
 });
 
 watch(() => ({
-  height: alignedBox.value.height,
-  width: alignedBox.value.width,
+  height: scaledBox.value.height,
+  width: scaledBox.value.width,
 }),
 (newValue, oldValue) => {
+  const dx = (newValue.width - oldValue.width) / scale.value;
+  const dy = (newValue.height - oldValue.height) / scale.value;
+
   if (resizeCorner === 'a') {
-    item.value.y -= newValue.height - oldValue.height;
-    item.value.x -= newValue.width - oldValue.width;
+    item.value.y -= dy;
+    item.value.x -= dx;
   }
   else if (resizeCorner === 'b') {
-    item.value.y -= newValue.height - oldValue.height;
+    item.value.y -= dy;
   }
   else if (resizeCorner === 'c') {
-    item.value.x -= newValue.width - oldValue.width;
+    item.value.x -= dx;
   }
 });
 
@@ -93,9 +105,9 @@ function onMove(event: PointerEvent) {
   if (!lastMoveEvent) {
     return;
   }
-
-  const dx = (event.x - lastMoveEvent.x) / scale.value;
-  const dy = (event.y - lastMoveEvent.y) / scale.value;
+  const alignedMove = alignedMoveEvent();
+  const dx = (alignToGrid(event.x / scale.value) - alignedMove!.x);
+  const dy = (alignToGrid(event.y / scale.value) - alignedMove!.y); 
 
   if (resizeCorner) {
     resize(dx, dy);
@@ -147,7 +159,7 @@ onBeforeUnmount(() => {
 <template>
   <g v-if="anchorsOnly">
     <RmAnchors
-      v-model:box="alignedBox"
+      v-model:box="scaledBox"
       @anchor-hover="emit('anchor-hover', $event)"
       @anchor-leave="emit('anchor-leave')"
     />
@@ -158,16 +170,16 @@ onBeforeUnmount(() => {
     @pointerdown.left.stop="startMove"
   >
     <rect
-      :width="alignedBox.width"
-      :height="alignedBox.height"
-      :x="alignedBox.x"
-      :y="alignedBox.y"
+      :width="scaledBox.width"
+      :height="scaledBox.height"
+      :x="scaledBox.x"
+      :y="scaledBox.y"
       fill="none"
       stroke="#009FB7"
       stroke-width="3"
     />
     <RmAnchors
-      v-model:box="alignedBox"
+      v-model:box="scaledBox"
       @anchor-click="emit('anchor-click', $event)"
       @anchor-hover="emit('anchor-hover', $event)"
     />

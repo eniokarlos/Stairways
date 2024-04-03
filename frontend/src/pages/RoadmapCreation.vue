@@ -5,6 +5,7 @@ import UiBtn from '@/ui/btn/UiBtn.vue';
 import RmCanvas, { GridMoveEvent } from '@/components/canvas/RmCanvas.vue';
 import { ref } from 'vue';
 import { ItemType, RoadmapItem } from '@/components/canvas/RmItem.vue';
+import { alignToGrid } from '@/components/canvas/Util/alignToGrid';
 
 const levelColors = [
   'brand-blue',
@@ -105,8 +106,12 @@ function onLeave() {
 }
 
 function stopAddElement() {
-  isGrabbing = false;
-  newItem.value = undefined;
+  if (newItem.value) {
+    isGrabbing = false;
+    newItem.value.x = alignToGrid(newItem.value.x);
+    newItem.value.y = alignToGrid(newItem.value.y);
+    newItem.value = undefined;
+  }
 }
 
 

@@ -5,6 +5,7 @@ import UiDropDown from '@/ui/dropDown/UiDropDown.vue';
 import UiBtn from '@/ui/btn/UiBtn.vue';
 import UiIcon from '@/ui/icon/UiIcon.vue';
 import { RoadmapItem } from './RmItem.vue';
+import { alignToGrid } from './Util/alignToGrid';
 
 const tabs = ref([
   'Design',
@@ -18,6 +19,8 @@ const inputStep = ref(gridStore.state.value ? 8 : 1);
 
 function toggleGridAlign() {
   gridStore.toggle();
+  item.value.x = alignToGrid(item.value.x);
+  item.value.y = alignToGrid(item.value.y);
   inputStep.value = gridStore.state.value ? 8 : 1;
 }
 

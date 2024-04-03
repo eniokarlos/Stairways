@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import { alignToGrid } from './Util/alignToGrid';
 
 export type ItemType = 'topic' | 'subTopic' | 'link';
 export type ItemContent = {
@@ -29,9 +27,7 @@ export interface RoadmapItem extends BoundingBox{
   labelSize?: number;
 }
 
-const props = defineProps<{item: RoadmapItem}>();
-const widthAligned = computed(() => alignToGrid(props.item.width));
-const heightAligned = computed(() => alignToGrid(props.item.height));
+defineProps<{item: RoadmapItem}>();
 const paddingOffset = 40;
 const typeColors: Record<ItemType, {bg:string, fg:string}> = {
   topic: {
@@ -50,18 +46,18 @@ const typeColors: Record<ItemType, {bg:string, fg:string}> = {
 </script>
 <template>
   <g
-    :transform="`translate(${alignToGrid(item.x)},${alignToGrid(item.y)})`"
+    :transform="`translate(${item.x},${item.y})`"
   >
     <rect
       :x="-paddingOffset/2"
       :y="-paddingOffset/2"
-      :width="widthAligned + paddingOffset"
-      :height="heightAligned + paddingOffset"
+      :width="item.width + paddingOffset"
+      :height="item.height + paddingOffset"
       fill="transparent"
     />
     <rect
-      :width="widthAligned"
-      :height="heightAligned"
+      :width="item.width"
+      :height="item.height"
       :fill="typeColors[item.type ?? 'topic'].bg"
       stroke="black"
       rx="5"
@@ -74,8 +70,8 @@ const typeColors: Record<ItemType, {bg:string, fg:string}> = {
       :font-size="item.labelSize"
       :font-weight="item.labelWidth"
       :fill="typeColors[item.type ?? 'topic'].fg"
-      :x="widthAligned / 2"
-      :y="heightAligned / 2"
+      :x="item.width / 2"
+      :y="item.height / 2"
     >
       {{ item.label }}
     </text>

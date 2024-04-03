@@ -148,6 +148,7 @@ function stopAddEdge() {
       endItemAnchor: addEdgeEvent.value.endItemAnchor,
       format: 'curve',
       style: 'solid',
+      selected: false,
     };
     
     roadmapEdges.value.push(newEdge); 
@@ -194,7 +195,13 @@ provide('scale', { scale });
       @pointerdown.middle="startGridMove"
       @wheel.prevent="onWheel"
       @pointerenter="emit('on-enter', {event: $event, grid: {x: grid.x, y: grid.y}})"
-      @pointerdown="selectedItem = undefined; selectedEdge = undefined"
+      @pointerdown="
+        selectedItem = undefined;
+        if (selectedEdge) {
+          selectedEdge.selected = false;
+          selectedEdge = undefined;
+        }
+      "
     >
     
       <RmGrid
@@ -224,7 +231,10 @@ provide('scale', { scale });
         >
           <RmEdge
             :edge="edge"
-            @pointerdown.left.stop="selectedItem = undefined; selectedEdge = edge;"
+            @pointerdown.left.stop="
+              selectedItem = undefined; 
+              selectedEdge = edge;
+            "
           />
           
         </template>
@@ -236,7 +246,11 @@ provide('scale', { scale });
             :item="item"
             @pointerdown.left.stop="
               selectedItem = item; 
-              selectedEdge = undefined; selectionEvent = $event;"
+              selectionEvent = $event;
+              if (selectedEdge) {
+                selectedEdge.selected = false;
+                selectedEdge = undefined;
+              };"
             @mouseenter="hoveredItem = item"
           />
 
