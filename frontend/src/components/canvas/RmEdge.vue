@@ -64,7 +64,7 @@ const shadow = ref<string>();
 
 watchEffect(() => {
   shadow.value = props.edge.selected ?
-    'drop-shadow(3px 3px 2px rgb(0 0 0 / 0.7))' : '';
+    'drop-shadow(2px 2px 2px rgb(0 0 0 / 0.6))' : '';
 });
 
 function getLinePath(start: Point, end: Point) {

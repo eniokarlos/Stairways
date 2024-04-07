@@ -9,5 +9,6 @@
   "files.autoSave": "onFocusChange",
   "[vue]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-  }
+  },
+  "svg.preview.background": "editor"
 }

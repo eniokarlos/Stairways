@@ -20,13 +20,13 @@ export default createRouter({
           component: () => import('@/pages/Signup.vue'), 
         },
         {
-          path: '/password_reset',
+          path: '/password-reset',
           component: () => import('@/pages/PasswordReset.vue'), 
         },
       ],
     },
     {
-      path: '/roadmap_creation',
+      path: '/roadmap-creation',
       component: () => import('@/pages/RoadmapCreation.vue'), 
     },
   ],

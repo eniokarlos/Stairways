@@ -182,6 +182,7 @@ onBeforeUnmount(() => {
 });
 
 provide('scale', { scale });
+provide('roadmapItems', { roadmapItems });
 </script>
 
 <template>

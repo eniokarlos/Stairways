@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { Ref, inject, ref, watchEffect } from 'vue';
 import { useGridAlignment } from './Util/gridAlignment';
 import UiDropDown from '@/ui/dropDown/UiDropDown.vue';
 import UiBtn from '@/ui/btn/UiBtn.vue';
 import UiIcon from '@/ui/icon/UiIcon.vue';
 import { RoadmapItem } from './RmItem.vue';
 import { alignToGrid } from './Util/alignToGrid';
+
 
 const tabs = ref([
   'Design',
@@ -17,12 +18,24 @@ const item = defineModel<RoadmapItem>({ required: true });
 const gridStore = useGridAlignment();
 const inputStep = ref(gridStore.state.value ? 8 : 1);
 
+const { roadmapItems } = inject('roadmapItems') as {
+  roadmapItems: Ref<RoadmapItem[]>
+};
+
 function toggleGridAlign() {
   gridStore.toggle();
-  item.value.x = alignToGrid(item.value.x);
-  item.value.y = alignToGrid(item.value.y);
+  roadmapItems.value.forEach(item => {
+    item.x = alignToGrid(item.x);
+    item.y = alignToGrid(item.y);
+  });
   inputStep.value = gridStore.state.value ? 8 : 1;
 }
+
+watchEffect(() => {
+  if (item.value.type !== 'link') {
+    item.value.linkTo = '';
+  }
+});
 
 </script>
 

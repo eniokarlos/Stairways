@@ -44,6 +44,6 @@ import { RouterLink } from 'vue-router';
 
 <style lang="css" scoped>
   .nav-bar {
-    box-shadow: 0 4px 4px rgba(0,0,0,25%);
+    box-shadow: 0 2px 2px rgba(0,0,0,25%);
   }
 </style>

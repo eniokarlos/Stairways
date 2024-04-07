@@ -28,7 +28,7 @@ export interface RoadmapItem extends BoundingBox{
 }
 
 defineProps<{item: RoadmapItem}>();
-const paddingOffset = 40;
+const paddingOffset = 30;
 const typeColors: Record<ItemType, {bg:string, fg:string}> = {
   topic: {
     bg: '#FF8811',

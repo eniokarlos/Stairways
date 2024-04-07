@@ -50,7 +50,7 @@ watch([
   <div
     v-color="cardColors[level]"
     class="card relative w-250px h-350px flex flex-col justify-between 
-    rd-15px bg-card-bg"
+    rd-15px bg-light-gray-alfa"
   >
     <div>
       <div class="card__header flex items-center h-12% mb-15px mt-8px pl-10px">
@@ -119,7 +119,7 @@ watch([
 
 <style lang="css" scoped>
   .card {
-    box-shadow: 0 4px 4px rgba(0,0,0,25%);
+    box-shadow: 3px 3px 2px rgba(0,0,0,25%);
     min-width: 250px;
     min-height: 320px;
     user-select: none;
