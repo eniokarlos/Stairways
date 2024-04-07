@@ -158,6 +158,12 @@ function stopAddEdge() {
 }
 
 function deleteItem() {
+  if (document.activeElement?.tagName === 'INPUT' ||
+    document.activeElement?.tagName === 'TEXTAREA'
+  ) {
+    return;
+  }
+
   roadmapEdges.value = roadmapEdges.value.filter(
     edge => edge.startItem.id !== selectedItem.value?.id &&
     edge.endItem.id !== selectedItem.value?.id,
@@ -174,11 +180,13 @@ function deleteItem() {
 document.addEventListener('pointermove', onMove);
 document.addEventListener('pointerup', stopGridMove);
 document.addEventListener('pointerup', stopAddEdge);
+document.addEventListener('keydown', deleteItem);
 
 onBeforeUnmount(() => {
   document.removeEventListener('pointermove', onMove);
   document.removeEventListener('pointerup', stopGridMove);
   document.removeEventListener('pointerup', stopAddEdge);
+  document.removeEventListener('keydown', deleteItem);
 });
 
 provide('scale', { scale });
