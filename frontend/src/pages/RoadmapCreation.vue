@@ -31,27 +31,33 @@ const roadmapItems = ref<RoadmapItem[]>([]);
 const scale = ref<number>(1);
 const newItem = ref<Required<RoadmapItem>>();
   
-const roadmapItemsDefaults: Record<ItemType, {
-  width: number,
-  height: number,
-  labelSize: number,
-}> = {
-  topic: {
-    width: 256,
-    height: 64,
-    labelSize: 24,
-  }, 
-  subTopic: {
-    width: 192,
-    height: 48,
-    labelSize: 18,
-  },
-  link: {
-    width: 288,
-    height: 48,
-    labelSize: 24,
-  },
-};
+const roadmapItemsDefaults: Record<ItemType, 
+  Partial<RoadmapItem>> = {
+    topic: {
+      label: 'Tópico',
+      width: 256,
+      height: 64,
+      labelSize: 24,
+    }, 
+    subTopic: {
+      label: 'Sub-Tópico',
+      width: 192,
+      height: 48,
+      labelSize: 18,
+    },
+    link: {
+      label: 'Link para outro roadmap',
+      width: 288,
+      height: 48,
+      labelSize: 24,
+    },
+    text: {
+      label: 'Título',
+      width: 120,
+      height: 64,
+      labelSize: 32,
+    },
+  };
 
 let isGrabbing: boolean = false;
 let lastItemType: ItemType;
@@ -72,14 +78,14 @@ function onEnter(e: GridMoveEvent) {
         description: '',
         links: [],
       },
-      width: roadmapItemsDefaults[lastItemType].width,
-      height: roadmapItemsDefaults[lastItemType].height,
-      labelSize: roadmapItemsDefaults[lastItemType].labelSize,
+      width: roadmapItemsDefaults[lastItemType].width!,
+      height: roadmapItemsDefaults[lastItemType].height!,
+      labelSize: roadmapItemsDefaults[lastItemType].labelSize!,
       labelWidth: 400,
       x: (e.event.offsetX - lastMoveEvent.grid.x) / scale.value,
       y: (e.event.offsetY - lastMoveEvent.grid.y) / scale.value,
       type: lastItemType,
-      label: '',
+      label: roadmapItemsDefaults[lastItemType].label!,
       linkTo: '',
     };
     roadmapItems.value.push(newItem.value);
@@ -213,6 +219,13 @@ function stopAddElement() {
           @pointerdown.left="onGrab('link')"
         >
           Link
+        </UiBtn>
+        <UiBtn
+          draggable
+          color="foreground"
+          @pointerdown.left="onGrab('text')"
+        >
+          Texto
         </UiBtn>
       </div>
       <div 

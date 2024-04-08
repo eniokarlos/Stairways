@@ -206,7 +206,8 @@ watchEffect(() => {
               :items="[
                 {title: 'Tópico', value:'topic'},
                 {title: 'Sub-Tópico', value: 'subTopic'},
-                {title: 'Link', value: 'link'}
+                {title: 'Link', value: 'link'},
+                {title: 'Texto', value: 'text'}
               ]"
             />
           </div>

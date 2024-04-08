@@ -25,12 +25,6 @@ const emit = defineEmits<{
   (name: 'anchor-leave'): void
 }>();
 
-// const scaledItem = computed(() => ({
-//   x: item.value.x * scale.value,
-//   y: item.value.y * scale.value,
-//   width: item.value.width * scale.value,
-//   height: item.value.height * scale.value,
-// }));
 
 const initialRadius = 7;
 const r = ref({
