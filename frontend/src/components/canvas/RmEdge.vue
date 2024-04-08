@@ -18,7 +18,6 @@ export interface RoadmapEdge {
 }
 
 const props = defineProps<{edge: RoadmapEdge}>();
-
 const styleProps: Record<EdgeStyle, object> = {
   solid: { 'stroke-width': '4' },
   dashed: {
@@ -31,7 +30,6 @@ const styleProps: Record<EdgeStyle, object> = {
     'stroke-linecap': 'round',
   },
 };
-
 const anchorOffset = 6;
 const anchorsCords = {
   top: (item: RoadmapItem) => ({
@@ -61,11 +59,6 @@ const end = computed(() => {
   return anchorsCords[props.edge.endItemAnchor](props.edge.endItem);
 });
 const shadow = ref<string>();
-
-watchEffect(() => {
-  shadow.value = props.edge.selected ?
-    'drop-shadow(2px 2px 2px rgb(0 0 0 / 0.6))' : '';
-});
 
 function getLinePath(start: Point, end: Point) {
   
@@ -118,10 +111,18 @@ function getLinePath(start: Point, end: Point) {
   }
 }
 
+watchEffect(() => {
+  shadow.value = props.edge.selected ?
+    'drop-shadow(2px 2px 2px rgb(0 0 0 / 0.6))' : '';
+});
+
+
 </script>
 
 <template>
-  <g v-if="edge">
+  <g
+    v-if="edge"
+  >
     <path
       :d="getLinePath(start,end)"
       fill="none"

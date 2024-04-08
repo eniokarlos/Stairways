@@ -157,24 +157,33 @@ function stopAddEdge() {
   addEdgeEvent.value = undefined;
 }
 
-function deleteItem() {
+function deleteItem(e: KeyboardEvent) {
+  if (e.key !== 'Delete' && e.key !== 'Backspace') {
+    return;
+  }
+
   if (document.activeElement?.tagName === 'INPUT' ||
     document.activeElement?.tagName === 'TEXTAREA'
   ) {
     return;
   }
 
-  roadmapEdges.value = roadmapEdges.value.filter(
-    edge => edge.startItem.id !== selectedItem.value?.id &&
-    edge.endItem.id !== selectedItem.value?.id,
-  );
-
-  roadmapItems.value = roadmapItems.value.filter(
-    (item) => item.id !== selectedItem.value?.id,
-  );
-
-  selectedItem.value = undefined;
-
+  if (selectedItem.value) {
+    roadmapEdges.value = roadmapEdges.value.filter(
+      edge => edge.startItem.id !== selectedItem.value?.id &&
+      edge.endItem.id !== selectedItem.value?.id,
+    );
+  
+    roadmapItems.value = roadmapItems.value.filter(
+      (item) => item.id !== selectedItem.value?.id,
+    );
+    selectedItem.value = undefined;
+  }
+  else if (selectedEdge.value) {
+    roadmapEdges.value = roadmapEdges.value.filter(
+      edge => edge.id !== selectedEdge.value!.id,
+    );
+  }
 }
 
 document.addEventListener('pointermove', onMove);
@@ -272,7 +281,6 @@ provide('roadmapItems', { roadmapItems });
         <RmSelectedBox
           v-model:item="selectedItem"
           :event="selectionEvent"
-          @delete="deleteItem"
           @anchor-click="startAddEdge"
         />
 

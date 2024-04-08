@@ -16,7 +16,6 @@ const props = withDefaults(
 const item = defineModel<RoadmapItem>('item', { required: true });
 
 const emit = defineEmits<{
-  (name: 'delete'): void,
   (name: 'anchor-click', value: AnchorClickEvent): void,
   (name: 'anchor-hover', value: AnchorDropEvent): void,
   (name: 'anchor-leave'): void
