@@ -8,6 +8,11 @@ import RmItemMenu from './RmItemMenu.vue';
 import RmEdgeMenu from './RmEdgeMenu.vue';
 import { Anchor, AnchorClickEvent } from './RmAnchors.vue';
 
+export interface Roadmap {
+  items: RoadmapItem[],
+  edges: RoadmapEdge[]
+}
+
 export interface Point {
   x: number,
   y: number,
@@ -53,8 +58,7 @@ const grid = reactive({
   y: 0,
 });
 
-const roadmapItems = defineModel<RoadmapItem[]>('items', { required: true });
-const roadmapEdges = ref<RoadmapEdge[]>([]);
+const roadmap = defineModel<Roadmap>('roadmap', { required: true });
 
 function onWheel(evt: WheelEvent) {   
   if (!svg.value) {
@@ -151,7 +155,7 @@ function stopAddEdge() {
       selected: false,
     };
     
-    roadmapEdges.value.push(newEdge); 
+    roadmap.value.edges.push(newEdge); 
   }
   
   addEdgeEvent.value = undefined;
@@ -169,20 +173,26 @@ function deleteItem(e: KeyboardEvent) {
   }
 
   if (selectedItem.value) {
-    roadmapEdges.value = roadmapEdges.value.filter(
+    const edges = roadmap.value.edges.filter(
       edge => edge.startItem.id !== selectedItem.value?.id &&
       edge.endItem.id !== selectedItem.value?.id,
     );
-  
-    roadmapItems.value = roadmapItems.value.filter(
+    
+    const items = roadmap.value.items.filter(
       (item) => item.id !== selectedItem.value?.id,
     );
+
+    roadmap.value.items = items;
+    roadmap.value.edges = edges;
+
     selectedItem.value = undefined;
   }
   else if (selectedEdge.value) {
-    roadmapEdges.value = roadmapEdges.value.filter(
+    const edges = roadmap.value.edges.filter(
       edge => edge.id !== selectedEdge.value!.id,
     );
+
+    roadmap.value.edges = edges;
   }
 }
 
@@ -199,7 +209,7 @@ onBeforeUnmount(() => {
 });
 
 provide('scale', { scale });
-provide('roadmapItems', { roadmapItems });
+provide('roadmapItems', roadmap.value.items);
 </script>
 
 <template>
@@ -244,7 +254,7 @@ provide('roadmapItems', { roadmapItems });
         </g>
 
         <template
-          v-for="edge in roadmapEdges"
+          v-for="edge in roadmap.edges"
           :key="edge.id"
         >
           <RmEdge
@@ -257,7 +267,7 @@ provide('roadmapItems', { roadmapItems });
           
         </template>
         <template
-          v-for="item in roadmapItems"
+          v-for="item in roadmap.items"
           :key="item.id"
         >
           <RmItem

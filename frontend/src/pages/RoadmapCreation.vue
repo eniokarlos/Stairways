@@ -6,6 +6,7 @@ import RmCanvas, { GridMoveEvent } from '@/components/canvas/RmCanvas.vue';
 import { ref } from 'vue';
 import { ItemType, RoadmapItem } from '@/components/canvas/RmItem.vue';
 import { alignToGrid } from '@/components/canvas/Util/alignToGrid';
+import { useRoadmapStore } from '@/stores/roadmap.store';
 
 const levelColors = [
   'brand-blue',
@@ -27,7 +28,7 @@ const privacity = [
 const selectedPrivacity = ref(0);
 const selectedLevel = ref(0);
 
-const roadmapItems = ref<RoadmapItem[]>([]);
+const store = useRoadmapStore();
 const scale = ref<number>(1);
 const newItem = ref<Required<RoadmapItem>>();
   
@@ -49,7 +50,7 @@ const roadmapItemsDefaults: Record<ItemType,
       label: 'Link para outro roadmap',
       width: 288,
       height: 48,
-      labelSize: 24,
+      labelSize: 18,
     },
     text: {
       label: 'Título',
@@ -88,7 +89,7 @@ function onEnter(e: GridMoveEvent) {
       label: roadmapItemsDefaults[lastItemType].label!,
       linkTo: '',
     };
-    roadmapItems.value.push(newItem.value);
+    store.roadmap.items.push(newItem.value);
   }
 }
 
@@ -107,7 +108,7 @@ function onMove(e: GridMoveEvent) {
 
 function onLeave() {
   if (newItem.value && isGrabbing) {
-    roadmapItems.value.pop();
+    store.roadmap.items.pop();
   }
 }
 
@@ -234,7 +235,7 @@ function stopAddElement() {
       >
         <RmCanvas
           v-model:scale="scale"
-          v-model:items="roadmapItems"
+          v-model:roadmap="store.roadmap"
           @on-move="onMove"
           @on-enter="onEnter"
         />

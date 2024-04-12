@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Ref, inject, ref, watchEffect } from 'vue';
+import { inject, ref, watchEffect } from 'vue';
 import { useGridAlignment } from './Util/gridAlignment';
 import UiDropDown from '@/ui/dropDown/UiDropDown.vue';
 import UiBtn from '@/ui/btn/UiBtn.vue';
@@ -18,13 +18,12 @@ const item = defineModel<RoadmapItem>({ required: true });
 const gridStore = useGridAlignment();
 const inputStep = ref(gridStore.state.value ? 8 : 1);
 
-const { roadmapItems } = inject('roadmapItems') as {
-  roadmapItems: Ref<RoadmapItem[]>
-};
+const roadmapItems = inject('roadmapItems') as RoadmapItem[];
 
 function toggleGridAlign() {
   gridStore.toggle();
-  roadmapItems.value.forEach(item => {
+
+  roadmapItems.forEach(item => {
     item.x = alignToGrid(item.x);
     item.y = alignToGrid(item.y);
   });

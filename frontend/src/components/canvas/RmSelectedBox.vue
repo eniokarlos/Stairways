@@ -76,6 +76,14 @@ watch(() => ({
   width: scaledBox.value.width,
 }),
 (newValue, oldValue) => {
+  if (newValue.width < 32 * scale.value) {
+    item.value.width = 32;
+  }
+
+  if (newValue.height < 32 * scale.value) {
+    item.value.height = 32;
+  }
+
   const dx = (newValue.width - oldValue.width) / scale.value;
   const dy = (newValue.height - oldValue.height) / scale.value;
 

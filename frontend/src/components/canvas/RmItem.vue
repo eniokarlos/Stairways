@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 export type ItemType = 'topic' | 'subTopic' | 'link' | 'text';
 export type ItemContent = {
   title: string,
@@ -28,7 +27,6 @@ export interface RoadmapItem extends BoundingBox{
 }
 
 defineProps<{item: RoadmapItem}>();
-
 const paddingOffset = 30;
 const typeColors: Record<ItemType, {bg:string, fg:string}> = {
   topic: {
@@ -48,7 +46,6 @@ const typeColors: Record<ItemType, {bg:string, fg:string}> = {
     fg: '#2E2E2E',
   },
 };
-
 
 </script>
 <template>
