@@ -9,6 +9,13 @@ import RmEdgeMenu from './RmEdgeMenu.vue';
 import { Anchor, AnchorClickEvent } from './RmAnchors.vue';
 
 export interface Roadmap {
+  meta: {
+    title: string,
+    description: string,
+    tags: string[],
+    privacity: 'public' | 'private',
+    level: 'beginner' | 'intermediate' | 'advanced',
+  },
   items: RoadmapItem[],
   edges: RoadmapEdge[]
 }
@@ -60,15 +67,15 @@ const grid = reactive({
 
 const roadmap = defineModel<Roadmap>('roadmap', { required: true });
 
-function onWheel(evt: WheelEvent) {   
+function onWheel(event: WheelEvent) {   
   if (!svg.value) {
     return;
   }
   
-  const delta = 0.2 * Math.sign(evt.deltaY);
+  const delta = 0.2 * Math.sign(event.deltaY);
   const point = svg.value.createSVGPoint();
-  point.x = evt.clientX;
-  point.y = evt.clientY;
+  point.x = event.clientX;
+  point.y = event.clientY;
   
   const scaleBefore = scale.value;
   const scaleAfter = Math.max(0.2, Math.min(5, scale.value - delta));

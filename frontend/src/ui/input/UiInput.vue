@@ -1,9 +1,16 @@
 <script setup lang="ts">
 import UiIcon from '../icon/UiIcon.vue';
 import UiInputProps from './UiInputProps';
-import { ref, watchEffect } from 'vue';
+import { watchEffect } from 'vue';
   
-const model = ref('');
+const model = defineModel<string>();
+
+const emit = defineEmits<{
+  (name: 'submitted'): void,
+  (name: 'leftIconClicked'): void,
+  (name: 'rightIconClicked'): void
+}>();
+
 var inputFocused = false;
 
 defineProps({ ...UiInputProps });
@@ -23,51 +30,65 @@ watchEffect(() => {
     v-color="color"
     :class="[  
       `ui-input--${variant}`,
-      {'ui-input--large': large},
       {'ui-input--focused': inputFocused}
     ]"
     class="ui-input select-none cursor-text block relative b-1px-solid-foreground 
-    w-550px h-60px rd-10px flex"
+    min-w-100px min-h-20px rd-10px flex"
   >
-    <UiIcon
+    <div
       v-if="prependIcon"
-      class="pl-15px"
-      :name="prependIcon"
-      :color="color"
-    />
+      class="flex items-center
+      justify-center cursor-pointer w-50px h-full"
+      @pointerdown="emit('leftIconClicked')"
+    >
+      <UiIcon
+        :name="prependIcon"
+        :color="color"
+      /> 
+    </div>
       
     <div
       v-if="variant === 'default'"
       class="flex items-end w-100%"
     >
-      <span class="block flex items-center absolute h-100%">
+      <span class="block flex items-center z-0 absolute w-full h-full">
         <span
           class="ui-input__span block text-center font-size-16px 
-          font-500 pl-20px"
+          font-500 pl-2%"
         >{{ placeholder }}</span>
       </span>
       <input
         v-model="model"
         :type="type"
+        :maxlength="maxLenght"
         class="ui-input__text font-size-18px
-        bg-transparent b-0 w-100% h-80% pl-20px"
+        bg-transparent b-0 z-1 w-100% h-80% pl-2%"
+        @keydown.enter="emit('submitted')"
       >
     </div>
 
     <input
       v-else
+      v-model="model"
       :type="type"
-      :placeholder="placeholder" 
+      :placeholder="placeholder"
+      :maxlength="maxLenght"
       class="ui-input__text b-0 block bg-transparent 
-      font-size-16px pl-20px"
+      font-size-16px w-full"
+      @keydown.enter="emit('submitted')"
     >
       
-    <UiIcon
+    <div
       v-if="appendIcon"
-      class="pr-15px"
-      :name="appendIcon"
-      :color="color"
-    />
+      class="flex items-center
+      justify-center cursor-pointer w-50px h-full"
+      @pointerdown="emit('rightIconClicked')"
+    >
+      <UiIcon
+        :name="appendIcon"
+        :color="color"
+      /> 
+    </div>
   </label>
 </template>
 
@@ -81,13 +102,8 @@ watchEffect(() => {
     color: var(--current-color) !important;
     opacity: 1;
   }
-  .ui-input--large{
-    width: 50%;
-    height: 50px;
-  }
 
   .ui-input--rounded {
-    height: 45px;
     border-radius: 24px;
   }
   

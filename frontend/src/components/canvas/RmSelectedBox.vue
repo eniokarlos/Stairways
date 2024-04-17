@@ -80,8 +80,8 @@ watch(() => ({
     item.value.width = 32;
   }
 
-  if (newValue.height < 32 * scale.value) {
-    item.value.height = 32;
+  if (newValue.height < 24 * scale.value) {
+    item.value.height = 24;
   }
 
   const dx = (newValue.width - oldValue.width) / scale.value;

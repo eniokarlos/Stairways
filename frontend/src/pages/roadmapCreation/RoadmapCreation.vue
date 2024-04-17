@@ -2,34 +2,27 @@
 import UiIcon from '@/ui/icon/UiIcon.vue';
 import UiDropDown from '@/ui/dropDown/UiDropDown.vue';
 import UiBtn from '@/ui/btn/UiBtn.vue';
+import PublishMenu from './PublishMenu.vue';
 import RmCanvas, { GridMoveEvent } from '@/components/canvas/RmCanvas.vue';
 import { ref } from 'vue';
 import { ItemType, RoadmapItem } from '@/components/canvas/RmItem.vue';
 import { alignToGrid } from '@/components/canvas/Util/alignToGrid';
 import { useRoadmapStore } from '@/stores/roadmap.store';
 
-const levelColors = [
-  'brand-blue',
-  'brand-orange',
-  'brand-magenta',
-];
+const levelColors: Record<'beginner'| 'intermediate' | 'advanced', string> = {
+  beginner: 'brand-blue',
+  intermediate: 'brand-orange',
+  advanced: 'brand-magenta',
+}; 
 
-const privacity = [
-  {
-    value: 'public',
-    icon: 'earth', 
-  },
-  {
-    value: 'private',
-    icon: 'lock', 
-  },
-];
-
-const selectedPrivacity = ref(0);
-const selectedLevel = ref(0);
+const privacityIcons: Record<'public'|'private', string> = {
+  public: 'earth',
+  private: 'lock',
+};
 
 const store = useRoadmapStore();
 const scale = ref<number>(1);
+const showPublishMenu = ref<boolean>(false);
 const newItem = ref<Required<RoadmapItem>>();
   
 const roadmapItemsDefaults: Record<ItemType, 
@@ -121,7 +114,6 @@ function stopAddElement() {
   }
 }
 
-
 </script>
 
 <template>
@@ -142,6 +134,7 @@ function stopAddElement() {
 
       <div class="rm-creation__title absolute z-1 w-full flex flex-col items-center">
         <input
+          v-model="store.roadmap.meta.title"
           type="text"
           class="block bg-transparent b-0 font-size-20px w-460px
         text-center mb-4px fg-foreground font-500"
@@ -150,17 +143,17 @@ function stopAddElement() {
         >
 
         <div
-          v-color="levelColors[selectedLevel]"
+          v-color="levelColors[store.roadmap.meta.level]"
           class="rm-creation__level
         font-400 font-size-16px"
         >
           <span>Nível: </span>
           <UiDropDown
-            v-model="selectedLevel"
+            v-model="store.roadmap.meta.level"
             :items="[
-              {title: 'Iniciante', value: 0}, 
-              {title: 'Intermediário', value: 1}, 
-              {title: 'Avançado', value: 2}]"
+              {title: 'Iniciante', value: 'beginner'}, 
+              {title: 'Intermediário', value: 'intermediate'}, 
+              {title: 'Avançado', value: 'advanced'}]"
             class="mb-4px"
           />
         </div>
@@ -168,19 +161,22 @@ function stopAddElement() {
 
       <div class="rm-creation__config pr-40px flex items-center z-1">
         <UiIcon
-          :name="privacity[selectedPrivacity].icon"
+          :name="privacityIcons[store.roadmap.meta.privacity]"
           color="light-gray"
           class="font-size-20px mr-8px"
         />
         <UiDropDown
-          v-model="selectedPrivacity" 
+          v-model="store.roadmap.meta.privacity" 
           class="font-size-16px font-500 mr-20px"
           :items="[
-            {title: 'Todos podem ver', value: 0},
-            {title: 'Somente eu', value: 1}
+            {title: 'Todos podem ver', value: 'public'},
+            {title: 'Somente eu', value: 'private'}
           ]"
         />
-        <UiBtn class="font-size-16px">
+        <UiBtn
+          class="font-size-16px"
+          @pointerdown="showPublishMenu = true"
+        >
           Publicar
         </UiBtn>
       </div>
@@ -241,6 +237,10 @@ function stopAddElement() {
         />
       </div>
     </div>
+
+    <PublishMenu 
+      v-model="showPublishMenu"
+    />
   </section>
 </template>
 

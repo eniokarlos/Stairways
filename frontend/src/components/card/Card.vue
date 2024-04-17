@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import UiIcon from '@/ui/icon/UiIcon.vue';
 import cardProps from '@/components/card/cardProps';
-import { ref, Ref, watch } from 'vue';
+import { ref, Ref, watchEffect } from 'vue';
 
 const props = defineProps({ ...cardProps });
-var isSaved: Ref<boolean> = ref(false),
-  isLiked: Ref<boolean> = ref(false);
 
-  type BtnVariant = 'outline' | 'default'; 
+var isSaved: Ref<boolean> = ref(false);
+var isLiked: Ref<boolean> = ref(false);
 
-var saveBtnVariant: Ref<BtnVariant> = ref(isSaved.value? 'default': 'outline'),
-  likeBtnVariant: Ref<BtnVariant> = ref(isLiked.value? 'default': 'outline');
+var saveBtnIcon = ref();
+var likeBtnIcon = ref();
 
 const cardColors = {
   beginner: 'brand-blue',
@@ -32,15 +31,9 @@ function getRatingColor(): string{
   }
 }
 
-watch([
-  isSaved,
-  isLiked,
-], ([
-  newSaved,
-  newLiked,
-]) => {
-  saveBtnVariant.value = newSaved ? 'default' : 'outline';
-  likeBtnVariant.value = newLiked ? 'default' : 'outline';
+watchEffect(() => {
+  saveBtnIcon.value = isSaved.value? 'bookmark': 'bookmark-outline';
+  likeBtnIcon.value = isLiked.value? 'heart': 'heart-outline';
 });
 
 
@@ -66,7 +59,7 @@ watch([
         />
         <span class="font-500 pl-10px pt-5px">{{ userName }}</span>
         <div class="card-header__side w-30px h-10px absolute right-0">
-&nbsp;
+          &nbsp;
         </div>
       </div>
 
@@ -99,18 +92,16 @@ watch([
       </div>
       <div class="flex text-size-30px gap-2px items-start">
         <UiIcon
-          pointer
-          name="bookmark"
-          :variant="saveBtnVariant"
+          :name="saveBtnIcon"
           color="brand-blue"
-          @click="isSaved = !isSaved"
+          class="cursor-pointer"
+          @pointerdown="isSaved = !isSaved"
         />
         <UiIcon
-          pointer
-          name="heart"
-          :variant="likeBtnVariant"
+          :name="likeBtnIcon"
           color="brand-magenta"
-          @click="isLiked = !isLiked"
+          class="cursor-pointer"
+          @pointerdown="isLiked = !isLiked"
         />
       </div>
     </div>

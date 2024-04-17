@@ -19,7 +19,7 @@ import { RouterLink } from 'vue-router';
     <span class="fg-foreground cursor-pointer">Categorias</span>
     
     <UiInput
-      class="font-size-20px"
+      class="font-size-20px w-50% h-45px"
       variant="rounded"
       large
       prepend-icon="magnify"

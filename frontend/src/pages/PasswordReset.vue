@@ -9,7 +9,10 @@ import UiBtn from '@/ui/btn/UiBtn.vue';
     <div class="flex flex-col gap-20px items-center">
       <span class="fg-foreground block font-600 font-size-24px self-start">Recuperar senha</span>
       <div class="flex flex-col gap-10px">
-        <UiInput placeholder="E-mail" />
+        <UiInput 
+          class="w-550px h-60px"
+          placeholder="E-mail"
+        />
       </div>
       <UiBtn large>
         Redefinir senha

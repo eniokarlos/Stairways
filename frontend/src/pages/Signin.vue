@@ -10,10 +10,11 @@ import UiBtn from '@/ui/btn/UiBtn.vue';
       <span class="fg-foreground block font-600 font-size-24px self-start">Fazer login</span>
       <div>
         <UiInput
-          class="mb-10px"
+          class="mb-10px w-550px h-60px"
           placeholder="E-mail"
         />
         <UiInput
+          class="w-550px h-60px"
           type="password"
           placeholder="Senha"
         />
@@ -23,7 +24,7 @@ import UiBtn from '@/ui/btn/UiBtn.vue';
       </UiBtn>
       <span class="font-size-16px">ou
         <RouterLink
-          to="password_reset"
+          to="password-reset"
           class="underline fg-brand-blue cursor-pointer"
         >
           <span>Esqueci a senha</span>

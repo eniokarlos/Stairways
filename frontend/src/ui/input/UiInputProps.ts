@@ -10,6 +10,10 @@ export default {
     type: String,
     default: undefined,
   },
+  maxLenght: {
+    type: Number,
+    default: undefined,
+  },
   type: {
     type: String,
     default: 'text',

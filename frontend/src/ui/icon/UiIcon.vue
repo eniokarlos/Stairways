@@ -1,34 +1,20 @@
 <script setup lang="ts">
-import { PropType } from 'vue';
 
-const props = defineProps({
+defineProps({
   name: String,
-  variant: {
-    type: String as PropType<'outline' | 'default'>,
-    default: 'default',
-  },
   color: {
     type: String,
     default: 'blue',
   },
-  pointer: Boolean,
 });
 
-function getClassName() {
-  if (props.variant === 'default') {
-    return `mdi-${props.name}`;
-  }
-  else {
-    return `mdi-${props.name}-outline`;
-  }
-}
 </script>
 
 <template>
   <i
     v-color="color"
-    class="ui-icon mdi flex items-center justify-center"
-    :class="[getClassName(), {'ui-icon--pointer': pointer}]"
+    :class="`mdi mdi-${name}`"
+    class="ui-icon flex items-center justify-center"
   />
 </template>
 
@@ -38,10 +24,6 @@ function getClassName() {
   .ui-icon {
     color: var(--current-color) !important;
     user-select: none;
-  }
-
-  .ui-icon--pointer {
-    cursor: pointer;
   }
 
   .ui-icon::before {

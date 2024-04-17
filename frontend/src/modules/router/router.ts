@@ -27,7 +27,7 @@ export default createRouter({
     },
     {
       path: '/roadmap-creation',
-      component: () => import('@/pages/RoadmapCreation.vue'), 
+      component: () => import('@/pages/roadmapCreation/RoadmapCreation.vue'), 
     },
   ],
 });

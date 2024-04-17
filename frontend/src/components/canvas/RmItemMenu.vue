@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { inject, ref, watchEffect } from 'vue';
-import { useGridAlignment } from './Util/gridAlignment';
 import UiDropDown from '@/ui/dropDown/UiDropDown.vue';
 import UiBtn from '@/ui/btn/UiBtn.vue';
 import UiIcon from '@/ui/icon/UiIcon.vue';
 import { RoadmapItem } from './RmItem.vue';
 import { alignToGrid } from './Util/alignToGrid';
+import { useRoadmapStore } from '@/stores/roadmap.store';
 
 
 const tabs = ref([
@@ -15,19 +15,19 @@ const tabs = ref([
 
 const activeTab = ref(0);
 const item = defineModel<RoadmapItem>({ required: true });
-const gridStore = useGridAlignment();
-const inputStep = ref(gridStore.state.value ? 8 : 1);
+const store = useRoadmapStore();
+const inputStep = ref(store.gridAlignment ? 8 : 1);
 
 const roadmapItems = inject('roadmapItems') as RoadmapItem[];
 
 function toggleGridAlign() {
-  gridStore.toggle();
+  store.toggleGridAlignment();
 
   roadmapItems.forEach(item => {
     item.x = alignToGrid(item.x);
     item.y = alignToGrid(item.y);
   });
-  inputStep.value = gridStore.state.value ? 8 : 1;
+  inputStep.value = store.gridAlignment ? 8 : 1;
 }
 
 watchEffect(() => {
@@ -146,7 +146,7 @@ watchEffect(() => {
             @pointerdown="toggleGridAlign"
           >
             <input
-              :class="{'gridAlignment--active': gridStore.state.value}"
+              :class="{'gridAlignment--active': store.gridAlignment}"
               class="gridAlignment mr-10px ml-2px"
               type="checkbox"
               name="checkbox"
