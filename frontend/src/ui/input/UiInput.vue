@@ -73,7 +73,7 @@ watchEffect(() => {
       :type="type"
       :placeholder="placeholder"
       :maxlength="maxLenght"
-      class="ui-input__text b-0 block bg-transparent 
+      class="ui-input__text fg-foreground b-0 block bg-transparent 
       font-size-16px w-full"
       @keydown.enter="emit('submitted')"
     >
@@ -94,9 +94,9 @@ watchEffect(() => {
 
 
 <style lang="css" scoped>
-  .ui-input .ui-input__text{
+  /* .ui-input .ui-input__text{
     color: var(--current-color) !important;
-  }
+  } */
 
   .ui-input__text::placeholder{
     color: var(--current-color) !important;

@@ -14,6 +14,7 @@ export interface Roadmap {
     description: string,
     tags: string[],
     privacity: 'public' | 'private',
+    imageURL: string,
     level: 'beginner' | 'intermediate' | 'advanced',
   },
   items: RoadmapItem[],

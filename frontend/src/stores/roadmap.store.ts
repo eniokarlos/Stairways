@@ -10,6 +10,7 @@ export const useRoadmapStore = defineStore('roadmaps', () => {
       description: '',
       level: 'beginner',
       privacity: 'public',
+      imageURL: '',
       tags: [],
     },
     items: [],

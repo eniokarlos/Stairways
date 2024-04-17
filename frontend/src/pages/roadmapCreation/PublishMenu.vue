@@ -28,16 +28,17 @@ async function getImages() {
   const URL = `https://pixabay.com/api/?key=${API_KEY}&`+
   `q=${encodeURIComponent(imageSearch.value)}&`+
   'image-type=photo&lang=pt&'+
-  'orientation=horizontal';
+  'orientation=horizontal&'+
+  'per_page=150&safesearch=true';
   const init: RequestInit = {
     method: 'GET',
     mode: 'cors',
     cache: 'default',
   };
+
   await fetch(URL, init)
     .then(async (res) => {
       const json = await res.json();
-      console.log(json);
       imageResult.value = JSON.parse(JSON.stringify(json.hits));
     });
 }
@@ -137,7 +138,7 @@ onMounted(getImages);
         </div>
         <UiInput
           v-model="imageSearch"
-          color="gray"
+          color="dark-gray"
           variant="rounded"
           class="b-1px-solid-light-gray w-80% font-size-20px 
             mt-4px h-35px m-auto mb-20px"
@@ -146,13 +147,26 @@ onMounted(getImages);
           @submitted="getImages"
         />
         <div
+          v-if="store.roadmap.meta.imageURL" 
+          class="flex justify-center mb-10px"
+        >
+          <img
+            :src="store.roadmap.meta.imageURL"
+            class="w-180px h-120px"
+          >
+        </div>
+        <div
           class="flex flex-wrap gap-4px 
         max-h-370px overflow-auto"
         >
           <div
-            v-for="image in imageResult" 
+            v-for="image in imageResult"
             :key="image.id"
-            class="relative w-180px h-120px"
+            :class="{'selected-img': 
+              image.webformatURL === store.roadmap.meta.imageURL}"
+            class="cursor-pointer relative 
+            w-180px h-120px"
+            @pointerdown="store.roadmap.meta.imageURL = image.webformatURL;"
           >
             <img 
               :src="image.webformatURL"
@@ -162,7 +176,9 @@ onMounted(getImages);
         </div>
         <div class="flex justify-end mt-20px">
           <UiBtn
-            @pointerdown="getImages"
+            @pointerdown="
+              getImages(); 
+              isActive=false"
           >
             Publicar
           </UiBtn>
@@ -188,7 +204,7 @@ onMounted(getImages);
   }
 
   .selected-img img {
-    filter: brightness(0.4);
+    filter: brightness(0.2);
   }
 
   .title::-webkit-scrollbar {
