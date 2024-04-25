@@ -20,4 +20,8 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Stairways.Core.csproj" />
+  </ItemGroup>
+
 </Project>
