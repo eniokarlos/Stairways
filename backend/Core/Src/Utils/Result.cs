@@ -1,4 +1,4 @@
-namespace Stairways.Core.Util;
+namespace Stairways.Core.Utils;
 
 public class Result<T, E> where E : Exception
 { 
@@ -42,4 +42,43 @@ public class Result<T, E> where E : Exception
 
 }
 
+public class Result<E> where E : Exception
+{
+  private E? _error;
+  public bool IsFail {get; set;}
 
+  private Result()
+  {
+    IsFail = false;  
+  }
+
+  private Result(E error)
+  {
+    _error = error;
+    IsFail = true;
+  }
+
+  public static Result<E> Ok()
+  {
+    return new Result<E>();
+  }
+
+  public static Result<E> Fail(E error)
+  {
+    return new Result<E>(error);
+  }
+
+  public void Unwrap()
+  {
+    if (IsFail)
+    {
+      throw _error!;
+    }
+    else
+    {
+      throw new Exception("cannot unwrap void Result");
+    }
+  }
+
+  public static implicit operator Result<E>(E error) => new Result<E>(error);
+}

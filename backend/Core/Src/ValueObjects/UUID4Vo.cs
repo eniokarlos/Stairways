@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 using Stairways.Core.Errors;
-using Stairways.Core.Util;
+using Stairways.Core.Utils;
 
 namespace Stairways.Core.ValueObjects;
 
@@ -20,9 +20,9 @@ public class UUID4 : Id
       new InvalidUUID4Error("Invalid UUID4"));
   }
 
-  public static string Generate()
+  public static Id Generate()
   {
     return Of(Guid.NewGuid().ToString())
-      .Unwrap().Value;
+    .Unwrap();
   }
 }

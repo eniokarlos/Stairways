@@ -33,6 +33,6 @@ public class UUID4Test
     //Given/When
     var id = UUID4.Generate();
     //Then
-    Assert.IsType<string>(id);
+    Assert.IsType<string>(id.Value);
   }
 }

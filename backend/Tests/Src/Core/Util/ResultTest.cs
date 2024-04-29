@@ -1,8 +1,8 @@
-using Stairways.Core.Util;
+using Stairways.Core.Utils;
 
 public class ResultTest {
   [Fact]
-  public void GivenValidResultWhenCallUnwrapThenReturnValue()
+  public void GivenAValidResultWhenCallUnwrapThenReturnValue()
   {
     //Given
     var result = Result<string, Exception>.Ok("test");
@@ -13,35 +13,35 @@ public class ResultTest {
   }
 
   [Fact]
-  public void GivenErrorResultWhenCallUnwrapThenThrowError()
+  public void GivenAErrorResultWhenCallUnwrapThenThrowError()
   {
     //Given
     var result = Result<string, Exception>.Fail(new Exception());
-    //Then
+    //When/Then
     Assert.Throws<Exception>(() => {
       result.Unwrap();
     });
   }
 
   [Fact]
-  public void GivenAResultWhenItRecieveAValidValueThenReturnValue()
+  public void GivenAOkVoidResultWhencallUnwrapThenThrowError()
   {
     //Given
-    Result<string, Exception> result;
-    //When
-    result = "test";
-    //Then
-    Assert.Equal("test", result.Unwrap());
+    var result = Result<Exception>.Ok();
+    //When/Then
+    Assert.Throws<Exception>(() => {
+      result.Unwrap();
+    });
   }
 
   [Fact]
-  public void GivenAResultWhenItRecieveAnErrorThenThrowError()
+  public void GivenAVoidErrorResultWhenCallUnwrapThenThrowError()
   {
     //Given
-    Result<string, Exception> result;
+    Result<Exception> result;
     //When
-    result = new Exception();
-    //Then
+    result = new Exception("test");
+    //then
     Assert.Throws<Exception>(() => {
       result.Unwrap();
     });
