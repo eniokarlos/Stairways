@@ -1,7 +1,7 @@
 using Stairways.Core.Errors;
 using Stairways.Core.Models;
 
-namespace Stairways.Tests.Core;
+namespace Stairways.Tests.Core.Models;
 public class UserTest
 {
   [Fact]

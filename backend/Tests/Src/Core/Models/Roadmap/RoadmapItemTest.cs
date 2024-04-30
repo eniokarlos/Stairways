@@ -2,7 +2,7 @@ using Stairways.Core.Enums;
 using Stairways.Core.Errors;
 using Stairways.Core.Models;
 
-namespace Stairways.Tests.Core;
+namespace Stairways.Tests.Core.Models;
 public class RoadmapItemTest
 {
   [Fact]

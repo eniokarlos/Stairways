@@ -1,9 +1,10 @@
 using Stairways.Core.Errors;
+using Stairways.Core.Interfaces;
 using Stairways.Core.Utils;
 
 namespace Stairways.Core.ValueObjects;
 
-public abstract class Entity
+public abstract class Entity : IValidatable
 {
   public Id Id {get; set;}
   public DateTime CreatedAt {get; set;}

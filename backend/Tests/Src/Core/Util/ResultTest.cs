@@ -1,6 +1,6 @@
 using Stairways.Core.Utils;
 
-namespace Stairways.Tests.Util;
+namespace Stairways.Tests.Core.Util;
 
 public class ResultTest {
   [Fact]
