@@ -3,20 +3,19 @@ namespace Stairways.Core.Utils;
 public class Result<T, E> where E : Exception
 { 
   private T? _data;
-  private E? _error;
+  public E? Error {get;set;}
   public bool IsFail { get; set; }
 
   private Result(T data)
   {
     _data = data;
-    _error = null;
     IsFail = false;
   }
 
   private Result(E error)
   {
     _data = default;
-    _error = error;
+    Error = error;
     IsFail = true;
   }
 
@@ -34,7 +33,7 @@ public class Result<T, E> where E : Exception
   {
     if (!IsFail)
       return _data!;
-    else throw _error!;
+    else throw Error!;
   }
 
   public static implicit operator Result<T,E>(T data) => new Result<T, E>(data);
@@ -44,7 +43,7 @@ public class Result<T, E> where E : Exception
 
 public class Result<E> where E : Exception
 {
-  private E? _error;
+  public E? Error {get; set;}
   public bool IsFail {get; set;}
 
   private Result()
@@ -54,7 +53,7 @@ public class Result<E> where E : Exception
 
   private Result(E error)
   {
-    _error = error;
+    Error = error;
     IsFail = true;
   }
 
@@ -72,7 +71,7 @@ public class Result<E> where E : Exception
   {
     if (IsFail)
     {
-      throw _error!;
+      throw Error!;
     }
     else
     {

@@ -30,15 +30,16 @@ public class UserEntity : Entity
     ProfileImage = profileImage;
   }
 
-  public static UserEntity Of(string name, string email, string password, string profileImage = "")
+  public static Result<UserEntity,ValidationError> Of(string name, string email, 
+  string password, string profileImage = "")
   {
-    var result = Create(new UserEntity(name,email,password,profileImage));
-    return result.Unwrap();
+    return Create(new UserEntity(name,email,password,profileImage));
   }
 
-  public static UserEntity Of(Id id, string name, string email, string password, string profileImage = "")
+  public static Result<UserEntity,ValidationError> Of(Id id, string name, 
+  string email, string password, string profileImage = "")
   {
-    return new UserEntity(id, name, email, password, profileImage);
+    return Create(new UserEntity(id, name, email, password, profileImage));
   }
 
   public override Result<ValidationError> Validate()

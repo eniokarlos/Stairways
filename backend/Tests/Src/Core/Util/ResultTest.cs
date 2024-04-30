@@ -1,5 +1,7 @@
 using Stairways.Core.Utils;
 
+namespace Stairways.Tests.Util;
+
 public class ResultTest {
   [Fact]
   public void GivenAValidResultWhenCallUnwrapThenReturnValue()

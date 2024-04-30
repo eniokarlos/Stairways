@@ -1,6 +1,7 @@
 using Stairways.Core.Errors;
 using Stairways.Core.Models;
 
+namespace Stairways.Tests.Core;
 public class UserTest
 {
   [Fact]
@@ -11,9 +12,11 @@ public class UserTest
     var email = "test@email.com";
     var password = "password";
     //When
-    var user = UserEntity.Of(name, email, password);
+    var user = UserEntity.Of(name, email, password).Unwrap();
     //Then
-    Assert.IsType<UserEntity>(user);
+    Assert.NotNull(user.Id.Value);
+    Assert.Equal(email, user.Email);
+    Assert.Equal(password, user.Password);
   }
   
   [Fact]
@@ -25,7 +28,7 @@ public class UserTest
     var password = "password";
     //When/Then
     Assert.Throws<ValidationError>(() => {
-      UserEntity.Of(name, email, password);
+      UserEntity.Of(name, email, password).Unwrap();
     });
   }
 
@@ -38,7 +41,7 @@ public class UserTest
     var password = "password";
     //When/Then
     Assert.Throws<ValidationError>(() => {
-      UserEntity.Of(name, email, password);
+      UserEntity.Of(name, email, password).Unwrap();
     });
   }
 
@@ -51,7 +54,7 @@ public class UserTest
     var password = "";
     //When/Then
     Assert.Throws<ValidationError>(() => {
-      UserEntity.Of(name, email, password);
+      UserEntity.Of(name, email, password).Unwrap();
     });
   }
 }

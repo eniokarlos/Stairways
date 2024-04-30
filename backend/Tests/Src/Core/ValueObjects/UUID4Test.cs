@@ -2,6 +2,7 @@
 using Stairways.Core.Errors;
 using Stairways.Core.ValueObjects;
 
+namespace Stairways.Core.Vo;
 public class UUID4Test
 {
   [Fact]

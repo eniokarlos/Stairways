@@ -23,12 +23,12 @@ public abstract class Entity
     UpdatedAt = updatedAt;
   }
 
-  public static Result<T, ValidationError> Create<T>(T entity) where T : Entity
+  public static Result<T, ValidationError> Create<T>(T entity) where T: Entity
   {
     var result = entity.Validate();
 
     if (result.IsFail)
-      result.Unwrap();
+      return Result<T,ValidationError>.Fail(result.Error!);
     
     return Result<T,ValidationError>.Ok(entity);
   }
