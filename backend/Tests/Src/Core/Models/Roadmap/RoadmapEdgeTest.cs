@@ -17,18 +17,18 @@ public class RoadmapEdgeTest
       RoadmapItemAnchor.RIGHT
     );
 
+    var format = RoadmapEdgeFormat.STRAIGHT;
+    var style = RoadmapEdgeStyle.DOTTED;
     //When
     var edge = RoadmapEdgeEntity.Of(
       points, 
-      RoadmapEdgeFormat.STRAIGHT,
-      RoadmapEdgeStyle.DOTTED
+      format,
+      style
     ).Unwrap();
 
     //Then
-    Assert.NotNull(edge.Id);
-    Assert.Equal(points.StartItemId, edge.Points.StartItemId);
-    Assert.Equal(points.EndItemId, edge.Points.EndItemId);
-    Assert.Equal(points.StartItemAnchor, edge.Points.StartItemAnchor);
-    Assert.Equal(points.EndItemAnchor, edge.Points.EndItemAnchor);
+    Assert.Equivalent(points, edge.Points);
+    Assert.Equivalent(format, edge.Format);
+    Assert.Equivalent(style, edge.Style);
   }
 }

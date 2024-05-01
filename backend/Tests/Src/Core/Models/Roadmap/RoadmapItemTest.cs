@@ -20,14 +20,9 @@ public class RoadmapItemTest
     var item = RoadmapItemEntity.Of(content, box, info).Unwrap();
 
     //Then
-    Assert.NotNull(item.Id);
-    Assert.False(string.IsNullOrEmpty(item.Content.Title));
-    Assert.False(string.IsNullOrEmpty(item.Content.Description));
-    Assert.NotEmpty(item.Content.Links);
-    Assert.False(string.IsNullOrEmpty(item.Content.Links[0].Text));
-    Assert.False(string.IsNullOrEmpty(item.Content.Links[0].URL));
-    Assert.False(string.IsNullOrEmpty(item.Info.Label));
-    Assert.False(string.IsNullOrEmpty(item.Info.LinkTo));
+    Assert.Equivalent(content, item.Content);
+    Assert.Equivalent(box, item.Box);
+    Assert.Equivalent(info, item.Info);
   }
 
   [Fact]
