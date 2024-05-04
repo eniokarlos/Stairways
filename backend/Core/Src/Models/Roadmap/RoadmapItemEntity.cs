@@ -8,8 +8,8 @@ namespace Stairways.Core.Models;
 
 public class ItemLink: IValidatable
 {
-  public string Text;
-  public string URL;
+  public string Text {get; private set;}
+  public string URL {get; private set;}
 
   public ItemLink(string text, string url)
   {
@@ -31,9 +31,9 @@ public class ItemLink: IValidatable
 
 public class ItemContent
 {
-  public string Title;
-  public string Description;
-  public ItemLink[] Links;
+  public string Title {get; private set;}
+  public string Description {get; private set;}
+  public ItemLink[] Links {get; private set;}
 
   public ItemContent(string title, string description, ItemLink[] links)
   {
@@ -45,10 +45,10 @@ public class ItemContent
 
 public class ItemBox: IValidatable
 {
-  public float Width;
-  public float Height;
-  public int X;
-  public int Y;
+  public float Width {get; private set;}
+  public float Height {get; private set;}
+  public int X {get; private set;}
+  public int Y {get; private set;}
 
   public ItemBox(float width, float height, int x, int y)
   {
@@ -72,11 +72,11 @@ public class ItemBox: IValidatable
 
 public class ItemInfo: IValidatable
 {
-  public string Label;
-  public RoadmapItemType Type;
-  public int LabelWidth;
-  public int LabelSize; 
-  public string LinkTo;
+  public string Label {get; private set;}
+  public RoadmapItemType Type {get; private set;}
+  public int LabelWidth {get; private set;}
+  public int LabelSize {get; private set;} 
+  public string LinkTo {get; private set;}
 
   public ItemInfo(string label, RoadmapItemType type, 
   int labelWidth, int labelSize, string linkTo)
@@ -102,11 +102,11 @@ public class ItemInfo: IValidatable
 
 public class RoadmapItemEntity : Entity
 { 
-  public ItemContent Content {get; set;}
-  public ItemBox Box {get; set;}
-  public ItemInfo Info {get; set;}
+  public ItemContent Content {get; private set;}
+  public ItemBox Box {get; private set;}
+  public ItemInfo Info {get; private set;}
 
-  private RoadmapItemEntity(Id id, 
+  private RoadmapItemEntity(UUID4 id, 
   ItemContent content, ItemBox box, ItemInfo info)
   :base(id)
   {
@@ -123,7 +123,7 @@ public class RoadmapItemEntity : Entity
     Info = info;
   }
 
-  public static Result<RoadmapItemEntity, ValidationError> Of(Id id, 
+  public static Result<RoadmapItemEntity, ValidationError> Of(UUID4 id, 
   ItemContent content, ItemBox box, ItemInfo info)
   {
     return Create(new RoadmapItemEntity(id, content, box, info));

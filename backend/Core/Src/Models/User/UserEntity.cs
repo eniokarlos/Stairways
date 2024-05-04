@@ -7,10 +7,11 @@ namespace Stairways.Core.Models;
 
 public class UserEntity : Entity
 {
-  public string Name {get; set;}
-  public string Email {get; set;}
-  public string Password {get; set;}
-  public string ProfileImage {get; set;}
+  public string Name {get; private set;}
+  public string Email {get; private set;}
+  public string Password {get; private set;}
+  public string ProfileImage {get; private set;}
+  public ICollection<RoadmapEntity> Roadmaps {get; private set;}
   
   private UserEntity(Id id, string name, string email, string password, string profileImage = "") 
   : base(id)
@@ -19,6 +20,7 @@ public class UserEntity : Entity
     Email = email;
     Password = password;
     ProfileImage = profileImage;
+    Roadmaps = [];
   }
 
   private UserEntity(string name, string email, string password, string profileImage = "") 
@@ -28,6 +30,7 @@ public class UserEntity : Entity
     Email = email;
     Password = password;
     ProfileImage = profileImage;
+    Roadmaps = [];
   }
 
   public static Result<UserEntity,ValidationError> Of(string name, string email, 

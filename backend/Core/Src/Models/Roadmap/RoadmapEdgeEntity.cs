@@ -1,3 +1,4 @@
+#pragma warning disable CS8618
 using Stairways.Core.Enums;
 using Stairways.Core.Errors;
 using Stairways.Core.Utils;
@@ -7,16 +8,13 @@ namespace Stairways.Core.Models;
 
 public class EdgePoints
 {
-  public Id StartItemId {get; set;}
-  public Id EndItemId {get; set;}
-  public RoadmapItemAnchor StartItemAnchor {get; set;}
-  public RoadmapItemAnchor EndItemAnchor {get; set;}
+  public virtual RoadmapItemEntity StartItem {get; init;}
+  public virtual RoadmapItemEntity EndItem {get; init;}
+  public RoadmapItemAnchor StartItemAnchor {get; init;}
+  public RoadmapItemAnchor EndItemAnchor {get; init;}
 
-  public EdgePoints(Id startItemId, Id endItemId, 
-  RoadmapItemAnchor startItemAnchor, RoadmapItemAnchor endItemAnchor)
+  public EdgePoints(RoadmapItemAnchor startItemAnchor, RoadmapItemAnchor endItemAnchor)
   {
-    StartItemId = startItemId;
-    EndItemId = endItemId;
     StartItemAnchor = startItemAnchor;
     EndItemAnchor = endItemAnchor;
   }
@@ -24,10 +22,13 @@ public class EdgePoints
 
 public class RoadmapEdgeEntity : Entity
 {
-  public EdgePoints Points {get; set;}
-  public RoadmapEdgeFormat Format {get; set;}
-  public RoadmapEdgeStyle Style {get; set;}
+  public EdgePoints Points {get; private set;}
+  public RoadmapEdgeFormat Format {get; private set;}
+  public RoadmapEdgeStyle Style {get; private set;}
 
+
+    private RoadmapEdgeEntity()
+  : base(UUID4.Generate()){}
   private RoadmapEdgeEntity(Id id, EdgePoints points, 
   RoadmapEdgeFormat format, RoadmapEdgeStyle style)
   :base(id)

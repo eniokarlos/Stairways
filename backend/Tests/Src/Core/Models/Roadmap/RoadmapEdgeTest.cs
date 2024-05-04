@@ -11,8 +11,6 @@ public class RoadmapEdgeTest
   {
     //Given
     var points = new EdgePoints(
-      UUID4.Generate(), 
-      UUID4.Generate(),
       RoadmapItemAnchor.TOP,
       RoadmapItemAnchor.RIGHT
     );

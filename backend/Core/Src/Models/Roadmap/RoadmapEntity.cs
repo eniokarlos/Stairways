@@ -1,3 +1,5 @@
+#pragma warning disable CS8618
+using System.Text.Json.Serialization;
 using Stairways.Core.Enums;
 using Stairways.Core.Errors;
 using Stairways.Core.Interfaces;
@@ -8,17 +10,17 @@ namespace Stairways.Core.Models;
 
 public class RoadmapMeta : IValidatable
 {
-  public Id UserId {get; set;}
-  public string Title {get; set;}
-  public string Description { get; set; }
-  public RoadmapPrivacity Privacity { get; set; }
-  public string ImageURL { get; set; }
-  public string[] Tags {get; set;}
+  [JsonIgnore]
+  public virtual UserEntity Author {get; private set;}
+  public string Title {get; private set;}
+  public string Description { get; private set; }
+  public RoadmapPrivacity Privacity { get; private set; }
+  public string ImageURL { get; private set; }
+  public string[] Tags {get; private set;}
 
-  public RoadmapMeta(Id userId, string title, string description, 
+  public RoadmapMeta(string title, string description, 
   RoadmapPrivacity privacity, string imageURL, string[] tags)
   {
-    UserId = userId;
     Title = title;
     Description = description;
     Privacity = privacity;
@@ -45,50 +47,39 @@ public class RoadmapMeta : IValidatable
 }
 public class RoadmapEntity : Entity
 {
-  public RoadmapMeta Meta {get; set;}
-  public RoadmapEdgeEntity[] Edges {get; set;}
-  public RoadmapItemEntity[] Items {get; set;}
+  public RoadmapMeta Meta {get; private set;}
+  public ICollection<RoadmapEdgeEntity> Edges {get; private set;}
+  public ICollection<RoadmapItemEntity> Items {get; private set;}
 
-  private RoadmapEntity(Id id, RoadmapMeta meta, 
-  RoadmapEdgeEntity[] edges, RoadmapItemEntity[] items)
+  private RoadmapEntity()
+  :base(UUID4.Generate()){}
+
+  private RoadmapEntity(Id id, RoadmapMeta meta)
   :base(id)
   {
     Meta = meta;
-    Edges = edges;
-    Items = items;
   }
 
-  private RoadmapEntity(RoadmapMeta meta, 
-  RoadmapEdgeEntity[] edges, RoadmapItemEntity[] items)
+  private RoadmapEntity(RoadmapMeta meta)
   :base(UUID4.Generate())
   {
     Meta = meta;
-    Edges = edges;
-    Items = items;
   }
 
-  public static Result<RoadmapEntity, ValidationError> Of(Id id, RoadmapMeta meta, 
-  RoadmapEdgeEntity[] edges, RoadmapItemEntity[] items)
+  public static Result<RoadmapEntity, ValidationError> Of(Id id, RoadmapMeta meta)
   {
-    return Create(new RoadmapEntity(id, meta, edges, items));
+    return Create(new RoadmapEntity(id, meta));
   }
 
-  public static Result<RoadmapEntity, ValidationError> Of(RoadmapMeta meta, 
-  RoadmapEdgeEntity[] edges, RoadmapItemEntity[] items)
+  public static Result<RoadmapEntity, ValidationError> Of(RoadmapMeta meta)
   {
-    return Create(new RoadmapEntity(meta, edges, items));
+    return Create(new RoadmapEntity(meta));
   }
   public override Result<ValidationError> Validate()
   {
     var metaValidation = Meta.Validate();
     if (metaValidation.IsFail)
       return Result<ValidationError>.Fail(metaValidation.Error!);
-
-    if (Edges.Count() == 0)
-      return Result<ValidationError>.Fail(new ValidationError("Edges must be greater than zero"));
-
-    if (Items.Count() == 0)
-      return Result<ValidationError>.Fail(new ValidationError("Items must be greater than zero"));
     
     return Result<ValidationError>.Ok();
   }
