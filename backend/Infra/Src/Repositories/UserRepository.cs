@@ -39,16 +39,21 @@ public class UserRepository : IUserRespository
         .Fail(EntityNotFoundException.Of("User not found"));
     }
 
-    public async Task<Result<UserEntity, EntityNotFoundException>> GetByIdAsync(string userId)
+    public async Task<Result<UserEntity, Exception>> GetByIdAsync(string userId)
     {
-      var res  = await _context.Users.FirstOrDefaultAsync(
-        user => user.Id == UUID4.Of(userId).Unwrap()
+      var givenId = UUID4.Of(userId);
+
+      if (givenId.IsFail)
+        return Result<UserEntity, Exception>.Fail(givenId.Error!);
+
+      var res  = await _context.Users.Include(u => u.Roadmaps).FirstOrDefaultAsync(
+        user => user.Id == givenId.Unwrap()
       );
 
       if (res != null)
-        return Result<UserEntity,EntityNotFoundException>.Ok(res);
+        return Result<UserEntity,Exception>.Ok(res);
 
-      return Result<UserEntity,EntityNotFoundException>
+      return Result<UserEntity,Exception>
         .Fail(EntityNotFoundException.Of("User not found"));
     }
 

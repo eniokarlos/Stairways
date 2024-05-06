@@ -9,10 +9,7 @@ public class RoadmapItemTest
   public void GivenValidParamsWhenCreateItemThenReturnItemCreated()
   {
     //Given
-    var content = new ItemContent("title", "description", [
-      new ItemLink("link1", "url"),
-      new ItemLink("link2", "url")
-    ]);
+    var content = new ItemContent("title", "description");
     var box = new ItemBox(100, 200,0,0);
     var info = new ItemInfo("Link", RoadmapItemType.LINK, 400, 38, "linkurl");
     
@@ -23,23 +20,5 @@ public class RoadmapItemTest
     Assert.Equivalent(content, item.Content);
     Assert.Equivalent(box, item.Box);
     Assert.Equivalent(info, item.Info);
-  }
-
-  [Fact]
-  public void GivenInvalidItemLinkWhenCreateItemThenThrowError()
-  {
-    //Given
-    var content = new ItemContent("title", "description", [
-      new ItemLink("", "url"),
-      new ItemLink("link2", "url")
-    ]);
-    var box = new ItemBox(100, 200,0,0);
-    var info = new ItemInfo("Link", RoadmapItemType.LINK, 400, 38, "linkurl");
-
-    //When/Then
-    Assert.Throws<ValidationError>(() => {
-      RoadmapItemEntity.Of(content, box, info).Unwrap();
-    });
-    
   }
 }

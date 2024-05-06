@@ -26,9 +26,9 @@ public class RoadmapEdgeEntity : Entity
   public RoadmapEdgeFormat Format {get; private set;}
   public RoadmapEdgeStyle Style {get; private set;}
 
-
-    private RoadmapEdgeEntity()
+  private RoadmapEdgeEntity()
   : base(UUID4.Generate()){}
+  
   private RoadmapEdgeEntity(Id id, EdgePoints points, 
   RoadmapEdgeFormat format, RoadmapEdgeStyle style)
   :base(id)

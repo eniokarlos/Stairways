@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stairways.Tests", "Tests\St
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stairways.Infra", "Infra\Stairways.Infra.csproj", "{8FCA8925-A0CA-446A-BDDC-914AB4BA527C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stairways.Application", "Application\Stairways.Application.csproj", "{E69A4179-57F9-4903-B549-4DB25DBB9E06}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{8FCA8925-A0CA-446A-BDDC-914AB4BA527C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8FCA8925-A0CA-446A-BDDC-914AB4BA527C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8FCA8925-A0CA-446A-BDDC-914AB4BA527C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E69A4179-57F9-4903-B549-4DB25DBB9E06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E69A4179-57F9-4903-B549-4DB25DBB9E06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E69A4179-57F9-4903-B549-4DB25DBB9E06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E69A4179-57F9-4903-B549-4DB25DBB9E06}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

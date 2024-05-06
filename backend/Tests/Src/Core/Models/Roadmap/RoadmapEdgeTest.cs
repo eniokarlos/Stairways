@@ -1,6 +1,5 @@
 using Stairways.Core.Models;
 using Stairways.Core.Enums;
-using Stairways.Core.ValueObjects;
 
 namespace Stairways.Tests.Core.Models;
 

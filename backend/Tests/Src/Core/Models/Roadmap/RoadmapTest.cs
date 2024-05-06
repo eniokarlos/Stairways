@@ -19,24 +19,6 @@ public class RoadmapTest
       ["tag1", "tag2", "tag3"]
     );
 
-    var edge = RoadmapEdgeEntity.Of(
-      new EdgePoints(
-        RoadmapItemAnchor.TOP,
-        RoadmapItemAnchor.RIGHT
-      ),
-      RoadmapEdgeFormat.STRAIGHT,
-      RoadmapEdgeStyle.DOTTED
-    ).Unwrap();
-
-    var item = RoadmapItemEntity.Of(
-      new ItemContent("title", "description", [
-        new ItemLink("link1", "url"),
-        new ItemLink("link2", "url")
-      ]),
-      new ItemBox(100, 200,0,0),
-      new ItemInfo("Link", RoadmapItemType.LINK, 400, 38, "linkurl")
-    ).Unwrap();
-    //When
     var roadmap = RoadmapEntity.Of(
       meta
     ).Unwrap();
@@ -66,10 +48,7 @@ public class RoadmapTest
     ).Unwrap();
 
     var item = RoadmapItemEntity.Of(
-      new ItemContent("title", "description", [
-        new ItemLink("link1", "url"),
-        new ItemLink("link2", "url")
-      ]),
+      new ItemContent("title", "description"),
       new ItemBox(100, 200,0,0),
       new ItemInfo("Link", RoadmapItemType.LINK, 400, 38, "linkurl")
     ).Unwrap();
@@ -104,10 +83,7 @@ public class RoadmapTest
     ).Unwrap();
 
     var item = RoadmapItemEntity.Of(
-      new ItemContent("title", "description", [
-        new ItemLink("link1", "url"),
-        new ItemLink("link2", "url")
-      ]),
+      new ItemContent("title", "description"),
       new ItemBox(100, 200,0,0),
       new ItemInfo("Link", RoadmapItemType.LINK, 400, 38, "linkurl")
     ).Unwrap();
@@ -143,10 +119,7 @@ public class RoadmapTest
     ).Unwrap();
 
     var item = RoadmapItemEntity.Of(
-      new ItemContent("title", "description", [
-        new ItemLink("link1", "url"),
-        new ItemLink("link2", "url")
-      ]),
+      new ItemContent("title", "description"),
       new ItemBox(100, 200,0,0),
       new ItemInfo("Link", RoadmapItemType.LINK, 400, 38, "linkurl")
     ).Unwrap();

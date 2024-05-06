@@ -1,3 +1,4 @@
+#pragma warning disable CS8618
 using Stairways.Core.Enums;
 using Stairways.Core.Errors;
 using Stairways.Core.Interfaces;
@@ -6,40 +7,16 @@ using Stairways.Core.ValueObjects;
 
 namespace Stairways.Core.Models;
 
-public class ItemLink: IValidatable
-{
-  public string Text {get; private set;}
-  public string URL {get; private set;}
-
-  public ItemLink(string text, string url)
-  {
-    Text = text;
-    URL = url;
-  }
-
-  public Result<ValidationError> Validate()
-  {
-    if (string.IsNullOrEmpty(Text))
-      return Result<ValidationError>.Fail(new ValidationError("Link Text is Required"));
-
-    if (string.IsNullOrEmpty(URL))
-      return Result<ValidationError>.Fail(new ValidationError("Link URL is Required"));
-
-    return Result<ValidationError>.Ok();
-  }
-}
-
 public class ItemContent
 {
   public string Title {get; private set;}
   public string Description {get; private set;}
-  public ItemLink[] Links {get; private set;}
+  public virtual ICollection<RoadmapItemLinkEntity>? Links {get; private set;}
 
-  public ItemContent(string title, string description, ItemLink[] links)
+  public ItemContent(string title, string description)
   {
     Title = title;
     Description = description;
-    Links = links;
   }
 }
 
@@ -106,6 +83,9 @@ public class RoadmapItemEntity : Entity
   public ItemBox Box {get; private set;}
   public ItemInfo Info {get; private set;}
 
+  private RoadmapItemEntity()
+  :base(UUID4.Generate()){}
+
   private RoadmapItemEntity(UUID4 id, 
   ItemContent content, ItemBox box, ItemInfo info)
   :base(id)
@@ -137,11 +117,21 @@ public class RoadmapItemEntity : Entity
 
   public override Result<ValidationError> Validate()
   {
-    foreach (var link in Content.Links)
-    {
-      var linkValidation = link.Validate();
-      if (linkValidation.IsFail)
-        return Result<ValidationError>.Fail(linkValidation.Error!);
+    if (Content.Links != null)
+    {      
+      var count = 0;
+      foreach (var link in Content.Links)
+      {
+        var linkValidation = link.Validate();
+
+        if (linkValidation.IsFail)
+          return Result<ValidationError>.Fail(linkValidation.Error!);
+
+        if (count > 6)
+          return Result<ValidationError>.Fail(
+            new ValidationError("Links lenght must be less than six"));
+        count++;
+      }
     }
 
     var boxValidation = Box.Validate();

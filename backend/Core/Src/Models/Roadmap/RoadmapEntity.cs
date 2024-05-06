@@ -48,8 +48,8 @@ public class RoadmapMeta : IValidatable
 public class RoadmapEntity : Entity
 {
   public RoadmapMeta Meta {get; private set;}
-  public ICollection<RoadmapEdgeEntity> Edges {get; private set;}
-  public ICollection<RoadmapItemEntity> Items {get; private set;}
+  public virtual ICollection<RoadmapEdgeEntity> Edges {get; private set;}
+  public virtual ICollection<RoadmapItemEntity> Items {get; private set;}
 
   private RoadmapEntity()
   :base(UUID4.Generate()){}
