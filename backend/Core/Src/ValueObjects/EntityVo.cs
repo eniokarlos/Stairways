@@ -13,8 +13,8 @@ public abstract class Entity : IValidatable
   protected Entity(Id id)
   {
     Id = id;
-    CreatedAt = DateTime.Now;
-    UpdatedAt = DateTime.Now;
+    CreatedAt = DateTime.UtcNow;
+    UpdatedAt = DateTime.UtcNow;
   }
 
   protected Entity(Id id, DateTime createdAt,DateTime updatedAt)

@@ -11,7 +11,7 @@ public class UserEntity : Entity
   public string Email {get; private set;}
   public string Password {get; private set;}
   public string ProfileImage {get; private set;}
-  public ICollection<RoadmapEntity> Roadmaps {get; private set;}
+  public virtual ICollection<RoadmapEntity> Roadmaps {get; set;}
   
   private UserEntity(Id id, string name, string email, string password, string profileImage = "") 
   : base(id)

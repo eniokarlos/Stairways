@@ -1,3 +1,4 @@
+#pragma warning disable CS8618
 using Stairways.Core.Errors;
 using Stairways.Core.Utils;
 using Stairways.Core.ValueObjects;
@@ -9,6 +10,9 @@ public class RoadmapItemLinkEntity : Entity
   public string Text {get; private set;}
   public string URL {get; private set;}
 
+  private RoadmapItemLinkEntity()
+  :base(UUID4.Generate())
+  {}
   private RoadmapItemLinkEntity(Id id, string text, string url)
   :base(id)
   {
@@ -23,13 +27,22 @@ public class RoadmapItemLinkEntity : Entity
     URL = url;
   }
 
-  public static RoadmapItemLinkEntity Of(Id id, string text, string url)
+  public static Result<RoadmapItemLinkEntity, ValidationError> Of(Id id, string text, string url)
   {
-    return new RoadmapItemLinkEntity(id, text, url);
+    var res = Create(new RoadmapItemLinkEntity(id, text, url));
+
+    if (res.IsFail)
+      return Result<RoadmapItemLinkEntity, ValidationError>.Fail(res.Error!);
+    return Result<RoadmapItemLinkEntity, ValidationError>.Ok(res.Unwrap());
   }
-  public static RoadmapItemLinkEntity Of(string text, string url)
+  
+  public static Result<RoadmapItemLinkEntity, ValidationError> Of(string text, string url)
   {
-    return new RoadmapItemLinkEntity(text, url);
+    var res = Create(new RoadmapItemLinkEntity(text, url));
+
+    if (res.IsFail)
+      return Result<RoadmapItemLinkEntity, ValidationError>.Fail(res.Error!);
+    return Result<RoadmapItemLinkEntity, ValidationError>.Ok(res.Unwrap());
   }
 
   public override Result<ValidationError> Validate()

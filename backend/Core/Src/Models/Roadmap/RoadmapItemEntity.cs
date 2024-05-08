@@ -11,8 +11,6 @@ public class ItemContent
 {
   public string Title {get; private set;}
   public string Description {get; private set;}
-  public virtual ICollection<RoadmapItemLinkEntity>? Links {get; private set;}
-
   public ItemContent(string title, string description)
   {
     Title = title;
@@ -79,6 +77,9 @@ public class ItemInfo: IValidatable
 
 public class RoadmapItemEntity : Entity
 { 
+  public virtual ICollection<RoadmapEdgeEntity> StartEdges {get;set;}
+  public virtual ICollection<RoadmapEdgeEntity> EndEdges {get;set;}
+  public virtual ICollection<RoadmapItemLinkEntity>? Links {get; set;}
   public ItemContent Content {get; private set;}
   public ItemBox Box {get; private set;}
   public ItemInfo Info {get; private set;}
@@ -117,10 +118,10 @@ public class RoadmapItemEntity : Entity
 
   public override Result<ValidationError> Validate()
   {
-    if (Content.Links != null)
+    if (Links != null)
     {      
       var count = 0;
-      foreach (var link in Content.Links)
+      foreach (var link in Links)
       {
         var linkValidation = link.Validate();
 

@@ -19,6 +19,7 @@ public class UserService : IUserService
   public async Task<Result<ValidationError>> AddAsync(UserInDTO user)
   {
     var newEntityResult = user.ToEntity();
+
     if (newEntityResult.IsFail)
       return Result<ValidationError>.Fail(newEntityResult.Error!);
     

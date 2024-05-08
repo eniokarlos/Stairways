@@ -9,6 +9,7 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
 {
   public void Configure(EntityTypeBuilder<UserEntity> builder)
   {
+    builder.ToTable("Users");
     builder.HasKey(user => user.Id);
     builder.Property(user => user.Id)
       .HasConversion(
@@ -16,6 +17,7 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
         value => UUID4.Of(value).Unwrap()
       );
 
-    
+    builder.HasMany(u => u.Roadmaps)
+      .WithOne(r => r.Author);
   }
 }

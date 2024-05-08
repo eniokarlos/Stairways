@@ -39,10 +39,6 @@ public class RoadmapTest
     );
 
     var edge = RoadmapEdgeEntity.Of(
-      new EdgePoints(
-        RoadmapItemAnchor.TOP,
-        RoadmapItemAnchor.RIGHT
-      ),
       RoadmapEdgeFormat.STRAIGHT,
       RoadmapEdgeStyle.DOTTED
     ).Unwrap();
@@ -74,10 +70,6 @@ public class RoadmapTest
     );
 
     var edge = RoadmapEdgeEntity.Of(
-      new EdgePoints(
-        RoadmapItemAnchor.TOP,
-        RoadmapItemAnchor.RIGHT
-      ),
       RoadmapEdgeFormat.STRAIGHT,
       RoadmapEdgeStyle.DOTTED
     ).Unwrap();
@@ -110,10 +102,6 @@ public class RoadmapTest
     );
 
     var edge = RoadmapEdgeEntity.Of(
-      new EdgePoints(
-        RoadmapItemAnchor.TOP,
-        RoadmapItemAnchor.RIGHT
-      ),
       RoadmapEdgeFormat.STRAIGHT,
       RoadmapEdgeStyle.DOTTED
     ).Unwrap();

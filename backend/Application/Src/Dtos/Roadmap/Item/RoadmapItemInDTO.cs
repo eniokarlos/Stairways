@@ -1,5 +1,4 @@
 using Stairways.Core.Enums;
-using Stairways.Core.Models;
 
 namespace Stairways.Application.DTOs;
 

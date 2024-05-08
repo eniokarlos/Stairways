@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Stairways.Core.Enums;
 using Stairways.Core.Models;
 using Stairways.Core.ValueObjects;
 
@@ -10,6 +9,7 @@ public class RoadmapConfiguration : IEntityTypeConfiguration<RoadmapEntity>
 {
   public void Configure(EntityTypeBuilder<RoadmapEntity> builder)
   {
+    builder.ToTable("Roadmaps");
     builder.HasKey(rm => rm.Id);
     builder.Property(rm => rm.Id)
       .HasConversion(

@@ -6,6 +6,8 @@ public class ApplicationDbContext : DbContext
 {
   public DbSet<UserEntity> Users {get; set;}
   public DbSet<RoadmapEntity> Roadmaps {get; set;}
+  public DbSet<RoadmapItemEntity> Items {get; set;}
+  public DbSet<RoadmapItemLinkEntity> ItemLinks {get; set;}
   public DbSet<RoadmapEdgeEntity> Edges {get; set;}
 
   public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) 

@@ -2,7 +2,6 @@ using Stairways.Application.DTOs;
 using Stairways.Core.Errors;
 using Stairways.Core.Models;
 using Stairways.Core.Utils;
-using Stairways.Core.ValueObjects;
 
 namespace Stairways.Application.Mappings;
 
@@ -11,7 +10,6 @@ public static class UserMappings
   public static UserInDTO ToInDTO(this UserEntity user)
   {
     var inDto = new UserInDTO(
-      user.Id.Value,
       user.Name,
       user.Email,
       user.Password,
@@ -36,20 +34,22 @@ public static class UserMappings
 
   public static Result<UserEntity, ValidationError> ToEntity(this UserInDTO dto)
   {
-    var id = UUID4.Of(dto.Id);
-    if (id.IsFail)
-      return Result<UserEntity, ValidationError>.Fail(new ValidationError(id.Error!.Message));
-
-    var newEntity = UserEntity.Of(
-      id.Unwrap(),
+    var userResult = UserEntity.Of(
       dto.Name,
       dto.Email,
       dto.profileImage
     );
 
-    if (newEntity.IsFail)
-      return Result<UserEntity, ValidationError>.Fail(new ValidationError(newEntity.Error!.Message));
+    var roadmapList = dto.Roadmaps.ToResultList(rm => rm.ToEntity());
 
-    return Result<UserEntity, ValidationError>.Ok(newEntity.Unwrap());
+    if (userResult.IsFail)
+      return Result<UserEntity, ValidationError>.Fail(userResult.Error!);
+    if (roadmapList.IsFail)
+      return Result<UserEntity, ValidationError>.Fail(roadmapList.Error!);
+
+    var newUser = userResult.Unwrap();
+    newUser.Roadmaps = roadmapList.Unwrap();
+    
+    return Result<UserEntity, ValidationError>.Ok(newUser);
   }
 }

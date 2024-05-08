@@ -9,13 +9,12 @@ public class RoadmapItemLinkConfiguration : IEntityTypeConfiguration<RoadmapItem
 {
     public void Configure(EntityTypeBuilder<RoadmapItemLinkEntity> builder)
     {
-        builder.HasKey(e => e.Id);
-        builder.Property(e => e.Id)
-          .HasConversion(
-            id => id.Value,
-            value => UUID4.Of(value).Unwrap()
-          );
-
-        
+      builder.ToTable("ItemLinks");
+      builder.HasKey(e => e.Id);
+      builder.Property(e => e.Id)
+      .HasConversion(
+        id => id.Value,
+        value => UUID4.Of(value).Unwrap()
+      );
     }
 }

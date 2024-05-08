@@ -10,8 +10,6 @@ namespace Stairways.Core.Models;
 
 public class RoadmapMeta : IValidatable
 {
-  [JsonIgnore]
-  public virtual UserEntity Author {get; private set;}
   public string Title {get; private set;}
   public string Description { get; private set; }
   public RoadmapPrivacity Privacity { get; private set; }
@@ -47,9 +45,11 @@ public class RoadmapMeta : IValidatable
 }
 public class RoadmapEntity : Entity
 {
+  [JsonIgnore]
+  public virtual UserEntity Author {get; set;}
+  public virtual ICollection<RoadmapEdgeEntity> Edges {get; set;}
+  public virtual ICollection<RoadmapItemEntity> Items {get; set;}
   public RoadmapMeta Meta {get; private set;}
-  public virtual ICollection<RoadmapEdgeEntity> Edges {get; private set;}
-  public virtual ICollection<RoadmapItemEntity> Items {get; private set;}
 
   private RoadmapEntity()
   :base(UUID4.Generate()){}
