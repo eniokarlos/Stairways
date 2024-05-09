@@ -1,5 +1,4 @@
 #pragma warning disable CS8618
-using System.Text.Json.Serialization;
 using Stairways.Core.Enums;
 using Stairways.Core.Errors;
 using Stairways.Core.Interfaces;
@@ -13,10 +12,11 @@ public class RoadmapMeta : IValidatable
   public string Title {get; private set;}
   public string Description { get; private set; }
   public RoadmapPrivacity Privacity { get; private set; }
+  public RoadmapLevel Level {get; private set;}
   public string ImageURL { get; private set; }
   public string[] Tags {get; private set;}
 
-  public RoadmapMeta(string title, string description, 
+  public RoadmapMeta(string title, string description, RoadmapLevel level,
   RoadmapPrivacity privacity, string imageURL, string[] tags)
   {
     Title = title;
@@ -24,63 +24,69 @@ public class RoadmapMeta : IValidatable
     Privacity = privacity;
     ImageURL = imageURL;
     Tags = tags;
+    Level = level;
   }
 
-  public Result<ValidationError> Validate()
+  public Result<EntityValidationException> Validate()
   {
     if (string.IsNullOrEmpty(Title))
-      return Result<ValidationError>.Fail(new ValidationError("Title is required"));
+      return Result<EntityValidationException>.Fail(new EntityValidationException("Title is required"));
 
     if (string.IsNullOrEmpty(Description))
-      return Result<ValidationError>.Fail(new ValidationError("Description is required"));
+      return Result<EntityValidationException>.Fail(new EntityValidationException("Description is required"));
 
     if (string.IsNullOrEmpty(ImageURL))
-      return Result<ValidationError>.Fail(new ValidationError("Image URL is required"));
+      return Result<EntityValidationException>.Fail(new EntityValidationException("Image URL is required"));
 
     if (Tags.Count() < 3)
-      return Result<ValidationError>.Fail(new ValidationError("Tags must be greater than three"));
+      return Result<EntityValidationException>.Fail(new EntityValidationException("Tags must be greater than three"));
 
-    return Result<ValidationError>.Ok();
+    return Result<EntityValidationException>.Ok();
   }
 }
 public class RoadmapEntity : Entity
 {
-  [JsonIgnore]
   public virtual UserEntity Author {get; set;}
-  public virtual ICollection<RoadmapEdgeEntity> Edges {get; set;}
-  public virtual ICollection<RoadmapItemEntity> Items {get; set;}
   public RoadmapMeta Meta {get; private set;}
+  public string JsonContent {get; set;}
 
   private RoadmapEntity()
   :base(UUID4.Generate()){}
 
-  private RoadmapEntity(Id id, RoadmapMeta meta)
+  private RoadmapEntity(Id id, RoadmapMeta meta, string jsonContent)
   :base(id)
   {
     Meta = meta;
+    JsonContent = jsonContent;
   }
 
-  private RoadmapEntity(RoadmapMeta meta)
+  private RoadmapEntity(RoadmapMeta meta, string jsonContent)
   :base(UUID4.Generate())
   {
     Meta = meta;
+    JsonContent = jsonContent;
   }
 
-  public static Result<RoadmapEntity, ValidationError> Of(Id id, RoadmapMeta meta)
+  public static Result<RoadmapEntity, EntityValidationException> Of(Id id, RoadmapMeta meta, string jsonContent)
   {
-    return Create(new RoadmapEntity(id, meta));
+    return Create(new RoadmapEntity(id, meta, jsonContent));
   }
 
-  public static Result<RoadmapEntity, ValidationError> Of(RoadmapMeta meta)
+  public static Result<RoadmapEntity, EntityValidationException> Of(RoadmapMeta meta, string jsonContent)
   {
-    return Create(new RoadmapEntity(meta));
+    return Create(new RoadmapEntity(meta, jsonContent));
   }
-  public override Result<ValidationError> Validate()
+  public override Result<EntityValidationException> Validate()
   {
     var metaValidation = Meta.Validate();
+    var jsonContentValidation = RoadmapJsonValidator.Parse(JsonContent);
     if (metaValidation.IsFail)
-      return Result<ValidationError>.Fail(metaValidation.Error!);
+      return Result<EntityValidationException>.Fail(metaValidation.Error!);
     
-    return Result<ValidationError>.Ok();
+    if (jsonContentValidation.IsFail)
+      return Result<EntityValidationException>.Fail(jsonContentValidation.Error!);
+
+
+    return Result<EntityValidationException>.Ok();
   }
 }

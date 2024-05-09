@@ -33,38 +33,38 @@ public class UserEntity : Entity
     Roadmaps = [];
   }
 
-  public static Result<UserEntity,ValidationError> Of(string name, string email, 
+  public static Result<UserEntity,EntityValidationException> Of(string name, string email, 
   string password, string profileImage = "")
   {
     return Create(new UserEntity(name,email,password,profileImage));
   }
 
-  public static Result<UserEntity,ValidationError> Of(Id id, string name, 
+  public static Result<UserEntity,EntityValidationException> Of(Id id, string name, 
   string email, string password, string profileImage = "")
   {
     return Create(new UserEntity(id, name, email, password, profileImage));
   }
 
-  public override Result<ValidationError> Validate()
+  public override Result<EntityValidationException> Validate()
   {
       var emailPattern = new Regex(@"^[a-z0-9.]+@[a-z0-9]+\.[a-z]+(\.[a-z]+)*$");
 
       if (string.IsNullOrEmpty(Name))
       {
-        return Result<ValidationError>.Fail(new ValidationError("Name is required"));
+        return Result<EntityValidationException>.Fail(new EntityValidationException("Name is required"));
       }
       if (string.IsNullOrEmpty(Email)) 
       {
-        return Result<ValidationError>.Fail(new ValidationError("Email is required"));
+        return Result<EntityValidationException>.Fail(new EntityValidationException("Email is required"));
       }
       if (!emailPattern.IsMatch(Email))
       {
-        return Result<ValidationError>.Fail(new ValidationError("Invalid Email"));
+        return Result<EntityValidationException>.Fail(new EntityValidationException("Invalid Email"));
       }
       if(string.IsNullOrEmpty(Password))
       {
-        return Result<ValidationError>.Fail(new ValidationError("Password is required"));
+        return Result<EntityValidationException>.Fail(new EntityValidationException("Password is required"));
       }
-      return Result<ValidationError>.Ok();
+      return Result<EntityValidationException>.Ok();
   }
 }

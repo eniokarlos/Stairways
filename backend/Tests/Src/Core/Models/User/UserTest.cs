@@ -27,7 +27,7 @@ public class UserTest
     var email = "test@email.com";
     var password = "password";
     //When/Then
-    Assert.Throws<ValidationError>(() => {
+    Assert.Throws<EntityValidationException>(() => {
       UserEntity.Of(name, email, password).Unwrap();
     });
   }
@@ -40,7 +40,7 @@ public class UserTest
     var email = "testemail.com";
     var password = "password";
     //When/Then
-    Assert.Throws<ValidationError>(() => {
+    Assert.Throws<EntityValidationException>(() => {
       UserEntity.Of(name, email, password).Unwrap();
     });
   }
@@ -53,7 +53,7 @@ public class UserTest
     var email = "testemail.com";
     var password = "";
     //When/Then
-    Assert.Throws<ValidationError>(() => {
+    Assert.Throws<EntityValidationException>(() => {
       UserEntity.Of(name, email, password).Unwrap();
     });
   }

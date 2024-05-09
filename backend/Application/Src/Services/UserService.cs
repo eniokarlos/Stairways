@@ -16,15 +16,15 @@ public class UserService : IUserService
     _repository = respository;
   }
 
-  public async Task<Result<ValidationError>> AddAsync(UserInDTO user)
+  public async Task<Result<EntityValidationException>> AddAsync(UserInDTO user)
   {
     var newEntityResult = user.ToEntity();
 
     if (newEntityResult.IsFail)
-      return Result<ValidationError>.Fail(newEntityResult.Error!);
+      return Result<EntityValidationException>.Fail(newEntityResult.Error!);
     
     await _repository.AddAsync(newEntityResult.Unwrap());
-    return Result<ValidationError>.Ok();
+    return Result<EntityValidationException>.Ok();
   }
 
   public async Task<Result<EntityNotFoundException>> DeleteAsync(string id)

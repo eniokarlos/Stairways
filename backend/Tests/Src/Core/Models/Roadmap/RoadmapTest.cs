@@ -1,5 +1,4 @@
 using Stairways.Core.Models;
-using Stairways.Core.ValueObjects;
 using Stairways.Core.Enums;
 using Stairways.Core.Errors;
 
@@ -11,113 +10,89 @@ public class RoadmapTest
   public void GivenValidParamsWhenCreateRoadmapThenReturnRoadmapCreated()
   {
     //Given
-    var meta = new RoadmapMeta(
-      "title", 
-      "description",
-      RoadmapPrivacity.PRIVATE,
-      "imageUrl",
-      ["tag1", "tag2", "tag3"]
-    );
-
-    var roadmap = RoadmapEntity.Of(
-      meta
-    ).Unwrap();
+    var currentRoadmap = RoadmapGenerator.OfValid();
     //Then
-    Assert.Equivalent(meta, roadmap.Meta);
+    Assert.NotNull(currentRoadmap.Unwrap());
   }
 
   [Fact]
-  public void GivenAnInvalidMetaTitleWhenCreateRoadmapThenReturnRoadmapCreated()
+  public void GivenAnInvalidMetaTitleWhenCreateRoadmapThenThrowError()
   {
     //Given
     var meta = new RoadmapMeta(
       "", 
       "description",
+      RoadmapLevel.BEGINNER,
       RoadmapPrivacity.PRIVATE,
       "imageUrl",
       ["tag1", "tag2", "tag3"]
     );
 
-    var edge = RoadmapEdgeEntity.Of(
-      RoadmapEdgeFormat.STRAIGHT,
-      RoadmapEdgeStyle.DOTTED
-    ).Unwrap();
-
-    var item = RoadmapItemEntity.Of(
-      new ItemContent("title", "description"),
-      new ItemBox(100, 200,0,0),
-      new ItemInfo("Link", RoadmapItemType.LINK, 400, 38, "linkurl")
-    ).Unwrap();
     //When
-    var roadmap = RoadmapEntity.Of(
-      meta
-    );
+    var actualRoadmap = RoadmapGenerator.OfMeta(meta);
     //Then
-    Assert.Throws<ValidationError>(() => {
-      roadmap.Unwrap();
+    Assert.Throws<EntityValidationException>(() => {
+      actualRoadmap.Unwrap();
     });
   }
   [Fact]
-  public void GivenAnInvalidMetaDescriptionWhenCreateRoadmapThenReturnRoadmapCreated()
+  public void GivenAnInvalidMetaDescriptionWhenCreateRoadmapThenThrowError()
   {
     //Given
     var meta = new RoadmapMeta(
       "title", 
       "",
+      RoadmapLevel.BEGINNER,
       RoadmapPrivacity.PRIVATE,
       "imageUrl",
       ["tag1", "tag2", "tag3"]
     );
-
-    var edge = RoadmapEdgeEntity.Of(
-      RoadmapEdgeFormat.STRAIGHT,
-      RoadmapEdgeStyle.DOTTED
-    ).Unwrap();
-
-    var item = RoadmapItemEntity.Of(
-      new ItemContent("title", "description"),
-      new ItemBox(100, 200,0,0),
-      new ItemInfo("Link", RoadmapItemType.LINK, 400, 38, "linkurl")
-    ).Unwrap();
     //When
-    var roadmap = RoadmapEntity.Of(
-      meta
-    );
+    var actualRoadmap = RoadmapGenerator.OfMeta(meta);
     //Then
-    Assert.Throws<ValidationError>(() => {
-      roadmap.Unwrap();
+    Assert.Throws<EntityValidationException>(() => {
+      actualRoadmap.Unwrap();
     });
   }
 
   [Fact]
-  public void GivenAnInvalidMetaTagsWhenCreateRoadmapThenReturnRoadmapCreated()
+  public void GivenAnInvalidMetaTagsWhenCreateRoadmapThenThrowError()
   {
     //Given
     var meta = new RoadmapMeta(
       "title", 
       "description",
+      RoadmapLevel.BEGINNER,
       RoadmapPrivacity.PRIVATE,
       "imageUrl",
       ["tag1", "tag2"]
     );
-
-    var edge = RoadmapEdgeEntity.Of(
-      RoadmapEdgeFormat.STRAIGHT,
-      RoadmapEdgeStyle.DOTTED
-    ).Unwrap();
-
-    var item = RoadmapItemEntity.Of(
-      new ItemContent("title", "description"),
-      new ItemBox(100, 200,0,0),
-      new ItemInfo("Link", RoadmapItemType.LINK, 400, 38, "linkurl")
-    ).Unwrap();
     //When
-    var roadmap = RoadmapEntity.Of(
-      meta
-    );
+    var actualRoadmap = RoadmapGenerator.OfMeta(meta);
     //Then
-    Assert.Throws<ValidationError>(() => {
-      roadmap.Unwrap();
+    Assert.Throws<EntityValidationException>(() => {
+      actualRoadmap.Unwrap();
+    });
+  }
+
+  [Fact]
+  public void GivenAnInvalidJsonContentWhenCreateRoadmapThenThrowError()
+  {
+    //Given
+    var json = @"{
+      'edges': [
+        {
+
+        },
+      'items': {}
+      ]
+    }";
+
+    //When
+    var actualRoadmap = RoadmapGenerator.OfJson(json);
+    //Then
+    Assert.Throws<EntityValidationException>(() => {
+      actualRoadmap.Unwrap();
     });
   }
 

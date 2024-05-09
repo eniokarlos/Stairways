@@ -32,7 +32,7 @@ public static class UserMappings
     return outDto;
   }
 
-  public static Result<UserEntity, ValidationError> ToEntity(this UserInDTO dto)
+  public static Result<UserEntity, EntityValidationException> ToEntity(this UserInDTO dto)
   {
     var userResult = UserEntity.Of(
       dto.Name,
@@ -43,13 +43,13 @@ public static class UserMappings
     var roadmapList = dto.Roadmaps.ToResultList(rm => rm.ToEntity());
 
     if (userResult.IsFail)
-      return Result<UserEntity, ValidationError>.Fail(userResult.Error!);
+      return Result<UserEntity, EntityValidationException>.Fail(userResult.Error!);
     if (roadmapList.IsFail)
-      return Result<UserEntity, ValidationError>.Fail(roadmapList.Error!);
+      return Result<UserEntity, EntityValidationException>.Fail(roadmapList.Error!);
 
     var newUser = userResult.Unwrap();
     newUser.Roadmaps = roadmapList.Unwrap();
     
-    return Result<UserEntity, ValidationError>.Ok(newUser);
+    return Result<UserEntity, EntityValidationException>.Ok(newUser);
   }
 }

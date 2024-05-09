@@ -24,15 +24,15 @@ public abstract class Entity : IValidatable
     UpdatedAt = updatedAt;
   }
 
-  public static Result<T, ValidationError> Create<T>(T entity) where T: Entity
+  public static Result<T, EntityValidationException> Create<T>(T entity) where T: Entity
   {
     var result = entity.Validate();
 
     if (result.IsFail)
-      return Result<T,ValidationError>.Fail(result.Error!);
+      return Result<T,EntityValidationException>.Fail(result.Error!);
     
-    return Result<T,ValidationError>.Ok(entity);
+    return Result<T,EntityValidationException>.Ok(entity);
   }
 
-  public abstract Result<ValidationError> Validate();
+  public abstract Result<EntityValidationException> Validate();
 }
