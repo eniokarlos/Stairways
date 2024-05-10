@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Stairways.Application.DTOs;
 using Stairways.Core.Errors;
 using Stairways.Core.Models;
@@ -10,13 +12,13 @@ public static class RoadmapMapping
   public static RoadmapInDTO ToInDTO(this RoadmapEntity roadmap)
   {
     var newIn = new RoadmapInDTO(
-      roadmap.JsonContent,
       roadmap.Meta.Title,
       roadmap.Meta.Description,
       roadmap.Meta.Level,
       roadmap.Meta.Privacity,
       roadmap.Meta.ImageURL,
-      roadmap.Meta.Tags
+      roadmap.Meta.Tags,
+      JsonSerializer.Deserialize<JsonNode>(roadmap.JsonContent)!
     );
     
     return newIn;
@@ -32,7 +34,7 @@ public static class RoadmapMapping
         dto.Privacity, 
         dto.ImageURL,
         dto.Tags),
-        dto.JsonContent
+        JsonSerializer.Serialize(dto.JsonContent)
     );
 
     if (roadmapResult.IsFail)
