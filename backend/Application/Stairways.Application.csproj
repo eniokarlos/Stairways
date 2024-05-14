@@ -2,7 +2,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Core\Stairways.Core.csproj" />
-    <ProjectReference Include="..\Infra\Stairways.Infra.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Stairways.Api.Models;
 using Stairways.Application.DTOs;
 using Stairways.Application.Interfaces;
-using Stairways.Core.Utils;
+using Stairways.Core.Accounts;
 using Stairways.Core.ValueObjects;
 
 namespace Stairways.Api.Controllers;
@@ -11,21 +13,47 @@ namespace Stairways.Api.Controllers;
 public class UserController : ControllerBase
 {
   private readonly IUserService _service;
+  private readonly IAuthenticate _auth;
 
-  public UserController(IUserService service)
+  public UserController(IUserService service, IAuthenticate auth)
   {
     _service = service;
+    _auth = auth;
   }
 
-  [HttpPost]
-  public async Task<ActionResult> AddUser(UserInDTO userIn)
+  [HttpPost("signup")]
+  [Authorize]
+  public async Task<ActionResult> SignUp(UserInDTO userIn)
   {
+    if (await _auth.UserExists(userIn.Email))
+      return BadRequest("Email has already been registered");
+
     var res = await _service.AddAsync(userIn);
 
     if (res.IsFail)
       return BadRequest(res.Error!.Message);
 
-    return Ok();
+    var token = _auth.GenerateToken(res.Unwrap().Id, userIn.Email);
+
+    return Ok(token); 
+  }
+
+  [HttpPost("signin")]
+  public async Task<ActionResult> SignIn(LoginModel login)
+  {
+    var userResult = await _auth.GetUserByEmail(login.Email);
+
+    if (userResult.IsFail)
+      return Unauthorized(userResult.Error!.Message);
+    
+    var res = await _auth.AuthenticateAsync(login.Email, login.Password);
+    if (!res)
+      return Unauthorized("Invalid login or password");
+    var user = userResult.Unwrap();
+
+    var token = _auth.GenerateToken(user.Id.Value, user.Email);
+
+    return Ok(token);
   }
 
   [HttpGet("{id}")]

@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using Stairways.Application.DTOs;
 using Stairways.Application.Interfaces;
 using Stairways.Application.Mappings;
@@ -16,15 +18,23 @@ public class UserService : IUserService
     _repository = respository;
   }
 
-  public async Task<Result<EntityValidationException>> AddAsync(UserInDTO user)
+  public async Task<Result<UserOutDTO,EntityValidationException>> AddAsync(UserInDTO userDto)
   {
-    var newEntityResult = user.ToEntity();
+    var newEntityResult = userDto.ToEntity();
+
+    using var hmac = new HMACSHA256();
+    byte[] passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(userDto.Password));
+    byte[] passwordSalt = hmac.Key;
 
     if (newEntityResult.IsFail)
-      return Result<EntityValidationException>.Fail(newEntityResult.Error!);
+      return Result<UserOutDTO,EntityValidationException>.Fail(newEntityResult.Error!);
     
-    await _repository.AddAsync(newEntityResult.Unwrap());
-    return Result<EntityValidationException>.Ok();
+    var newEntity = newEntityResult.Unwrap();
+    newEntity.UpdatePassword(passwordHash, passwordSalt);
+    
+    await _repository.AddAsync(newEntity);
+    return Result<UserOutDTO,EntityValidationException>
+      .Ok(newEntityResult.Unwrap().ToOutDTO());
   }
 
   public async Task<Result<EntityNotFoundException>> DeleteAsync(string id)

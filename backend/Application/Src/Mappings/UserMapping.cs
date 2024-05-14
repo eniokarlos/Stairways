@@ -7,19 +7,6 @@ namespace Stairways.Application.Mappings;
 
 public static class UserMappings
 {
-  public static UserInDTO ToInDTO(this UserEntity user)
-  {
-    var inDto = new UserInDTO(
-      user.Name,
-      user.Email,
-      user.Password,
-      user.ProfileImage,
-      user.Roadmaps.Select(r => r.ToInDTO()).ToList()
-    );
-
-    return inDto;
-  }
-
   public static UserOutDTO ToOutDTO(this UserEntity user)
   {
     var outDto = new UserOutDTO(

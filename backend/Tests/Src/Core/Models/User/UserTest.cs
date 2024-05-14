@@ -10,13 +10,11 @@ public class UserTest
     //Given
     var name = "john";
     var email = "test@email.com";
-    var password = "password";
     //When
-    var user = UserEntity.Of(name, email, password).Unwrap();
+    var user = UserEntity.Of(name, email).Unwrap();
     //Then
     Assert.NotNull(user.Id.Value);
     Assert.Equal(email, user.Email);
-    Assert.Equal(password, user.Password);
   }
   
   [Fact]
@@ -25,10 +23,9 @@ public class UserTest
     //Given
     var name = "";
     var email = "test@email.com";
-    var password = "password";
     //When/Then
     Assert.Throws<EntityValidationException>(() => {
-      UserEntity.Of(name, email, password).Unwrap();
+      UserEntity.Of(name, email).Unwrap();
     });
   }
 
@@ -38,23 +35,9 @@ public class UserTest
     //Given
     var name = "john";
     var email = "testemail.com";
-    var password = "password";
     //When/Then
     Assert.Throws<EntityValidationException>(() => {
-      UserEntity.Of(name, email, password).Unwrap();
-    });
-  }
-
-  [Fact]
-  public void GivenInvalidPasswordWhenCreateUserThenThrowError()
-  {
-    //Given
-    var name = "john";
-    var email = "testemail.com";
-    var password = "";
-    //When/Then
-    Assert.Throws<EntityValidationException>(() => {
-      UserEntity.Of(name, email, password).Unwrap();
+      UserEntity.Of(name, email).Unwrap();
     });
   }
 }
