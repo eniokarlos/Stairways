@@ -2,6 +2,38 @@
 import { RouterLink } from 'vue-router';
 import UiInput from '@/ui/input/UiInput.vue';
 import UiBtn from '@/ui/btn/UiBtn.vue';
+import UserServices from '@/services/user.services';
+import { onBeforeUnmount, reactive } from 'vue';
+import { useAuthStore } from '@/stores/auth.store';
+import router from '@/modules/router/router';
+
+const loginModel = reactive({
+  email: '',
+  password: '',
+});
+
+const auth = useAuthStore();
+
+async function login() {
+  const data = await UserServices.login(loginModel.email, loginModel.password)
+    .then(res => res.text());
+  auth.setToken(data);
+
+  await auth.verifyToken();
+}
+
+async function loginOnEnter(e : KeyboardEvent) {
+  if (e.key === 'Enter') {
+    await login();
+    router.push({ name: 'roadmapCreation' });
+  }
+}
+
+window.addEventListener('keydown', loginOnEnter);
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', loginOnEnter);
+});
 </script>
 
 <template>
@@ -10,18 +42,25 @@ import UiBtn from '@/ui/btn/UiBtn.vue';
       <span class="fg-foreground block font-600 font-size-24px self-start">Fazer login</span>
       <div>
         <UiInput
+          v-model="loginModel.email"
           class="mb-10px w-550px h-60px"
           placeholder="E-mail"
         />
         <UiInput
+          v-model="loginModel.password"
           class="w-550px h-60px"
           type="password"
           placeholder="Senha"
         />
       </div>
-      <UiBtn large>
-        Fazer login
-      </UiBtn>
+      <RouterLink to="roadmap-creation">
+        <UiBtn 
+          large
+          @pointerdown="login"
+        >
+          Fazer login
+        </UiBtn>
+      </RouterLink>
       <span class="font-size-16px">ou
         <RouterLink
           to="password-reset"

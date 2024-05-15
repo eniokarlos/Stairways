@@ -2,7 +2,7 @@
 import UiIcon from '@/ui/icon/UiIcon.vue';
 import UiDropDown from '@/ui/dropDown/UiDropDown.vue';
 import UiBtn from '@/ui/btn/UiBtn.vue';
-import PublishMenu from './PublishMenu.vue';
+import PublishMenu from './PublishMenuView.vue';
 import RmCanvas, { GridMoveEvent } from '@/components/canvas/RmCanvas.vue';
 import { ref } from 'vue';
 import { ItemType, RoadmapItem } from '@/components/canvas/RmItem.vue';

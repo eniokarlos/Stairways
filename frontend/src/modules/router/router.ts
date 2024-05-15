@@ -1,6 +1,7 @@
+import { useAuthStore } from '@/stores/auth.store';
 import { createRouter, createWebHistory } from 'vue-router';
 
-export default createRouter({
+const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
@@ -9,25 +10,41 @@ export default createRouter({
       children: [
         {
           path: '/',
-          component: () => import('@/pages/Index.vue'), 
+          component: () => import('@/pages/IndexView.vue'),
+          name: 'index', 
         },
         {
           path: '/signin',
-          component: () => import('@/pages/Signin.vue'), 
+          component: () => import('@/pages/SigninView.vue'),
+          name: 'login',
         },
         {
           path: '/signup',
-          component: () => import('@/pages/Signup.vue'), 
+          component: () => import('@/pages/SignupView.vue'),
+          name: 'register',
         },
         {
           path: '/password-reset',
-          component: () => import('@/pages/PasswordReset.vue'), 
+          component: () => import('@/pages/PasswordResetView.vue'), 
         },
       ],
     },
     {
       path: '/roadmap-creation',
-      component: () => import('@/pages/roadmapCreation/RoadmapCreation.vue'), 
+      component: () => import('@/pages/roadmapCreation/RoadmapCreationView.vue'),
+      meta: { auth: true }, 
+      name: 'roadmapCreation',
     },
   ],
 });
+
+router.beforeEach(async (to) => {
+  if (to.meta?.auth) {
+    const auth = useAuthStore();
+    if (!auth.isAuth && to.name !== 'login') {
+      return { name: 'login' };
+    }
+  }
+});
+
+export default router;
