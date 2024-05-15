@@ -5,5 +5,5 @@ namespace Stairways.Core.Interfaces;
 
 public interface IValidatable
 {
-  Result<ValidationError> Validate();
+  Result<EntityValidationException> Validate();
 }

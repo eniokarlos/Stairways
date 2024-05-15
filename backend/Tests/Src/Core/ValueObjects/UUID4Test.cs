@@ -23,7 +23,7 @@ public class UUID4Test
     //Given
     var id = UUID4.Of("invalid_UUID");
     //When/Then
-    Assert.Throws<InvalidUUID4Error>(() => {
+    Assert.Throws<InvalidUUID4Exception>(() => {
       id.Unwrap();
     });
   }

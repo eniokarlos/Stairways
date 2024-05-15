@@ -15,6 +15,9 @@ import { RouterLink } from 'vue-router';
         src="../../assets/logo.svg"
       >
     </RouterLink>
+    <RouterLink to="roadmap-creation">
+      <h1>aaaaa</h1>
+    </RouterLink>
 
     <span class="fg-foreground cursor-pointer">Categorias</span>
     

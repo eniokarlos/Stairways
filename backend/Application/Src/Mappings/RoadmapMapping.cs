@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Stairways.Application.DTOs;
 using Stairways.Core.Errors;
 using Stairways.Core.Models;
@@ -12,41 +14,34 @@ public static class RoadmapMapping
     var newIn = new RoadmapInDTO(
       roadmap.Meta.Title,
       roadmap.Meta.Description,
+      roadmap.Meta.Level,
       roadmap.Meta.Privacity,
       roadmap.Meta.ImageURL,
       roadmap.Meta.Tags,
-      roadmap.Items.Select(i => i.ToInDTO()).ToList(),
-      roadmap.Edges.Select(e => e.ToInDTO()).ToList()
+      JsonSerializer.Deserialize<JsonNode>(roadmap.JsonContent)!
     );
     
     return newIn;
   }
 
-  public static Result<RoadmapEntity, ValidationError> ToEntity(this RoadmapInDTO dto)
+  public static Result<RoadmapEntity, EntityValidationException> ToEntity(this RoadmapInDTO dto)
   {
     var roadmapResult = RoadmapEntity.Of(
       new RoadmapMeta(
         dto.Title, 
         dto.Description,
+        dto.Level,
         dto.Privacity, 
         dto.ImageURL,
-        dto.Tags)
+        dto.Tags),
+        JsonSerializer.Serialize(dto.JsonContent)
     );
 
-    var itemListResult = dto.Items.ToResultList(i => i.ToEntity());
-    var edgeListResult = dto.Edges.ToResultList(i => i.ToEntity());
-
     if (roadmapResult.IsFail)
-      return Result<RoadmapEntity, ValidationError>.Fail(roadmapResult.Error!);
-    if (itemListResult.IsFail)
-      return Result<RoadmapEntity, ValidationError>.Fail(itemListResult.Error!);
-    if (edgeListResult.IsFail)
-      return Result<RoadmapEntity, ValidationError>.Fail(edgeListResult.Error!);
+      return Result<RoadmapEntity, EntityValidationException>.Fail(roadmapResult.Error!);
 
     var newRoadmap = roadmapResult.Unwrap();
-    newRoadmap.Items = itemListResult.Unwrap();
-    newRoadmap.Edges = edgeListResult.Unwrap();
 
-    return Result<RoadmapEntity, ValidationError>.Ok(roadmapResult.Unwrap());
+    return Result<RoadmapEntity, EntityValidationException>.Ok(newRoadmap);
   }
 }

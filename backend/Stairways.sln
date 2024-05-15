@@ -1,5 +1,4 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -12,6 +11,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stairways.Application", "Application\Stairways.Application.csproj", "{E69A4179-57F9-4903-B549-4DB25DBB9E06}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stairways.Api", "Api\Stairways.Api.csproj", "{0937453D-8746-4EB0-B83F-4FD558EB987B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stairways.Ioc", "Ioc\Stairways.Ioc.csproj", "{8FA2E1E2-2636-4714-9013-0DF3C001B40A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,5 +43,9 @@ Global
 		{0937453D-8746-4EB0-B83F-4FD558EB987B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0937453D-8746-4EB0-B83F-4FD558EB987B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0937453D-8746-4EB0-B83F-4FD558EB987B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FA2E1E2-2636-4714-9013-0DF3C001B40A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FA2E1E2-2636-4714-9013-0DF3C001B40A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FA2E1E2-2636-4714-9013-0DF3C001B40A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FA2E1E2-2636-4714-9013-0DF3C001B40A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
