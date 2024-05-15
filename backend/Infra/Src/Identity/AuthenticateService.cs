@@ -57,7 +57,7 @@ public class AuthenticateService : IAuthenticate
       Encoding.UTF8.GetBytes(_configuration["jwt:secretKey"]!));
 
     var credentials = new SigningCredentials(privateKey, SecurityAlgorithms.HmacSha256);
-    var expiration = DateTime.UtcNow.AddMinutes(10);
+    var expiration = DateTime.UtcNow.AddSeconds(30);
 
     var token = new JwtSecurityToken(
       issuer: _configuration["jwt:issuer"],
@@ -66,19 +66,37 @@ public class AuthenticateService : IAuthenticate
       expires: expiration,
       signingCredentials: credentials
     );
-
     return new JwtSecurityTokenHandler().WriteToken(token);
   }
 
-  public async Task<bool> UserExists(string email)
+  public bool ValidateToken(string jwt)
   {
-    var user = await _context.Users.Where(u => u.Email.ToLower() == email.ToLower())
-    .FirstOrDefaultAsync();
+    var handler = new JwtSecurityTokenHandler();
+    var privateKey = new SymmetricSecurityKey(
+      Encoding.UTF8.GetBytes(_configuration["jwt:secretKey"]!));
 
-    if (user == null)
+    var parameters = new TokenValidationParameters
+      {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+
+        ValidIssuer = _configuration["jwt:issuer"],
+        ValidAudience = _configuration["jwt:audience"],
+        IssuerSigningKey = privateKey,
+        ClockSkew = TimeSpan.Zero
+      };
+
+    try
+    {
+      handler.ValidateToken(jwt, parameters, out SecurityToken token);
+      return true;
+    }
+    catch
+    {
       return false;
-
-    return true;
+    }
   }
 
   public async Task<Result<UserEntity, EntityNotFoundException>> GetUserByEmail(string email)
@@ -92,4 +110,16 @@ public class AuthenticateService : IAuthenticate
 
     return Result<UserEntity, EntityNotFoundException>.Ok(user);
   }
+
+  public async Task<bool> UserExists(string email)
+  {
+    var user = await _context.Users.Where(u => u.Email.ToLower() == email.ToLower())
+    .FirstOrDefaultAsync();
+
+    if (user == null)
+      return false;
+
+    return true;
+  }
+
 }

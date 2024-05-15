@@ -22,7 +22,6 @@ public class UserController : ControllerBase
   }
 
   [HttpPost("signup")]
-  [Authorize]
   public async Task<ActionResult> SignUp(UserInDTO userIn)
   {
     if (await _auth.UserExists(userIn.Email))
@@ -44,16 +43,26 @@ public class UserController : ControllerBase
     var userResult = await _auth.GetUserByEmail(login.Email);
 
     if (userResult.IsFail)
-      return Unauthorized(userResult.Error!.Message);
+      return BadRequest(userResult.Error!.Message);
     
     var res = await _auth.AuthenticateAsync(login.Email, login.Password);
     if (!res)
-      return Unauthorized("Invalid login or password");
+      return BadRequest("Invalid login or password");
     var user = userResult.Unwrap();
 
     var token = _auth.GenerateToken(user.Id.Value, user.Email);
 
     return Ok(token);
+  }
+
+  [HttpGet("validate")]
+  public ActionResult ValidateToken([FromQuery]string token)
+  {
+    var res = _auth.ValidateToken(token);
+
+    if (res)
+      return Ok("valid token");
+    return Unauthorized("invalid token");
   }
 
   [HttpGet("{id}")]

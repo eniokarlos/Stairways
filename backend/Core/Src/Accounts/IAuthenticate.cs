@@ -9,5 +9,6 @@ public interface IAuthenticate
   Task<bool> AuthenticateAsync(string email, string password);
   Task<bool> UserExists(string email);
   Task<Result<UserEntity, EntityNotFoundException>> GetUserByEmail(string email);
+  bool ValidateToken(string jwt);
   string GenerateToken(string id, string email);
 }

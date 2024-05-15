@@ -5,6 +5,7 @@ using Stairways.Application.Interfaces;
 using Stairways.Application.Mappings;
 using Stairways.Core.Errors;
 using Stairways.Core.Interfaces;
+using Stairways.Core.Models;
 using Stairways.Core.Utils;
 
 namespace Stairways.Application.Services;
@@ -71,4 +72,5 @@ public class UserService : IUserService
 
     return Result<UserOutDTO, Exception>.Ok(result.Unwrap().ToOutDTO());
   }
+
 }
