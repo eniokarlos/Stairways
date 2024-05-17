@@ -23,8 +23,8 @@ if (localStorage.getItem('token')) {
   (async () => {
     const auth = useAuthStore();
     auth.setIsAuth(true);
-    if (!await auth.verifyToken()) {
-      auth.clear();
+    auth.setIsAuth(await auth.verifyToken());
+    if (auth.isAuth == false) {
       router.push({ name: 'login' });
     }
   })();

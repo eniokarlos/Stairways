@@ -15,17 +15,25 @@ const loginModel = reactive({
 const auth = useAuthStore();
 
 async function login() {
-  const data = await UserServices.login(loginModel.email, loginModel.password)
-    .then(res => res.text());
-  auth.setToken(data);
-
-  await auth.verifyToken();
+  let res;
+  try {
+    res = await UserServices.login(loginModel.email, loginModel.password)
+      .then(res => res.json());
+    console.log(res);
+  }
+  catch {
+    auth.clear();
+    return;
+  }
+  auth.setToken(res.token);
+  auth.setUser(res.user);
+  auth.setIsAuth(true);
+  router.push('/');
 }
 
 async function loginOnEnter(e : KeyboardEvent) {
   if (e.key === 'Enter') {
     await login();
-    router.push({ name: 'roadmapCreation' });
   }
 }
 
@@ -53,14 +61,12 @@ onBeforeUnmount(() => {
           placeholder="Senha"
         />
       </div>
-      <RouterLink to="roadmap-creation">
-        <UiBtn 
-          large
-          @pointerdown="login"
-        >
-          Fazer login
-        </UiBtn>
-      </RouterLink>
+      <UiBtn 
+        large
+        @pointerdown="login"
+      >
+        Fazer login
+      </UiBtn>
       <span class="font-size-16px">ou
         <RouterLink
           to="password-reset"

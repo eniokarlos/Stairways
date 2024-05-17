@@ -1,8 +1,10 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Stairways.Api.Models;
 using Stairways.Application.DTOs;
 using Stairways.Application.Interfaces;
+using Stairways.Application.Mappings;
 using Stairways.Core.Accounts;
 using Stairways.Core.ValueObjects;
 
@@ -34,7 +36,7 @@ public class UserController : ControllerBase
 
     var token = _auth.GenerateToken(res.Unwrap().Id, userIn.Email);
 
-    return Ok(token); 
+    return Ok(new {user = res.Unwrap(), token}); 
   }
 
   [HttpPost("signin")]
@@ -52,7 +54,7 @@ public class UserController : ControllerBase
 
     var token = _auth.GenerateToken(user.Id.Value, user.Email);
 
-    return Ok(token);
+    return Ok(new {user = userResult.Unwrap().ToOutDTO(), token});
   }
 
   [HttpGet("validate")]
@@ -66,8 +68,16 @@ public class UserController : ControllerBase
   }
 
   [HttpGet("{id}")]
+  [Authorize]
   public async Task<ActionResult<UserOutDTO>> GetUserById(string id)
   {
+    var userId = User.FindFirst("id")?.Value;
+
+    if (userId != id) 
+    {
+      return Unauthorized();
+    }
+
     var idResult = UUID4.Of(id);
     if (idResult.IsFail)
       return BadRequest(idResult.Error!.Message);

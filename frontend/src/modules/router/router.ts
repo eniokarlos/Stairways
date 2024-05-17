@@ -38,8 +38,8 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach(async (to) => {
-  if (to.meta?.auth) {
+router.beforeEach((to) => {
+  if (to.meta?.auth == true) {
     const auth = useAuthStore();
     if (!auth.isAuth && to.name !== 'login') {
       return { name: 'login' };

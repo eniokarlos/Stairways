@@ -9,7 +9,7 @@ defineProps({
   large: Boolean,
   draggable: Boolean,
   variant: {
-    type: String as PropType<'outline' | 'default' | 'spherical'>,
+    type: String as PropType<'outline' | 'default' | 'rounded'>,
     default: 'default',
   },
 });
@@ -58,8 +58,9 @@ defineProps({
     border: 2px solid black;
   }
 
-  .ui-btn--spherical {
-    padding: 8px;
+  .ui-btn--rounded {
+    min-width: 30px !important;
+    min-height: 30px !important;
     border-radius: 100%;
   }
 

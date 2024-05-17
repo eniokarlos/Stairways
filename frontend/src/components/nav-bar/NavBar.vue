@@ -2,6 +2,9 @@
 import UiInput from '@/ui/input/UiInput.vue';
 import UiBtn from '@/ui/btn/UiBtn.vue';
 import { RouterLink } from 'vue-router';
+import { useAuthStore } from '@/stores/auth.store';
+
+const auth = useAuthStore();
 </script>
 
 <template>
@@ -15,9 +18,6 @@ import { RouterLink } from 'vue-router';
         src="../../assets/logo.svg"
       >
     </RouterLink>
-    <RouterLink to="roadmap-creation">
-      <h1>aaaaa</h1>
-    </RouterLink>
 
     <span class="fg-foreground cursor-pointer">Categorias</span>
     
@@ -30,7 +30,7 @@ import { RouterLink } from 'vue-router';
       color="gray"
     />
     
-    <div>
+    <div v-if="!auth.isAuth">
       <RouterLink to="signup">
         <UiBtn class="mr-14px">
           Cadastre-se
@@ -41,6 +41,35 @@ import { RouterLink } from 'vue-router';
           Fazer login
         </UiBtn>
       </RouterLink>
+    </div>
+    <div
+      v-else
+      class="h-full flex w-320px gap-20px"
+    >
+      <RouterLink
+        to="/"
+        class="font-size-15px fg-foreground decoration-none flex items-center"
+      >
+        Meu Progresso
+      </RouterLink>
+      <RouterLink
+        to="/"
+        class="font-size-15px fg-foreground decoration-none flex items-center"
+      >
+        Meus Roadmaps
+      </RouterLink>
+      <div class="flex items-center">
+        <img
+          v-if="auth.user?.profileImage !== ''"
+          class="h-60% rd-100% "
+          :src="auth.user?.profileImage"
+        >
+        <img
+          v-else
+          class="h-60% rd-100% "
+          src="https://cdn-icons-png.flaticon.com/512/9187/9187604.png"
+        >
+      </div>
     </div>
   </nav>
 </template>

@@ -1,8 +1,9 @@
-import services from '@/services/user.services';
+import services, { User } from '@/services/user.services';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
 export const useAuthStore = defineStore('auth', () => {
+  const user = ref<User>();
   const token = ref(localStorage.getItem('token'));
   const isAuth = ref<boolean>(false);
 
@@ -11,31 +12,39 @@ export const useAuthStore = defineStore('auth', () => {
     token.value = tokenValue;
   }
 
-  function setIsAuth(auth: boolean) {
-    isAuth.value = auth;
+  function setIsAuth(value: boolean) {
+    isAuth.value = value;
+  }
+
+  function setUser(newUser: User){
+    user.value = newUser;
   }
 
   function clear() {
     localStorage.removeItem('token');
+    user.value = undefined;
     isAuth.value = false;
     token.value = '';
   }
 
   async function verifyToken(): Promise<boolean> {
-    const res = await services.verifyToken(token.value);
-    if (res != 200) {
-      clear();
-    } 
-    else {
-      isAuth.value = true;
+    try {
+      await services.verifyToken(token.value);
     }
-    return isAuth.value;
+    catch {
+      clear();
+      return false;
+    }
+    isAuth.value = true;
+    return true;
   }
 
   return {
+    user,
     token,
     isAuth,
     setToken,
+    setUser,
     verifyToken,
     setIsAuth,
     clear,

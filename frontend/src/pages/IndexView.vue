@@ -1,10 +1,31 @@
 <script setup lang="ts">
 import UiList from '@/ui/uiList/UiList.vue';
 import Card from '@/components/card/Card.vue';
+import UiBtn from '@/ui/btn/UiBtn.vue';
+import UiIcon from '@/ui/icon/UiIcon.vue';
+import { useAuthStore } from '@/stores/auth.store';
+
+const auth = useAuthStore();
 </script>
 
 <template>
   <section>
+    <RouterLink 
+      v-if="auth.isAuth"
+      to="roadmap-creation"
+    >
+      <UiBtn
+        class="w-60px h-60px fixed 
+      bottom-40px right-10px z-10 bg-brand-orange"
+        variant="rounded"
+      >
+        <UiIcon
+          color="white"
+          name="plus"
+          class="font-500 font-size-38px"
+        />
+      </UiBtn>
+    </RouterLink>
     <UiList title="Desenvolvimento">
       <Card 
         title="Desenvolvimento web"
