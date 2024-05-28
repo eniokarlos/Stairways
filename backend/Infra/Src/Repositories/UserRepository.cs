@@ -71,4 +71,20 @@ public class UserRepository : IUserRespository
       return Result<UserEntity,EntityNotFoundException>
         .Fail(EntityNotFoundException.Of("User not found"));
     }
+
+    public async Task<Result<bool, InvalidUUID4Exception>> UserExists(string id)
+    {
+      var givenId = UUID4.Of(id);
+
+      if (givenId.IsFail)
+        return Result<bool, InvalidUUID4Exception>.Fail(givenId.Error!);
+
+      var result = await _context.Users.FirstOrDefaultAsync(user =>
+      user.Id == givenId.Unwrap());
+
+      if (result != null)
+        return Result<bool, InvalidUUID4Exception>.Ok(true);
+
+      return false;
+    }
 }

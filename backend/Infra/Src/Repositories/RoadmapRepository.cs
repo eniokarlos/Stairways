@@ -3,6 +3,7 @@ using Stairways.Core.Errors;
 using Stairways.Core.Interfaces;
 using Stairways.Core.Models;
 using Stairways.Core.Utils;
+using Stairways.Core.ValueObjects;
 using Stairways.Infra.Context;
 
 namespace Stairways.Infra.Repositories;
@@ -18,7 +19,7 @@ public class RoadmapRepository : IRoadmapRepository
   
   public async Task<RoadmapEntity> AddAsync(RoadmapEntity roadmap)
   {
-    _context.Add(roadmap);
+    _context.Roadmaps.Add(roadmap);
     await _context.SaveChangesAsync();
     return roadmap;
   }
@@ -38,20 +39,30 @@ public class RoadmapRepository : IRoadmapRepository
       .Fail(EntityNotFoundException.Of("Roadmap not found"));
   }
 
-  public async Task<Result<RoadmapEntity, EntityNotFoundException>> GetByIdAsync(string roadmapId)
+  public async Task<Result<RoadmapEntity, Exception>> GetByIdAsync(string roadmapId)
   {
-    var res = await _context.Roadmaps.FirstOrDefaultAsync(
-      roadmap => roadmap.Id.Value == roadmapId
+    var givenId = UUID4.Of(roadmapId);
+
+    if (givenId.IsFail)
+      return Result<RoadmapEntity, Exception>.Fail(givenId.Error!);
+
+    var res  = await _context.Roadmaps.Include(rm => rm.Author).FirstOrDefaultAsync(
+      rm => rm.Id == givenId.Unwrap()
     );
 
-    if(res != null)
-      return Result<RoadmapEntity, EntityNotFoundException>.Ok(res);
+    if (res != null)
+      return Result<RoadmapEntity,Exception>.Ok(res);
 
-    return Result<RoadmapEntity, EntityNotFoundException>
+    return Result<RoadmapEntity,Exception>
       .Fail(EntityNotFoundException.Of("Roadmap not found"));
   }
 
-  public async Task<Result<RoadmapEntity, EntityNotFoundException>> UpdateAsync(RoadmapEntity roadmap)
+  public async Task<ICollection<RoadmapEntity>> GetRoadmaps()
+  {
+    return await _context.Roadmaps.Take(10).Include(r => r.Author).ToListAsync();
+  }
+
+    public async Task<Result<RoadmapEntity, EntityNotFoundException>> UpdateAsync(RoadmapEntity roadmap)
   {
     var res = await GetByIdAsync(roadmap.Id.Value);
 

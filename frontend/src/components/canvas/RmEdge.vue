@@ -30,6 +30,7 @@ const styleProps: Record<EdgeStyle, object> = {
     'stroke-linecap': 'round',
   },
 };
+
 const anchorOffset = 6;
 const anchorsCords = {
   top: (item: RoadmapItem) => ({
@@ -61,7 +62,6 @@ const end = computed(() => {
 const shadow = ref<string>();
 
 function getLinePath(start: Point, end: Point) {
-  
   let format = props.edge.format === 'curve' ? 'C' : 'L';
   const halfX = (start.x + end.x)/2;
   const halfY = (start.y + end.y)/2;
@@ -116,7 +116,6 @@ watchEffect(() => {
     'drop-shadow(2px 2px 2px rgb(0 0 0 / 0.6))' : '';
 });
 
-
 </script>
 
 <template>
@@ -124,7 +123,7 @@ watchEffect(() => {
     v-if="edge"
   >
     <path
-      :d="getLinePath(start,end)"
+      :d="getLinePath(start, end)"
       fill="none"
       stroke-linecap="round"
       stroke-linejoin="round"
@@ -132,6 +131,8 @@ watchEffect(() => {
       stroke-width="40"
     />
     <path
+      class="edge"
+      :class="edge.style"
       :d="getLinePath(start,end)"
       v-bind="styleProps[edge.style ?? 'solid']"
       fill="none"

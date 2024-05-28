@@ -50,6 +50,9 @@ public static class ApiInjection
     service.AddScoped<IUserService, UserService>();
     service.AddScoped<IAuthenticate, AuthenticateService>();
 
+    service.AddScoped<IRoadmapRepository, RoadmapRepository>();
+    service.AddScoped<IRoadmapService, RoadmapService>();
+
     return service;
   }
 }

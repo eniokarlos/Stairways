@@ -22,6 +22,8 @@ function autoGrow() {
   }
 }
 
+const emits = defineEmits(['published']);
+
 async function getImages() {
   const API_KEY = '43438261-1366a182f6ecb194485b76aa6';
 
@@ -30,6 +32,7 @@ async function getImages() {
   'image-type=photo&lang=pt&'+
   'orientation=horizontal&'+
   'per_page=150&safesearch=true';
+
   const init: RequestInit = {
     method: 'GET',
     mode: 'cors',
@@ -81,17 +84,18 @@ onMounted(getImages);
         <UiDropDown
           v-model="store.roadmap.meta.level"
           :items="[
-            {title: 'Iniciante', value: 'beginner'}, 
-            {title: 'Intermediário', value: 'intermediate'}, 
-            {title: 'Avançado', value: 'advanced'}]"
+            {title: 'Iniciante', value: 0}, 
+            {title: 'Intermediário', value: 1}, 
+            {title: 'Avançado', value: 2}]"
           class="mb-4px font-500"
         />
   
         <label class="block w-full font-500 mt-20px">
           Descrição
-          <textarea 
+          <textarea
+            v-model="store.roadmap.meta.description"
             class="border-gray resize-none w-full mt-4px rd-5px
-            h-100px font-size-16px pa-10px fg-dark-gray"
+          h-100px font-size-16px pa-10px fg-dark-gray"
             maxlength="150"
           />
         </label>
@@ -177,8 +181,8 @@ onMounted(getImages);
         <div class="flex justify-end mt-20px">
           <UiBtn
             @pointerdown="
-              getImages(); 
-              isActive=false"
+              emits('published');
+              isActive=false;"
           >
             Publicar
           </UiBtn>

@@ -4,6 +4,7 @@ import cardProps from '@/components/card/cardProps';
 import { ref, Ref, watchEffect } from 'vue';
 
 const props = defineProps({ ...cardProps });
+const emit = defineEmits(['clicked']);
 
 var isSaved: Ref<boolean> = ref(false);
 var isLiked: Ref<boolean> = ref(false);
@@ -63,7 +64,10 @@ watchEffect(() => {
         </div>
       </div>
 
-      <div class="card__body flex flex-col items-center gap-10px">
+      <div
+        class="card__body flex flex-col items-center gap-10px"
+        @pointerdown="emit('clicked')"
+      >
         <img
           :src="cardPicture"
           class="w-210px h-118px rd-4px"
@@ -72,7 +76,7 @@ watchEffect(() => {
           <h4 class="fg-foreground mb-5px">
             {{ title }}
           </h4>
-          <span class="fg-gray font-size-12px">{{ description }}</span>
+          <span class="card__description fg-gray font-size-12px">{{ description }}</span>
         </div>
       </div>
     </div>
@@ -118,6 +122,13 @@ watchEffect(() => {
 
   .card-header__side {
     background-color: var(--current-color);
+  }
+
+  .card__description {
+    display: inline-block;
+    word-wrap: break-word;
+    word-break: break-all;
+    white-space: normal;
   }
 
   .card__level {

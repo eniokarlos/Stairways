@@ -2,30 +2,29 @@
 import { RouterLink } from 'vue-router';
 import UiInput from '@/ui/input/UiInput.vue';
 import UiBtn from '@/ui/btn/UiBtn.vue';
-import { User } from '@/services/user.services';
+import { UserApi } from '@/services/user.services';
 import userServices from '@/services/user.services';
 import { onBeforeUnmount, ref } from 'vue';
 import { useAuthStore } from '@/stores/auth.store';
 import router from '@/modules/router/router';
 
 const auth = useAuthStore();
-const user = ref<User>(new User());
+const user = ref<UserApi>(new UserApi());
 
 async function signUp() {
   let res;
   try {
     res = await userServices.register(user.value)
       .then(res => res.json());
-    console.log(res);
   }
   catch {
     auth.clear();
     return;
   }
+  auth.setIsAuth(true);
   auth.setToken(res.token);
   auth.setUser(res.user);
-  auth.setIsAuth(true);
-  router.push('/');
+  await router.push('/');
 }
 
 async function signUpOnEnter(e : KeyboardEvent) {

@@ -61,14 +61,16 @@ const auth = useAuthStore();
       <div class="flex items-center">
         <img
           v-if="auth.user?.profileImage !== ''"
-          class="h-60% rd-100% "
+          class="h-70% rd-100% "
           :src="auth.user?.profileImage"
         >
-        <img
+        <div 
           v-else
-          class="h-60% rd-100% "
-          src="https://cdn-icons-png.flaticon.com/512/9187/9187604.png"
+          class="bg-black fg-white w-40px h-40px rd-100% 
+          flex items-center justify-center font-500 font-size-18px"
         >
+          {{ auth.user?.name[0].toUpperCase() }}
+        </div>
       </div>
     </div>
   </nav>

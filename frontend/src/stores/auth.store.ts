@@ -1,9 +1,9 @@
-import services, { User } from '@/services/user.services';
+import services, { UserApi} from '@/services/user.services';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref<User>();
+  const user = ref<UserApi| null>(JSON.parse(localStorage.getItem('user')!));
   const token = ref(localStorage.getItem('token'));
   const isAuth = ref<boolean>(false);
 
@@ -17,12 +17,13 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function setUser(newUser: User){
+    localStorage.setItem('user', JSON.stringify(newUser));
     user.value = newUser;
   }
 
   function clear() {
     localStorage.removeItem('token');
-    user.value = undefined;
+    user.value = null;
     isAuth.value = false;
     token.value = '';
   }

@@ -1,5 +1,3 @@
-
-using System.Text.Json.Nodes;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using Stairways.Core.Utils;
@@ -12,34 +10,17 @@ public class RoadmapJsonValidator
   @"{
     '$schema': 'http://json-schema.org/draft-07/schema#',
     'definitions': {
-        'vector2': {
-            'type': 'array',
-            'description': 'Ponto no formato [x, y] ou [width, height]',
-            'minItems': 2,
-            'maxItems': 2,
-            'items': {
-                'type': 'number'
-            }
-        },
         'edge': {
-            'required': ['start', 'end', 'format', 'style'],
+            'required': ['path'],
             'properties': {
-                'start': {
-                    '$ref': '#/definitions/vector2'
-                },
-                'end': {
-                    '$ref': '#/definitions/vector2'
-                },
-                'format': {
-                    'type': 'string',
-                    'enum': ['line', 'curve', 'straight'],
-                    'default': 'line'
+                'path': {
+                    'type': 'string'
                 },
                 'style': {
                     'type': 'string',
                     'enum': ['solid', 'dashed', 'dotted'],
                     'default': 'solid'
-                }
+                } 
             },
             'additionalProperties': false
         },
@@ -78,8 +59,10 @@ public class RoadmapJsonValidator
                 'label', 
                 'labelWidth', 
                 'labelSize',
-                'position', 
-                'dimension'],
+                'width',
+                'height', 
+                'x',
+                'y'],
             'properties': {
                 'label': {
                     'type': 'string'
@@ -93,12 +76,18 @@ public class RoadmapJsonValidator
                 'content': {
                     '$ref': '#/definitions/item-content'
                 },
-                'position': {
-                    '$ref': '#/definitions/vector2'
+                x: {
+                    'type': 'number'
                 },
-                'dimension': {
-                    '$ref': '#/definitions/vector2'
-                }
+                y: {
+                    'type': 'number'
+                },
+                width: {
+                    'type': 'number'
+                },
+                height: {
+                    'type': 'number'
+                },
             }
         },
         'topic': {
@@ -111,17 +100,17 @@ public class RoadmapJsonValidator
                 }
             }
         },
-        'sub-topic': {
+        'subTopic': {
             'allOf': [{'$ref': '#/definitions/item-base'}],
             'required': ['type'],
             'properties': {
                 'type': {
                     'type': 'string',
-                    'enum': ['sub-topic']
+                    'enum': ['subTopic']
                 }
             }
         },
-        'reference': {
+        'link': {
             'allOf': [{'$ref': '#/definitions/item-base'}],
             'required': ['type', 'linkTo'],
             'properties': {
@@ -130,7 +119,7 @@ public class RoadmapJsonValidator
                 },
                 'type': {
                     'type': 'string',
-                    'enum': ['reference']
+                    'enum': ['link']
                 }
             }
         },
@@ -147,8 +136,8 @@ public class RoadmapJsonValidator
         'item': {
             'anyOf': [
                 {'$ref': '#/definitions/topic'},
-                {'$ref': '#/definitions/sub-topic'},
-                {'$ref': '#/definitions/reference'},
+                {'$ref': '#/definitions/subTopic'},
+                {'$ref': '#/definitions/link'},
                 {'$ref': '#/definitions/text'}
             ]
         }
@@ -157,7 +146,7 @@ public class RoadmapJsonValidator
     'properties': {
         'edges': {
             'type': 'array',
-            'minItems': 1,
+            'minItems': 0,
             'items': {
                 '$ref': '#/definitions/edge'
             }

@@ -10,4 +10,5 @@ public interface IUserRespository
   Task<UserEntity> AddAsync(UserEntity user);
   Task<Result<UserEntity, EntityNotFoundException>> UpdateAsync(UserEntity user);
   Task<Result<EntityNotFoundException>> DeleteAsync(string userId);
+  Task<Result<bool, InvalidUUID4Exception>> UserExists(string id);
 }

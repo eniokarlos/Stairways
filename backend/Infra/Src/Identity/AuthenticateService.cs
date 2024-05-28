@@ -57,7 +57,7 @@ public class AuthenticateService : IAuthenticate
       Encoding.UTF8.GetBytes(_configuration["jwt:secretKey"]!));
 
     var credentials = new SigningCredentials(privateKey, SecurityAlgorithms.HmacSha256);
-    var expiration = DateTime.UtcNow.AddSeconds(30);
+    var expiration = DateTime.UtcNow.AddMinutes(10);
 
     var token = new JwtSecurityToken(
       issuer: _configuration["jwt:issuer"],

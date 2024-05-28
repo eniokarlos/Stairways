@@ -1,20 +1,29 @@
-import { Roadmap } from '@/components/canvas/RmCanvas.vue';
+import { RenderFormat } from '@/components/canvas/RmCanvas.vue';
+import { RoadmapEdge } from '@/components/canvas/RmEdge.vue';
+import { RoadmapItem } from '@/components/canvas/RmItem.vue';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
 export const useRoadmapStore = defineStore('roadmaps', () => {
   const gridAlignment = ref<boolean>(true);
-  const roadmap = ref<Roadmap>({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const roadmap = ref<{meta: any, items: RoadmapItem[], edges: RoadmapEdge[]}>({
     meta: {
       title: '',
       description: '',
-      level: 'beginner',
-      privacity: 'public',
+      level: 0,
+      privacity: 1,
       imageURL: '',
       tags: [],
     },
     items: [],
     edges: [], 
+  });
+
+
+  const toBePublished = ref<RenderFormat>({
+    edges: [],
+    items: [],
   });
 
   function toggleGridAlignment() {
@@ -23,7 +32,8 @@ export const useRoadmapStore = defineStore('roadmaps', () => {
 
   return {
     roadmap,
-    gridAlignment, 
+    gridAlignment,
+    toBePublished,
     toggleGridAlignment,
   };
 });

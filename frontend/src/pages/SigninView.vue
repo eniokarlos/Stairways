@@ -19,7 +19,6 @@ async function login() {
   try {
     res = await UserServices.login(loginModel.email, loginModel.password)
       .then(res => res.json());
-    console.log(res);
   }
   catch {
     auth.clear();
@@ -28,7 +27,7 @@ async function login() {
   auth.setToken(res.token);
   auth.setUser(res.user);
   auth.setIsAuth(true);
-  router.push('/');
+  await router.push('/');
 }
 
 async function loginOnEnter(e : KeyboardEvent) {

@@ -33,6 +33,7 @@ export default defineConfig({
       'pink': '#ffe4e8',
       'white': '#ffffff',
       'red': '#FF0000',
+      'green': '#7FB069',
       'dropdown-hover': '#f6f6f6',
       'dark-gray': '#727272',
       'gray': '#8F8F8F',

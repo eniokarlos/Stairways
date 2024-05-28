@@ -8,23 +8,28 @@ import { ref } from 'vue';
 import { ItemType, RoadmapItem } from '@/components/canvas/RmItem.vue';
 import { alignToGrid } from '@/components/canvas/Util/alignToGrid';
 import { useRoadmapStore } from '@/stores/roadmap.store';
+import { useAuthStore } from '@/stores/auth.store';
+import rmService from '@/services/roadmap.services';
+import router from '@/modules/router/router';
 
-const levelColors: Record<'beginner'| 'intermediate' | 'advanced', string> = {
-  beginner: 'brand-blue',
-  intermediate: 'brand-orange',
-  advanced: 'brand-magenta',
-}; 
+const levelColors: string[] = [
+  'brand-blue',
+  'brand-orange',
+  'brand-magenta',
+]; 
 
-const privacityIcons: Record<'public'|'private', string> = {
-  public: 'earth',
-  private: 'lock',
-};
+const privacityIcons: string[] = [
+  'lock',
+  'earth',
+];
 
-const store = useRoadmapStore();
+const canvas = ref();
+const authStore = useAuthStore();
+const rmStore = useRoadmapStore();
 const scale = ref<number>(1);
 const showPublishMenu = ref<boolean>(false);
 const newItem = ref<Required<RoadmapItem>>();
-  
+
 const roadmapItemsDefaults: Record<ItemType, 
   Partial<RoadmapItem>> = {
     topic: {
@@ -82,7 +87,7 @@ function onEnter(e: GridMoveEvent) {
       label: roadmapItemsDefaults[lastItemType].label!,
       linkTo: '',
     };
-    store.roadmap.items.push(newItem.value);
+    rmStore.roadmap.items.push(newItem.value);
   }
 }
 
@@ -101,7 +106,7 @@ function onMove(e: GridMoveEvent) {
 
 function onLeave() {
   if (newItem.value && isGrabbing) {
-    store.roadmap.items.pop();
+    rmStore.roadmap.items.pop();
   }
 }
 
@@ -114,6 +119,28 @@ function stopAddElement() {
   }
 }
 
+async function publish() {
+  if (!authStore.user || !canvas.value) {
+    return;
+  }
+  const requestBody = {
+    userId: authStore.user.id,
+    title: rmStore.roadmap.meta.title,
+    description: rmStore.roadmap.meta.description,
+    level: rmStore.roadmap.meta.level,
+    privacity: rmStore.roadmap.meta.privacity,
+    imageURL: rmStore.roadmap.meta.imageURL,
+    tags: rmStore.roadmap.meta.tags,
+    jsonContent: rmStore.toBePublished,
+  };
+  const res = await rmService.post(requestBody);
+  
+  if (res?.status !== 200) {
+    return;
+  }
+
+  router.push('/');
+}
 </script>
 
 <template>
@@ -134,7 +161,7 @@ function stopAddElement() {
 
       <div class="rm-creation__title absolute z-1 w-full flex flex-col items-center">
         <input
-          v-model="store.roadmap.meta.title"
+          v-model="rmStore.roadmap.meta.title"
           type="text"
           class="block bg-transparent b-0 font-size-20px w-460px
         text-center mb-4px fg-foreground font-500"
@@ -143,17 +170,17 @@ function stopAddElement() {
         >
 
         <div
-          v-color="levelColors[store.roadmap.meta.level]"
+          v-color="levelColors[rmStore.roadmap.meta.level]"
           class="rm-creation__level
         font-400 font-size-16px"
         >
           <span>Nível: </span>
           <UiDropDown
-            v-model="store.roadmap.meta.level"
+            v-model="rmStore.roadmap.meta.level"
             :items="[
-              {title: 'Iniciante', value: 'beginner'}, 
-              {title: 'Intermediário', value: 'intermediate'}, 
-              {title: 'Avançado', value: 'advanced'}]"
+              {title: 'Iniciante', value: 0}, 
+              {title: 'Intermediário', value: 1}, 
+              {title: 'Avançado', value: 2}]"
             class="mb-4px"
           />
         </div>
@@ -161,16 +188,16 @@ function stopAddElement() {
 
       <div class="rm-creation__config pr-40px flex items-center z-1">
         <UiIcon
-          :name="privacityIcons[store.roadmap.meta.privacity]"
+          :name="privacityIcons[rmStore.roadmap.meta.privacity]"
           color="light-gray"
           class="font-size-20px mr-8px"
         />
         <UiDropDown
-          v-model="store.roadmap.meta.privacity" 
+          v-model="rmStore.roadmap.meta.privacity" 
           class="font-size-16px font-500 mr-20px"
           :items="[
-            {title: 'Todos podem ver', value: 'public'},
-            {title: 'Somente eu', value: 'private'}
+            {title: 'Somente eu', value: 0},
+            {title: 'Todos podem ver', value: 1}
           ]"
         />
         <UiBtn
@@ -230,8 +257,10 @@ function stopAddElement() {
         @pointerleave="onLeave"
       >
         <RmCanvas
+          ref="canvas"
           v-model:scale="scale"
-          v-model:roadmap="store.roadmap"
+          v-model:roadmap="rmStore.roadmap"
+          :is-on-publish="showPublishMenu"
           @on-move="onMove"
           @on-enter="onEnter"
         />
@@ -240,6 +269,7 @@ function stopAddElement() {
 
     <PublishMenu 
       v-model="showPublishMenu"
+      @published="publish"
     />
   </section>
 </template>

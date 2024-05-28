@@ -27,6 +27,12 @@ const router = createRouter({
           path: '/password-reset',
           component: () => import('@/pages/PasswordResetView.vue'), 
         },
+        {
+          path: '/roadmap/:id',
+          name: 'roadmap',
+          props: true,
+          component: () => import('@/pages/RoadmapView.vue'),
+        },
       ],
     },
     {
@@ -38,7 +44,7 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   if (to.meta?.auth == true) {
     const auth = useAuthStore();
     if (!auth.isAuth && to.name !== 'login') {

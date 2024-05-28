@@ -1,13 +1,14 @@
 const url = 'http://localhost:5247/user';
 
-export class User {
+export class UserApi{
   constructor(
+    public id = '',
     public name = '',
     public email = '',
     public password = '',
     public profileImage = '',
     public roadmaps = [],
-  ) { }
+  ) {}
 }
 
 const services = {
@@ -25,7 +26,7 @@ const services = {
     }
     return res;
   },
-  register: async (user: User) => {
+  register: async (user: UserApi) => {
     const res = await fetch(url + '/signup', {
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',

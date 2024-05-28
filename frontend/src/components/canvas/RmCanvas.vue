@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, ref, reactive, provide } from 'vue';
+import { onBeforeUnmount, ref, reactive, provide, watchEffect } from 'vue';
 import RmGrid from './RmGrid.vue';
 import RmItem, { RoadmapItem } from './RmItem.vue';
 import RmEdge, { RoadmapEdge } from './RmEdge.vue';
@@ -7,6 +7,16 @@ import RmSelectedBox from './RmSelectedBox.vue';
 import RmItemMenu from './RmItemMenu.vue';
 import RmEdgeMenu from './RmEdgeMenu.vue';
 import { Anchor, AnchorClickEvent } from './RmAnchors.vue';
+import { ItemRenderProps } from '../RoadmapRender/RenderItem';
+import { EdgeRenderProps } from '../RoadmapRender/RenderEdge';
+import { useRoadmapStore } from '@/stores/roadmap.store';
+
+export interface RenderFormat {
+  items: ItemRenderProps[], 
+  edges: EdgeRenderProps[]
+}
+
+export type RoadmapLevel = 'beginner' | 'intermediate' | 'advanced';
 
 export interface Roadmap {
   meta: {
@@ -15,7 +25,7 @@ export interface Roadmap {
     tags: string[],
     privacity: 'public' | 'private',
     imageURL: string,
-    level: 'beginner' | 'intermediate' | 'advanced',
+    level: RoadmapLevel,
   },
   items: RoadmapItem[],
   edges: RoadmapEdge[]
@@ -41,7 +51,15 @@ export interface GridMoveEvent{
   grid: Point
 }
 
+const props = defineProps({
+  isOnPublish: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
+});
 const svg = ref<SVGSVGElement>();
+const rmStore = useRoadmapStore();
 const selectedItem = ref<RoadmapItem>();
 const hoveredItem = ref<RoadmapItem>();
 const selectedEdge = ref<RoadmapEdge>();
@@ -204,6 +222,42 @@ function deleteItem(e: KeyboardEvent) {
   }
 }
 
+function setRenderFormat(){
+  if (!svg.value) {
+    return;
+  }
+  const res: RenderFormat = {
+    items: [],
+    edges: [], 
+  };
+
+  res.items = roadmap.value.items.map(i => ({
+    x: i.x,
+    y: i.y,
+    content: i.content,
+    height: i.height,
+    width: i.width,
+    label: i.label,
+    labelSize: i.labelSize,
+    labelWidth: i.labelWidth,
+    type: i.type,
+    linkTo: i.linkTo,
+  }));
+  
+  const edges = svg.value.getElementsByClassName('edge');
+  res.edges = Array.from(edges).map(
+    (e) => { 
+      return {
+        path: e.getAttribute('d')!.replace(/(\s+|\r\n|\n|\r)/gm, ' '),
+        style: e.classList[1],
+      };
+    },
+  );
+  rmStore.toBePublished.edges = res.edges;
+  rmStore.toBePublished.items = res.items;
+}
+
+
 document.addEventListener('pointermove', onMove);
 document.addEventListener('pointerup', stopGridMove);
 document.addEventListener('pointerup', stopAddEdge);
@@ -214,6 +268,12 @@ onBeforeUnmount(() => {
   document.removeEventListener('pointerup', stopGridMove);
   document.removeEventListener('pointerup', stopAddEdge);
   document.removeEventListener('keydown', deleteItem);
+});
+
+watchEffect(() => {
+  if (props.isOnPublish) {
+    setRenderFormat();
+  }
 });
 
 provide('scale', { scale });
@@ -239,7 +299,6 @@ provide('roadmapItems', roadmap.value.items);
         }
       "
     >
-    
       <RmGrid
         grid-id="grid"
         :x="grid.x"

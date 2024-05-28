@@ -25,7 +25,7 @@ if (localStorage.getItem('token')) {
     auth.setIsAuth(true);
     auth.setIsAuth(await auth.verifyToken());
     if (auth.isAuth == false) {
-      router.push({ name: 'login' });
+      await router.push({ name: 'login' });
     }
   })();
 }

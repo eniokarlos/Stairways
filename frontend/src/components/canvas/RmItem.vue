@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useRoadmapStore } from '@/stores/roadmap.store';
+
 export type ItemType = 'topic' | 'subTopic' | 'link' | 'text';
 export type ItemContent = {
   title: string,
@@ -18,13 +20,15 @@ export interface BoundingBox {
 
 export interface RoadmapItem extends BoundingBox{
   id: string;
-  content: ItemContent;
+  content?: ItemContent;
   type?: ItemType;
   linkTo?: string;
   label?: string;
   labelWidth?: number;
   labelSize?: number;
 }
+
+useRoadmapStore();
 
 defineProps<{item: RoadmapItem}>();
 const paddingOffset = 30;
@@ -47,6 +51,7 @@ const typeColors: Record<ItemType, {bg:string, fg:string}> = {
   },
 };
 
+
 </script>
 <template>
   <g
@@ -60,6 +65,7 @@ const typeColors: Record<ItemType, {bg:string, fg:string}> = {
       fill="transparent"
     />
     <rect
+      class="item"
       :width="item.width"
       :height="item.height"
       :fill="typeColors[item.type ?? 'topic'].bg"

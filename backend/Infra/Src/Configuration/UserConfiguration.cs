@@ -18,6 +18,7 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
       );
 
     builder.HasMany(u => u.Roadmaps)
-      .WithOne(r => r.Author);
+      .WithOne(r => r.Author)
+      .HasForeignKey(r => r.AuthorId);
   }
 }
