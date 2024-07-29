@@ -16,6 +16,8 @@ public class RoadmapConfiguration : IEntityTypeConfiguration<RoadmapEntity>
         id => id.Value,
         value => UUID4.Of(value).Unwrap()
       );
+    builder.HasOne(rm => rm.Category).WithOne()
+      .HasForeignKey<RoadmapEntity>(rm => rm.CategoryId);
       
     builder.ComplexProperty(rm => rm.Meta);
 

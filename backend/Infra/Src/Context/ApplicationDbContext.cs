@@ -6,6 +6,7 @@ public class ApplicationDbContext : DbContext
 {
   public DbSet<UserEntity> Users {get; set;}
   public DbSet<RoadmapEntity> Roadmaps {get; set;}
+  public DbSet<CategoryEntity> Categories {get;set;}
   public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) 
   :base(options){}
 

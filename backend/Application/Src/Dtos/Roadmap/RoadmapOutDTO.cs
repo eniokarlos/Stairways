@@ -11,6 +11,6 @@ public record RoadmapOutDTO(
   RoadmapLevel Level,
   RoadmapPrivacity Privacity,
   string ImageURL,
-  string[] Tags,
+  CategoryDTO category,
   object JsonContent
 );

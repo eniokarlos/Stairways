@@ -53,6 +53,9 @@ public static class ApiInjection
     service.AddScoped<IRoadmapRepository, RoadmapRepository>();
     service.AddScoped<IRoadmapService, RoadmapService>();
 
+    service.AddScoped<ICategoryRepository, CategoryRepository>();
+    service.AddScoped<ICategoryService, CategoryService>();
+
     return service;
   }
 }

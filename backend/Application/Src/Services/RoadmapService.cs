@@ -3,7 +3,6 @@ using Stairways.Application.Interfaces;
 using Stairways.Application.Mappings;
 using Stairways.Core.Errors;
 using Stairways.Core.Interfaces;
-using Stairways.Core.Models;
 using Stairways.Core.Utils;
 
 namespace Stairways.Application.Services;
@@ -55,10 +54,13 @@ public class RoadmapService : IRoadmapService
     return Result<RoadmapOutDTO, Exception>.Ok(result.Unwrap().ToOutDTO());
   }
 
-  public async Task<ICollection<RoadmapOutDTO>> GetRoadmaps()
+  public async Task<PagedList<RoadmapOutDTO>> GetRoadmaps(int pageNumber, int pageSize)
   {
-    var result = await _repository.GetRoadmaps();
-    return result.Select(r => r.ToOutDTO()).ToArray();
+    var roadmaps = await _repository.GetRoadmaps(pageNumber, pageSize);
+    var roadmapsDto = roadmaps.Select(rm => rm.ToOutDTO()).ToList(); 
+
+    return new PagedList<RoadmapOutDTO>
+      (roadmapsDto, pageNumber, pageSize, roadmaps.TotalCount);
   }
 
   public async Task<Result<Exception>> UpdateAsync(RoadmapInDTO roadmap)

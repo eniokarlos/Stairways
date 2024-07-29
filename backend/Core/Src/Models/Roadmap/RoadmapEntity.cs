@@ -14,16 +14,14 @@ public class RoadmapMeta : IValidatable
   public RoadmapPrivacity Privacity { get; private set; }
   public RoadmapLevel Level {get; private set;}
   public string ImageURL { get; private set; }
-  public string[] Tags {get; private set;}
 
   public RoadmapMeta(string title, string description, RoadmapLevel level,
-  RoadmapPrivacity privacity, string imageURL, string[] tags)
+  RoadmapPrivacity privacity, string imageURL)
   {
     Title = title;
     Description = description;
     Privacity = privacity;
     ImageURL = imageURL;
-    Tags = tags;
     Level = level;
   }
 
@@ -38,15 +36,14 @@ public class RoadmapMeta : IValidatable
     if (string.IsNullOrEmpty(ImageURL))
       return Result<EntityValidationException>.Fail(new EntityValidationException("Image URL is required"));
 
-    if (Tags.Count() < 1)
-      return Result<EntityValidationException>.Fail(new EntityValidationException("Tags must be greater than one"));
-
     return Result<EntityValidationException>.Ok();
   }
 }
 public class RoadmapEntity : Entity
 {
   public virtual Id AuthorId {get;set;}
+  public virtual Id CategoryId {get;set;}
+  public virtual CategoryEntity Category {get;set;}
   public virtual UserEntity Author {get; set;}
   public RoadmapMeta Meta {get; private set;}
   public string JsonContent {get; set;}

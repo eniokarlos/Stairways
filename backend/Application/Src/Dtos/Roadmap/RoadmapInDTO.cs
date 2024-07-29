@@ -9,6 +9,6 @@ public record RoadmapInDTO(
   RoadmapLevel Level,
   RoadmapPrivacity Privacity,
   string ImageURL,
-  string[] Tags,
+  string categoryId,
   object JsonContent
 );

@@ -7,54 +7,52 @@ namespace Stairways.Tests.Core.Models;
 
 public class RoadmapGenerator
 {
-  private static string validJson = @"{
-      'edges': [
+  private static string validJson = @"
+  {
+    'edges': [
       {
-        'start': [0, 0],
-        'end': [100, 100],
-        'format': 'line',
+        'path': 'M400,138 C400,216 464,216 464,294',
         'style': 'solid'
       },
       {
-        'start': [50, 50],
-        'end': [200, 200],
-        'format': 'curve',
-        'style': 'dotted'
+        'path': 'M464,330 C464,400 504,400 504,470',
+        'style': 'solid'
+      },
+      {
+        'path': 'M654,216 C604,216 604,312 554,312',
+        'style': 'solid'
+      },
+      {
+        'path': 'M226,312 C300,312 300,312 374,312',
+        'style': 'solid'
       }
-      ],
-        'items': [
-        {
-          'label': 'Main Topic',
-          'labelWidth': 100,
-          'labelSize': 14,
-          'position': [50, 50],
-          'dimension': [200, 100],
-          'content': {
-            'title': 'Main Title',
-            'description': 'Description of the main topic',
-            'links': [
-              {
-                'text': 'Link 1',
-                'url': 'https://example.com/link1'
-              },
-              {
-                'text': 'Link 2',
-                'url': 'https://example.com/link2'
-              }
-          ]
+    ],
+    'items': [
+      {
+        'x': 272,
+        'y': 80,
+        'content': {
+          'title': '',
+          'description': '',
+          'links': []
         },
-        'type': 'topic'
-        }
+        'height': 64,
+        'width': 256,
+        'label': 'Tópico',
+        'labelSize': 24,
+        'labelWidth': 400,
+        'type': 'topic',
+        'linkTo': ''
+      },
       ]
-    }";
+  }";
   
   private static RoadmapMeta validMeta = new RoadmapMeta(
       "title", 
       "description",
       RoadmapLevel.BEGINNER,
       RoadmapPrivacity.PRIVATE,
-      "imageUrl",
-      ["tag1", "tag2", "tag3"]
+      "imageUrl"
     );
   
   public static Result<RoadmapEntity, EntityValidationException> OfMeta(RoadmapMeta meta)

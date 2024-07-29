@@ -18,7 +18,7 @@ public static class RoadmapMapping
       roadmap.Meta.Level,
       roadmap.Meta.Privacity,
       roadmap.Meta.ImageURL,
-      roadmap.Meta.Tags,
+      roadmap.Category.Id.Value,
       JsonSerializer.Deserialize<object>(roadmap.JsonContent)!
     );
     
@@ -36,7 +36,7 @@ public static class RoadmapMapping
       roadmap.Meta.Level,
       roadmap.Meta.Privacity,
       roadmap.Meta.ImageURL,
-      roadmap.Meta.Tags,
+      roadmap.Category.ToDto(),
       JsonSerializer.Deserialize<object>(roadmap.JsonContent)!
     );
 
@@ -51,21 +51,27 @@ public static class RoadmapMapping
         dto.Description,
         dto.Level,
         dto.Privacity, 
-        dto.ImageURL,
-        dto.Tags),
+        dto.ImageURL),
         JsonSerializer.Serialize(dto.JsonContent)
     );
 
     if (roadmapResult.IsFail)
       return Result<RoadmapEntity, EntityValidationException>.Fail(roadmapResult.Error!);
+
     var authorId = UUID4.Of(dto.UserId);
+    var categoryId = UUID4.Of(dto.categoryId);
 
     if (authorId.IsFail)
       return Result<RoadmapEntity, EntityValidationException>
         .Fail(new EntityValidationException(authorId.Error!.Message));
 
+    if (categoryId.IsFail)
+      return Result<RoadmapEntity, EntityValidationException>
+        .Fail(new EntityValidationException(categoryId.Error!.Message));
+
     var newRoadmap = roadmapResult.Unwrap();
     newRoadmap.AuthorId = authorId.Unwrap();
+    newRoadmap.CategoryId = categoryId.Unwrap();
 
     return Result<RoadmapEntity, EntityValidationException>.Ok(newRoadmap);
   }

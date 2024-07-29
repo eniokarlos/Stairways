@@ -6,7 +6,7 @@ namespace Stairways.Core.Models;
 
 public class RoadmapJsonValidator
 {
-  private static string schema =
+  private readonly static string _schema =
   @"{
     '$schema': 'http://json-schema.org/draft-07/schema#',
     'definitions': {
@@ -161,13 +161,12 @@ public class RoadmapJsonValidator
     }
   }";
 
-
   public static Result<Errors.EntityValidationException> Parse(string json)
   {
     JSchema parsedSchema;
     JObject jsonObject;
     try{
-        parsedSchema = JSchema.Parse(schema);
+        parsedSchema = JSchema.Parse(_schema);
         jsonObject = JObject.Parse(json); 
     }
     catch

@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Stairways.Api.Extensions;
+using Stairways.Api.Models;
 using Stairways.Application.DTOs;
 using Stairways.Application.Interfaces;
 
@@ -40,9 +42,20 @@ public class RoadmapController : ControllerBase
   }
 
   [HttpGet]
-  public async Task<ActionResult> getRoadmaps()
+  public async Task<ActionResult> getRoadmaps([FromQuery]PaginationParams pagination)
   {
-    var result = await _service.GetRoadmaps();
+    var result = await _service.GetRoadmaps(pagination.PageNumber, pagination.PageSize);
+
+    Response.AddPaginationHeader(
+      new PaginationHeader(
+        result.CurrentPage, 
+        result.ItemsPerPage, 
+        result.ItemsPerPage, 
+        result.TotalCount, 
+        result.TotalPages
+      )
+    );
+
     return Ok(result);
   }
 

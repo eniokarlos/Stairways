@@ -12,7 +12,7 @@ public class RoadmapTest
     //Given
     var currentRoadmap = RoadmapGenerator.OfValid();
     //Then
-    Assert.NotNull(currentRoadmap.Unwrap());
+    Assert.False(currentRoadmap.IsFail);
   }
 
   [Fact]
@@ -24,8 +24,7 @@ public class RoadmapTest
       "description",
       RoadmapLevel.BEGINNER,
       RoadmapPrivacity.PRIVATE,
-      "imageUrl",
-      ["tag1", "tag2", "tag3"]
+      "imageUrl"
     );
 
     //When
@@ -44,28 +43,7 @@ public class RoadmapTest
       "",
       RoadmapLevel.BEGINNER,
       RoadmapPrivacity.PRIVATE,
-      "imageUrl",
-      ["tag1", "tag2", "tag3"]
-    );
-    //When
-    var actualRoadmap = RoadmapGenerator.OfMeta(meta);
-    //Then
-    Assert.Throws<EntityValidationException>(() => {
-      actualRoadmap.Unwrap();
-    });
-  }
-
-  [Fact]
-  public void GivenAnInvalidMetaTagsWhenCreateRoadmapThenThrowError()
-  {
-    //Given
-    var meta = new RoadmapMeta(
-      "title", 
-      "description",
-      RoadmapLevel.BEGINNER,
-      RoadmapPrivacity.PRIVATE,
-      "imageUrl",
-      ["tag1", "tag2"]
+      "imageUrl"
     );
     //When
     var actualRoadmap = RoadmapGenerator.OfMeta(meta);
