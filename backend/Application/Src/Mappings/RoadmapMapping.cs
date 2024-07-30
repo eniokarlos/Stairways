@@ -16,7 +16,7 @@ public static class RoadmapMapping
       roadmap.Meta.Title,
       roadmap.Meta.Description,
       roadmap.Meta.Level,
-      roadmap.Meta.Privacity,
+      roadmap.Meta.Privacy,
       roadmap.Meta.ImageURL,
       roadmap.Category.Id.Value,
       JsonSerializer.Deserialize<object>(roadmap.JsonContent)!
@@ -34,7 +34,7 @@ public static class RoadmapMapping
       roadmap.Meta.Title,
       roadmap.Meta.Description,
       roadmap.Meta.Level,
-      roadmap.Meta.Privacity,
+      roadmap.Meta.Privacy,
       roadmap.Meta.ImageURL,
       roadmap.Category.ToDto(),
       JsonSerializer.Deserialize<object>(roadmap.JsonContent)!
@@ -50,7 +50,7 @@ public static class RoadmapMapping
         dto.Title, 
         dto.Description,
         dto.Level,
-        dto.Privacity, 
+        dto.Privacy, 
         dto.ImageURL),
         JsonSerializer.Serialize(dto.JsonContent)
     );

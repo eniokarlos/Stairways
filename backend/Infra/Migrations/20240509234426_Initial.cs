@@ -38,7 +38,7 @@ namespace Stairways.Infra.Migrations
                     Meta_Description = table.Column<string>(type: "text", nullable: false),
                     Meta_ImageURL = table.Column<string>(type: "text", nullable: false),
                     Meta_Level = table.Column<int>(type: "integer", nullable: false),
-                    Meta_Privacity = table.Column<int>(type: "integer", nullable: false),
+                    Meta_Privacy = table.Column<int>(type: "integer", nullable: false),
                     Meta_Tags = table.Column<string[]>(type: "text[]", nullable: false),
                     Meta_Title = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),

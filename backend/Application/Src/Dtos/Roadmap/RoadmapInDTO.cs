@@ -7,7 +7,7 @@ public record RoadmapInDTO(
   string Title,
   string Description,
   RoadmapLevel Level,
-  RoadmapPrivacity Privacity,
+  RoadmapPrivacy Privacy,
   string ImageURL,
   string categoryId,
   object JsonContent

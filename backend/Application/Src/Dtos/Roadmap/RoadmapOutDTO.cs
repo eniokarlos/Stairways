@@ -9,7 +9,7 @@ public record RoadmapOutDTO(
   string Title,
   string Description,
   RoadmapLevel Level,
-  RoadmapPrivacity Privacity,
+  RoadmapPrivacy Privacy,
   string ImageURL,
   CategoryDTO category,
   object JsonContent

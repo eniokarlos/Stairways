@@ -23,7 +23,7 @@ public class RoadmapTest
       "", 
       "description",
       RoadmapLevel.BEGINNER,
-      RoadmapPrivacity.PRIVATE,
+      RoadmapPrivacy.PRIVATE,
       "imageUrl"
     );
 
@@ -42,7 +42,7 @@ public class RoadmapTest
       "title", 
       "",
       RoadmapLevel.BEGINNER,
-      RoadmapPrivacity.PRIVATE,
+      RoadmapPrivacy.PRIVATE,
       "imageUrl"
     );
     //When

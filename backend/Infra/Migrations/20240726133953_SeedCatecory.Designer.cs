@@ -632,7 +632,7 @@ namespace Stairways.Infra.Migrations
                             b1.Property<int>("Level")
                                 .HasColumnType("integer");
 
-                            b1.Property<int>("Privacity")
+                            b1.Property<int>("Privacy")
                                 .HasColumnType("integer");
 
                             b1.Property<string>("Title")

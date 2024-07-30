@@ -1,6 +1,6 @@
 namespace Stairways.Core.Enums;
 
-public enum RoadmapPrivacity
+public enum RoadmapPrivacy
 {
   PRIVATE,
   PUBLIC,

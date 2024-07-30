@@ -51,7 +51,7 @@ public class RoadmapGenerator
       "title", 
       "description",
       RoadmapLevel.BEGINNER,
-      RoadmapPrivacity.PRIVATE,
+      RoadmapPrivacy.PRIVATE,
       "imageUrl"
     );
   

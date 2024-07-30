@@ -11,16 +11,16 @@ public class RoadmapMeta : IValidatable
 {
   public string Title {get; private set;}
   public string Description { get; private set; }
-  public RoadmapPrivacity Privacity { get; private set; }
+  public RoadmapPrivacy Privacy { get; private set; }
   public RoadmapLevel Level {get; private set;}
   public string ImageURL { get; private set; }
 
   public RoadmapMeta(string title, string description, RoadmapLevel level,
-  RoadmapPrivacity privacity, string imageURL)
+  RoadmapPrivacy privacy, string imageURL)
   {
     Title = title;
     Description = description;
-    Privacity = privacity;
+    Privacy = privacy;
     ImageURL = imageURL;
     Level = level;
   }
