@@ -20,12 +20,12 @@ export interface BoundingBox {
 
 export interface RoadmapItem extends BoundingBox{
   id: string;
-  content?: ItemContent;
-  type?: ItemType;
+  content: ItemContent;
+  type: ItemType;
   linkTo?: string;
-  label?: string;
-  labelWidth?: number;
-  labelSize?: number;
+  label: string;
+  labelWidth: number;
+  labelSize: number;
 }
 
 useRoadmapStore();

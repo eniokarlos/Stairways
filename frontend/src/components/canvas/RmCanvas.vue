@@ -16,14 +16,14 @@ export interface RenderFormat {
   edges: EdgeRenderProps[]
 }
 
-export type RoadmapLevel = 'beginner' | 'intermediate' | 'advanced';
+export type RoadmapLevel = 0 | 1 | 2;
 
 export interface Roadmap {
   meta: {
     title: string,
     description: string,
-    tags: string[],
-    privacity: 'public' | 'private',
+    categoryId: string,
+    privacy: 0 | 1,
     imageURL: string,
     level: RoadmapLevel,
   },

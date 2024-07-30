@@ -1,19 +1,34 @@
 import { RenderFormat } from '@/components/canvas/RmCanvas.vue';
 
 const url = 'http://localhost:5247/Roadmap';
-
-export interface RoadmapApi {
+export interface RoadmapPost {
   userId: string,
   title: string,
   description: string,
   level: 0 | 1 | 2,
-  privacity: 0 | 1,
-  tags: string[],
+  privacy: 0 | 1,
+  categoryId: string,
+  imageURL: string,
   jsonContent: RenderFormat,
+}
+export interface RoadmapGet {
+  id: string,
+  authorName: string,
+  authorProfileImage: string,
+  title: string,
+  description: string,
+  level: 0 | 1 | 2,
+  privacy: 0 | 1,
+  imageURL: string,
+  category: {
+    id: string,
+    name: string
+  },
+  jsonContent: string
 }
 
 const services = {
-  post: async (body: RoadmapApi) => {
+  post: async (body: RoadmapPost) => {
     const token = localStorage.getItem('token');
     if (!token){
       return;
@@ -30,8 +45,8 @@ const services = {
     return res;
   },
 
-  get: async () => {
-    const res = await fetch(url, {
+  get: async (): Promise<RoadmapGet[]> => {
+    const res = await fetch(url+'?PageNumber=1&PageSize=20', {
       headers: { 'Content-Type': 'application/json' },
       method: 'GET',
     }).then(res => res.json());

@@ -9,7 +9,7 @@ import { ItemType, RoadmapItem } from '@/components/canvas/RmItem.vue';
 import { alignToGrid } from '@/components/canvas/Util/alignToGrid';
 import { useRoadmapStore } from '@/stores/roadmap.store';
 import { useAuthStore } from '@/stores/auth.store';
-import rmService from '@/services/roadmap.services';
+import rmService, { RoadmapPost } from '@/services/roadmap.services';
 import router from '@/modules/router/router';
 
 const levelColors: string[] = [
@@ -18,7 +18,7 @@ const levelColors: string[] = [
   'brand-magenta',
 ]; 
 
-const privacityIcons: string[] = [
+const privacyIcons: string[] = [
   'lock',
   'earth',
 ];
@@ -123,18 +123,18 @@ async function publish() {
   if (!authStore.user || !canvas.value) {
     return;
   }
-  const requestBody = {
+  const requestBody: RoadmapPost = {
     userId: authStore.user.id,
     title: rmStore.roadmap.meta.title,
     description: rmStore.roadmap.meta.description,
     level: rmStore.roadmap.meta.level,
-    privacity: rmStore.roadmap.meta.privacity,
+    privacy: rmStore.roadmap.meta.privacy,
     imageURL: rmStore.roadmap.meta.imageURL,
-    tags: rmStore.roadmap.meta.tags,
+    categoryId: rmStore.roadmap.meta.categoryId,
     jsonContent: rmStore.toBePublished,
   };
+  console.log(requestBody);
   const res = await rmService.post(requestBody);
-  
   if (res?.status !== 200) {
     return;
   }
@@ -188,12 +188,12 @@ async function publish() {
 
       <div class="rm-creation__config pr-40px flex items-center z-1">
         <UiIcon
-          :name="privacityIcons[rmStore.roadmap.meta.privacity]"
+          :name="privacyIcons[rmStore.roadmap.meta.privacy]"
           color="light-gray"
           class="font-size-20px mr-8px"
         />
         <UiDropDown
-          v-model="rmStore.roadmap.meta.privacity" 
+          v-model="rmStore.roadmap.meta.privacy" 
           class="font-size-16px font-500 mr-20px"
           :items="[
             {title: 'Somente eu', value: 0},

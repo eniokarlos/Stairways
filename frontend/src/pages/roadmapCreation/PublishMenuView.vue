@@ -1,13 +1,16 @@
 <script setup lang="ts">
+import categoryService from '@/services/category.services';
 import UiDropDown from '@/ui/dropDown/UiDropDown.vue';
 import { useRoadmapStore } from '@/stores/roadmap.store';
 import UiIcon from '@/ui/icon/UiIcon.vue';
 import { onMounted, ref } from 'vue';
-import UiTags from '@/ui/tags/UiTags.vue';
 import UiBtn from '@/ui/btn/UiBtn.vue';
 import UiInput from '@/ui/input/UiInput.vue';
 
-const store = useRoadmapStore();
+import { useCategoryStore } from '@/stores/category.store';
+
+const categoryStore = useCategoryStore();
+const roadmapStore = useRoadmapStore();
 const imageSearch = ref<string>('');
 const isOnFirstStep = ref<boolean>(true);
 const isActive = defineModel<boolean>();
@@ -46,8 +49,21 @@ async function getImages() {
     });
 }
 
-onMounted(getImages);
+async function getCategories() {
+  categoryStore.list = await categoryService.get();
+}
 
+onMounted(async () => {
+  getImages();
+
+  if (!categoryStore.list) {
+    await getCategories();
+  }
+
+  if (!roadmapStore.roadmap.meta.categoryId) {
+    roadmapStore.roadmap.meta.categoryId = categoryStore.list[0].id;
+  }
+});
 </script>
   
 <template>
@@ -71,7 +87,7 @@ onMounted(getImages);
         />
         <textarea
           ref="title"
-          v-model="store.roadmap.meta.title"
+          v-model="roadmapStore.roadmap.meta.title"
           rows="1"
           type="text"
           class="title block b-0 resize-none font-size-20px w-90%
@@ -82,7 +98,7 @@ onMounted(getImages);
         />
         <span class="font-500">Nível: </span>
         <UiDropDown
-          v-model="store.roadmap.meta.level"
+          v-model="roadmapStore.roadmap.meta.level"
           :items="[
             {title: 'Iniciante', value: 0}, 
             {title: 'Intermediário', value: 1}, 
@@ -93,15 +109,24 @@ onMounted(getImages);
         <label class="block w-full font-500 mt-20px">
           Descrição
           <textarea
-            v-model="store.roadmap.meta.description"
+            v-model="roadmapStore.roadmap.meta.description"
             class="border-gray resize-none w-full mt-4px rd-5px
           h-100px font-size-16px pa-10px fg-dark-gray"
             maxlength="150"
           />
         </label>
-        <UiTags 
-          v-model="store.roadmap.meta.tags"
-        />
+        <label class="font-500">
+          <span>Categoria: </span>
+          <UiDropDown
+            v-model="roadmapStore.roadmap.meta.categoryId"
+            :items="categoryStore.list
+              .map(c => ({title: c.name, value: c.id})).sort((a,b) => {
+                if (a.title < b.title) return -1;
+                if (a.title > b.title) return 1;
+                return 0;
+              })"
+          />
+        </label>
         <div class="flex justify-end mt-20px">
           <UiBtn
             @pointerdown="isOnFirstStep = false"
@@ -151,11 +176,11 @@ onMounted(getImages);
           @submitted="getImages"
         />
         <div
-          v-if="store.roadmap.meta.imageURL" 
+          v-if="roadmapStore.roadmap.meta.imageURL" 
           class="flex justify-center mb-10px"
         >
           <img
-            :src="store.roadmap.meta.imageURL"
+            :src="roadmapStore.roadmap.meta.imageURL"
             class="w-180px h-120px"
           >
         </div>
@@ -167,10 +192,10 @@ onMounted(getImages);
             v-for="image in imageResult"
             :key="image.id"
             :class="{'selected-img': 
-              image.webformatURL === store.roadmap.meta.imageURL}"
+              image.webformatURL === roadmapStore.roadmap.meta.imageURL}"
             class="cursor-pointer relative 
             w-180px h-120px"
-            @pointerdown="store.roadmap.meta.imageURL = image.webformatURL;"
+            @pointerdown="roadmapStore.roadmap.meta.imageURL = image.webformatURL;"
           >
             <img 
               :src="image.webformatURL"

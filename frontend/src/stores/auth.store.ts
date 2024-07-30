@@ -1,4 +1,4 @@
-import services, { UserApi} from '@/services/user.services';
+import services, { UserApi } from '@/services/user.services';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
@@ -16,7 +16,7 @@ export const useAuthStore = defineStore('auth', () => {
     isAuth.value = value;
   }
 
-  function setUser(newUser: User){
+  function setUser(newUser: UserApi){
     localStorage.setItem('user', JSON.stringify(newUser));
     user.value = newUser;
   }

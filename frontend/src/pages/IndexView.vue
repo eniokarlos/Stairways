@@ -4,23 +4,35 @@ import Card from '@/components/card/Card.vue';
 import UiBtn from '@/ui/btn/UiBtn.vue';
 import UiIcon from '@/ui/icon/UiIcon.vue';
 import { useAuthStore } from '@/stores/auth.store';
-import rmService from '@/services/roadmap.services';
+import categoryService from '@/services/category.services';
+import rmService, { RoadmapGet } from '@/services/roadmap.services';
 import { ref, onMounted } from 'vue';
-import { RoadmapLevel } from '@/components/canvas/RmCanvas.vue';
 import router from '@/modules/router/router';
+import { useCategoryStore } from '@/stores/category.store';
+
+export type RoadmapByCategory = Record<string, Array<RoadmapGet>>
 
 const auth = useAuthStore();
-const roadmaps = ref();
-const levels: RoadmapLevel[] = [
+const categoryStore = useCategoryStore();
+const groupedRoadmaps = ref<RoadmapByCategory>();
+const levels: ('beginner' | 'intermediate' | 'advanced')[] = [
   'beginner',
   'intermediate',
   'advanced',
 ];
 
-async function getRoadmaps() {
-  const res = await rmService.get();
+async function loadData() {
+  const roadmaps = await rmService.get();
+  const allCategories = await categoryService.get();
 
-  roadmaps.value = res;
+  categoryStore.set(allCategories);
+
+  const groupedRes = roadmaps.reduce((res: RoadmapByCategory, current) => {
+    (res[current.category.name] = res[current.category.name] || []).push(current);
+    return res;
+  }, {});
+
+  groupedRoadmaps.value = groupedRes;
 }
 
 function openRoadmap(id: string) {
@@ -30,7 +42,8 @@ function openRoadmap(id: string) {
   });
 }
 
-onMounted(getRoadmaps);
+onMounted(loadData);
+
 </script>
 
 <template>
@@ -52,11 +65,12 @@ onMounted(getRoadmaps);
       </UiBtn>
     </RouterLink>
     <UiList 
-      v-if="roadmaps"
-      :title="roadmaps[0].tags[0]"
+      v-for="(category, i) in groupedRoadmaps"
+      :key="i"
+      :title="i.toString()"
     >
       <Card
-        v-for="rm in roadmaps"
+        v-for="rm in category"
         :key="rm.id"
         class="cursor-pointer"
         :title="rm.title"

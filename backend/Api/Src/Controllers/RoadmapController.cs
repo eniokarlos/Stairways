@@ -31,7 +31,7 @@ public class RoadmapController : ControllerBase
   }
 
   [HttpGet("{id}")]
-  public async Task<ActionResult> GetById(string id)
+  public async Task<ActionResult<RoadmapOutDTO>> GetById(string id)
   {
     var result = await _service.GetByIdAsync(id);
 

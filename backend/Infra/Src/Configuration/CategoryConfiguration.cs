@@ -16,6 +16,7 @@ public class CategoryConfiguration : IEntityTypeConfiguration<CategoryEntity>
         id => id.Value,
         value => UUID4.Of(value).Unwrap()
       );
+    
     builder.HasData(
       CategoryEntity.Of("Matemática").Unwrap(),
       CategoryEntity.Of("Estatística").Unwrap(),

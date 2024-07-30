@@ -88,7 +88,7 @@ onBeforeUnmount(() => {
     <div
       v-show="isOpened"
       ref="list"
-      class="drop-down__options wa mt-5px rd-4px py-9px absolute z-2 bg-white"
+      class="drop-down__options max-h-30vh overflow-auto wa mt-5px rd-4px py-9px absolute z-2 bg-white"
     >
       <ul class="list-none">
         <li

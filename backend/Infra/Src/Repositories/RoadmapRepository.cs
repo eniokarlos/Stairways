@@ -62,7 +62,7 @@ public class RoadmapRepository : IRoadmapRepository
 
   public async Task<PagedList<RoadmapEntity>> GetRoadmaps(int pageNumber, int pageSize)
   {
-    var query = _context.Roadmaps.AsQueryable().Include(rm => rm.Author).Include(rm => rm.Category);
+    var query = _context.Roadmaps.Include(rm => rm.Author).Include(rm => rm.Category);
     return await PaginationHelper.CreateAsync(query, pageNumber, pageSize);
   }
 
