@@ -15,11 +15,6 @@ export type RoadmapByCategory = Record<string, Array<RoadmapGet>>
 const auth = useAuthStore();
 const categoryStore = useCategoryStore();
 const groupedRoadmaps = ref<RoadmapByCategory>();
-const levels: ('beginner' | 'intermediate' | 'advanced')[] = [
-  'beginner',
-  'intermediate',
-  'advanced',
-];
 
 async function loadData() {
   const roadmaps = await rmService.get();
@@ -78,7 +73,7 @@ onMounted(loadData);
         :user-picture="rm.authorProfileImage"
         :description="rm.description"
         :rating="80"
-        :level="levels[rm.level]"
+        :level="rm.level"
         :card-picture="rm.imageURL"
         @clicked="openRoadmap(rm.id)"
       />

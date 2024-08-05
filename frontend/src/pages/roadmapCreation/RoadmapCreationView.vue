@@ -133,7 +133,6 @@ async function publish() {
     categoryId: rmStore.roadmap.meta.categoryId,
     jsonContent: rmStore.toBePublished,
   };
-  console.log(requestBody);
   const res = await rmService.post(requestBody);
   if (res?.status !== 200) {
     return;

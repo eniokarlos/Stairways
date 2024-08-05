@@ -11,6 +11,7 @@ import { ItemRenderProps } from '../RoadmapRender/RenderItem';
 import { EdgeRenderProps } from '../RoadmapRender/RenderEdge';
 import { useRoadmapStore } from '@/stores/roadmap.store';
 
+
 export interface RenderFormat {
   items: ItemRenderProps[], 
   edges: EdgeRenderProps[]
@@ -54,7 +55,6 @@ export interface GridMoveEvent{
 const props = defineProps({
   isOnPublish: {
     type: Boolean,
-    required: true,
     default: false,
   },
 });
@@ -232,6 +232,7 @@ function setRenderFormat(){
   };
 
   res.items = roadmap.value.items.map(i => ({
+    id: crypto.randomUUID(),
     x: i.x,
     y: i.y,
     content: i.content,

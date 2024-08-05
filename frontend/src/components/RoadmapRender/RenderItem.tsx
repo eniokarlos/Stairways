@@ -1,6 +1,8 @@
+import { SetupContext } from 'vue';
 import { ItemContent, ItemType } from '../canvas/RmItem.vue';
 
 export interface ItemRenderProps{
+  id: string,
   x?: number,
   y?: number,
   width?: number,
@@ -13,17 +15,11 @@ export interface ItemRenderProps{
   labelSize?: number;
 }
 
-export default function CanvasTopic({
-  x=0,
-  y=0,
-  width = 256,
-  height = 64,
-  type = 'topic',
-  label = '',
-  labelSize = 18,
-  labelWidth = 500,
-}: ItemRenderProps) {
+type Events = {
+  itemClicked(item: ItemRenderProps): void
+}
 
+export default function CanvasTopic(props: ItemRenderProps, context: SetupContext<Events>) {
   const typeColors: Record<ItemType, {bg:string, fg:string}> = {
     topic: {
       bg: '#FF8811',
@@ -43,9 +39,22 @@ export default function CanvasTopic({
     },
   };
 
+  const {
+    x=0,
+    y=0,
+    width = 256,
+    height = 64,
+    type = 'topic',
+    label = '',
+    labelSize = 18,
+    labelWidth = 500,
+  } = props;
+
   return (
     <>
-      <g cursor={'pointer'}>
+      <g cursor={'pointer'}
+        onClick={() => context.emit('itemClicked', props)}
+      >
         <rect
           x={x}
           y={y}

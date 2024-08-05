@@ -26,7 +26,7 @@ export default {
     default: undefined,
   },
   level: {
-    type: String as PropType<'beginner' | 'intermediate' | 'advanced'>,
+    type: Number as PropType<0 | 1 | 2>,
     default: 'beginner',
   },
 };

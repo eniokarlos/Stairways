@@ -12,11 +12,17 @@ var isLiked: Ref<boolean> = ref(false);
 var saveBtnIcon = ref();
 var likeBtnIcon = ref();
 
-const cardColors = {
-  beginner: 'brand-blue',
-  intermediate: 'brand-orange',
-  advanced: 'brand-magenta',
-};
+const cardColors = [
+  'brand-blue',
+  'brand-orange',
+  'brand-magenta',
+];
+
+const levelText = [
+  'Iniciante',
+  'Intermediário',
+  'Avançado',
+];
 
 function getRatingColor(): string{
   const rating = props.rating;
@@ -86,7 +92,7 @@ watchEffect(() => {
         <span
           class="card__level block bg-brand-blue fg-white font-size-12px 
         px-15px py-4px"
-        >Level: {{ level }}</span>
+        >Level: {{ levelText[level] }}</span>
         <span class="fg-gray font-size-12px block mt-2px">
           Avaliações: <span
             v-color="getRatingColor()"

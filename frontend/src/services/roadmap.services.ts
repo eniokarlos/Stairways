@@ -24,7 +24,7 @@ export interface RoadmapGet {
     id: string,
     name: string
   },
-  jsonContent: string
+  jsonContent: RenderFormat
 }
 
 const services = {
@@ -53,7 +53,7 @@ const services = {
 
     return res;
   },
-  getById: async (id: string) => {
+  getById: async (id: string): Promise<RoadmapGet> => {
     const res = await fetch(url+`/${id}`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'GET',

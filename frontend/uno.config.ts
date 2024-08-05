@@ -28,6 +28,7 @@ export default defineConfig({
       'sub-topic': '#FFE599',
       'fg-inverted': '#fff',
       'foreground': '#2E2E2E',
+      'modal-fg': '#374151',
       'light-gray': '#BFBFBF',
       'light-gray-alfa': '#BFBFBF40',
       'pink': '#ffe4e8',

@@ -11,6 +11,9 @@ defineProps<{
   edges: EdgeRenderProps[]
 }>();
 
+const emit = defineEmits<{
+  'itemClicked': [item: ItemRenderProps]
+}>();
 
 function centralizeSvgContent() {
   if (svg.value && content.value) {
@@ -51,6 +54,7 @@ onMounted(centralizeSvgContent);
           v-for="item in items"
           :key="item"
           v-bind="item"
+          @item-clicked="emit('itemClicked', $event)"
         />
       </g>
     </svg>

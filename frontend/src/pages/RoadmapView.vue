@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import rmService, { RoadmapPost } from '@/services/roadmap.services';
+import rmService, { RoadmapGet } from '@/services/roadmap.services';
 import RoadmapRender from '@/components/RoadmapRender/RoadmapRender.vue';
 import UiIcon from '@/ui/icon/UiIcon.vue';
 import UiProgressBar from '@/ui/progressBar/UiProgressBar.vue';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
+import { ItemRenderProps } from '@/components/RoadmapRender/RenderItem';
 
 const props = defineProps<{
   id:string
 }>();
 
-const roadmap = ref<RoadmapPost>();
+const roadmap = ref<RoadmapGet>();
+const activeItem = ref<ItemRenderProps | undefined>();
 
 const levels = [
   'Iniciante',
@@ -38,10 +40,36 @@ async function getRoadmap() {
     }));
 }
 
+function wrapPage() {
+  const app = document.getElementById('app');
+  if (!app) {
+    return;
+  }
+
+  app.style.height = '100vh';
+  app.style.overflow = 'hidden';
+}
+
+function unwrapPage() {
+  const app = document.getElementById('app');
+  if (!app) {
+    return;
+  }
+
+  app.style.height = 'auto';
+  app.style.overflow = 'unset';
+}
+
 onMounted(getRoadmap);
+watch(activeItem, () => {
+  activeItem.value ? wrapPage() : unwrapPage();  
+});
+
 </script>
 <template>
-  <div v-if="roadmap">
+  <div
+    v-if="roadmap"
+  >
     <header 
       class="relative flex items-stretch fg-gray justify-center pt-20px pb-10px"
     >
@@ -98,8 +126,39 @@ onMounted(getRoadmap);
       <RoadmapRender 
         :edges="roadmap.jsonContent.edges"
         :items="roadmap.jsonContent.items"
+        @item-clicked="activeItem = $event;"
       />
     </main>
+    <div
+      v-if="activeItem?.content?.title"
+      class="modal fixed top-0px right-0 h-full w-100vw z-100"
+      @pointerdown="activeItem = undefined"
+    >
+      <div
+        class="absolute top-0 z-102 right-0 bg-white w-35% h-full pa-24px" 
+        @pointerdown.stop
+      >
+        <h1 class="font-size-36px font-800 mt-28px mb-10px">
+          {{ activeItem.content?.title }}
+        </h1>
+        <p class="font-size-16px line-height-28px fg-modal-fg mb-25px">
+          {{ activeItem.content?.description }}
+        </p>
+        <span
+          v-if="activeItem.content.links"
+          class="mb-15px block"
+        >
+          Visite os seguintes links para aprender mais:
+        </span>
+        <a
+          v-for="link,i in activeItem.content?.links"
+          :key="i"
+          target="_blank"
+          :href="link.url"
+          class="fg-foreground font-600 mb-10px block"
+        >{{ link.text }}</a>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -116,4 +175,8 @@ onMounted(getRoadmap);
     bottom: -6px;
     border-radius: 5px;
   }
+  .modal {
+    background-color: rgba(17, 24, 39, .8);
+  }
+
 </style>

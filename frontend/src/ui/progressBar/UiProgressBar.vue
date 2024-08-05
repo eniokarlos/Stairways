@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUpdated, ref } from 'vue';
+import { useResizeObserver } from '@vueuse/core';
 
 const props = defineProps({
   progress: {
@@ -36,6 +37,7 @@ function init() {
 
 onMounted(init);
 onUpdated(init);
+useResizeObserver(bar, init);
 
 </script>
 
