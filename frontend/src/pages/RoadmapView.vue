@@ -62,13 +62,20 @@ function unwrapPage() {
 
 onMounted(getRoadmap);
 watch(activeItem, () => {
-  activeItem.value ? wrapPage() : unwrapPage();  
+  if (Object.values(activeItem.value?.content ?? {}).some(v => v.length)) {
+    wrapPage();
+  }
+  else {
+    unwrapPage();
+    activeItem.value = undefined;
+  }
 });
 
 </script>
 <template>
   <div
     v-if="roadmap"
+    @pointerdown="activeItem = undefined"
   >
     <header 
       class="relative flex items-stretch fg-gray justify-center pt-20px pb-10px"
@@ -86,13 +93,10 @@ watch(activeItem, () => {
           {{ roadmap.title }}
         </h1>
         <p class="mb-20px w-80%">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-          Alias ut quaerat, quidem, nostrum culpa omnis nam similique obcaecati 
-          officia maxime commodi id sit expedita ipsa autem odio 
-          aspernatur laborum delectus.
+          {{ roadmap.description }}
         </p>
         <span class="">
-          Criador por: <b>Lorem Ipsum</b>
+          Criador por: <b>{{ roadmap.authorName }}</b>
         </span>
         <div>
           <UiProgressBar
@@ -130,7 +134,7 @@ watch(activeItem, () => {
       />
     </main>
     <div
-      v-if="activeItem?.content?.title"
+      v-if="activeItem"
       class="modal fixed top-0px right-0 h-full w-100vw z-100"
       @pointerdown="activeItem = undefined"
     >
@@ -144,12 +148,6 @@ watch(activeItem, () => {
         <p class="font-size-16px line-height-28px fg-modal-fg mb-25px">
           {{ activeItem.content?.description }}
         </p>
-        <span
-          v-if="activeItem.content.links"
-          class="mb-15px block"
-        >
-          Visite os seguintes links para aprender mais:
-        </span>
         <a
           v-for="link,i in activeItem.content?.links"
           :key="i"

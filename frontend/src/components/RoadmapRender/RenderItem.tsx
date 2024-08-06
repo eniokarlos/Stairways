@@ -55,28 +55,58 @@ export default function CanvasTopic(props: ItemRenderProps, context: SetupContex
       <g cursor={'pointer'}
         onClick={() => context.emit('itemClicked', props)}
       >
-        <rect
-          x={x}
-          y={y}
-          width={width}
-          height={height}
-          fill={typeColors[type].bg}
-          stroke={type === 'text' ? 'none' : 'black'}
-          rx="5"
-        />
-        <text
-          style="font-family: 'Fredoka'"
-          alignment-baseline="middle"
-          dominant-baseline="middle"
-          text-anchor="middle"
-          font-size={labelSize}
-          font-weight={labelWidth}
-          fill={typeColors[type].fg}
-          x={x+width / 2}
-          y={y+height / 2}
-        >
-          { label }
-        </text>
+        {
+          props.type === 'link' ? 
+            <a href={props.linkTo} target='_blank'>
+              <rect
+                x={x}
+                y={y}
+                width={width}
+                height={height}
+                fill={typeColors[type].bg}
+                stroke={type === 'text' ? 'none' : 'black'}
+                rx="5"
+              />
+              <text
+                style="font-family: 'Fredoka'"
+                alignment-baseline="middle"
+                dominant-baseline="middle"
+                text-anchor="middle"
+                font-size={labelSize}
+                font-weight={labelWidth}
+                fill={typeColors[type].fg}
+                x={x+width / 2}
+                y={y+height / 2}
+              >
+                { label }
+              </text>
+            </a> 
+            :
+            <g>
+              <rect
+                x={x}
+                y={y}
+                width={width}
+                height={height}
+                fill={typeColors[type].bg}
+                stroke={type === 'text' ? 'none' : 'black'}
+                rx="5"
+              />
+              <text
+                style="font-family: 'Fredoka'"
+                alignment-baseline="middle"
+                dominant-baseline="middle"
+                text-anchor="middle"
+                font-size={labelSize}
+                font-weight={labelWidth}
+                fill={typeColors[type].fg}
+                x={x+width / 2}
+                y={y+height / 2}
+              >
+                { label }
+              </text>
+            </g>
+        }
       </g>
     </>
   );

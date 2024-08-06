@@ -218,7 +218,6 @@ watchEffect(() => {
                 class="prop-wrapper fg-foreground font-500
                 font-size-16px mt-4px py-6px pl-8px w-full"
                 type="text"
-                maxlength="35"
               >
             </label>
           </div>
@@ -269,7 +268,6 @@ watchEffect(() => {
                   class="b-0 fg-foreground font-500
                 font-size-16px mt-4px py-4px pl-8px w-full"
                   type="text"
-                  maxlength="35"
                   placeholder="titulo"
                 >
               </div>
@@ -280,7 +278,6 @@ watchEffect(() => {
                   class="b-0 fg-foreground font-500
                 font-size-16px mt-4px py-4px pl-8px w-full"
                   type="text"
-                  maxlength="35"
                   placeholder="url"
                 >
               </div>
