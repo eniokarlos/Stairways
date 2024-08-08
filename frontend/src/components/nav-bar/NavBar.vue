@@ -3,12 +3,15 @@ import UiInput from '@/ui/input/UiInput.vue';
 import UiBtn from '@/ui/btn/UiBtn.vue';
 import { RouterLink } from 'vue-router';
 import { useAuthStore } from '@/stores/auth.store';
+import UiOverlayMenu from '@/ui/overlayMenu/uiOverlayMenu.vue';
+import { useCategoryStore } from '@/stores/category.store';
 
 const auth = useAuthStore();
+const categories = useCategoryStore();
 </script>
 
 <template>
-  <nav class="nav-bar h-70px flex items-center justify-center gap-8">
+  <nav class="shadow h-70px flex items-center justify-center gap-8">
     <RouterLink
       to="/"
       class="h-32px"
@@ -18,8 +21,32 @@ const auth = useAuthStore();
         src="../../assets/logo.svg"
       >
     </RouterLink>
-
-    <span class="fg-foreground cursor-pointer">Categorias</span>
+    <UiOverlayMenu 
+      close-on-click
+      close-on-click-content
+      origin="bottom-start"
+    >
+      <template #activator="{attrs}">
+        <span
+          v-bind="attrs"
+          class="fg-foreground cursor-pointer"
+        >Categorias</span>
+      </template>
+      <div
+        class="shadow max-h-30vh overflow-auto w-400px mt-5px rd-4px py-9px absolute z-2 bg-white"
+      >
+        <ul class="list-none">
+          <li
+            v-for="c in categories.list" 
+            :key="c.id"
+            class="cursor-pointer hover:bg-dropdown-hover
+          pl-24px pr-58px h-40px flex items-center"
+          >
+            {{ c.name }}
+          </li>
+        </ul>
+      </div>
+    </UiOverlayMenu>
     
     <UiInput
       class="font-size-20px w-50% h-45px"
@@ -58,26 +85,43 @@ const auth = useAuthStore();
       >
         Meus Roadmaps
       </RouterLink>
-      <div class="flex items-center">
-        <img
-          v-if="auth.user?.profileImage !== ''"
-          class="h-70% rd-100% "
-          :src="auth.user?.profileImage"
-        >
-        <div 
-          v-else
-          class="bg-black fg-white w-40px h-40px rd-100% 
+      <UiOverlayMenu
+        close-on-click
+        close-on-click-content
+        origin="bottom-end"
+      >
+        <template #activator="{attrs}">
+          <div
+            v-bind="attrs"
+            class="flex cursor-pointer items-center"
+          >
+            <img
+              v-if="auth.user?.profileImage !== ''"
+              class="h-70% rd-100% "
+              :src="auth.user?.profileImage"
+            >
+            <div 
+              v-else
+              class="bg-black fg-white w-40px h-40px rd-100% 
           flex items-center justify-center font-500 font-size-18px"
+            >
+              {{ auth.user?.name[0].toUpperCase() }}
+            </div>
+          </div>
+        </template>
+        <div
+          class="bg-white cursor-pointer hover:bg-dropdown-hover px-20px py-10px shadow rd-4px"
+          @click="auth.clear()"
         >
-          {{ auth.user?.name[0].toUpperCase() }}
+          Sair
         </div>
-      </div>
+      </UiOverlayMenu>
     </div>
   </nav>
 </template>
 
 <style lang="css" scoped>
-  .nav-bar {
+  .shadow {
     box-shadow: 0 2px 2px rgba(0,0,0,25%);
   }
 </style>

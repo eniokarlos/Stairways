@@ -14,7 +14,7 @@ export type RoadmapByCategory = Record<string, Array<RoadmapGet>>
 
 const auth = useAuthStore();
 const categoryStore = useCategoryStore();
-const groupedRoadmaps = ref<RoadmapByCategory>();
+const groupedRoadmaps = ref<RoadmapByCategory>({});
 
 async function loadData() {
   const roadmaps = await rmService.get();
@@ -62,7 +62,7 @@ onMounted(loadData);
     <UiList 
       v-for="(category, i) in groupedRoadmaps"
       :key="i"
-      :title="i.toString()"
+      :title="i"
     >
       <Card
         v-for="rm in category"
@@ -72,7 +72,7 @@ onMounted(loadData);
         :user-name="rm.authorName"
         :user-picture="rm.authorProfileImage"
         :description="rm.description"
-        :rating="80"
+        :rating="0"
         :level="rm.level"
         :card-picture="rm.imageURL"
         @clicked="openRoadmap(rm.id)"

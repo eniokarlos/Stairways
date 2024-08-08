@@ -3,7 +3,7 @@ import rmService, { RoadmapGet } from '@/services/roadmap.services';
 import RoadmapRender from '@/components/RoadmapRender/RoadmapRender.vue';
 import UiIcon from '@/ui/icon/UiIcon.vue';
 import UiProgressBar from '@/ui/progressBar/UiProgressBar.vue';
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 import { ItemRenderProps } from '@/components/RoadmapRender/RenderItem';
 
 const props = defineProps<{
@@ -40,36 +40,8 @@ async function getRoadmap() {
     }));
 }
 
-function wrapPage() {
-  const app = document.getElementById('app');
-  if (!app) {
-    return;
-  }
-
-  app.style.height = '100vh';
-  app.style.overflow = 'hidden';
-}
-
-function unwrapPage() {
-  const app = document.getElementById('app');
-  if (!app) {
-    return;
-  }
-
-  app.style.height = 'auto';
-  app.style.overflow = 'unset';
-}
 
 onMounted(getRoadmap);
-watch(activeItem, () => {
-  if (Object.values(activeItem.value?.content ?? {}).some(v => v.length)) {
-    wrapPage();
-  }
-  else {
-    unwrapPage();
-    activeItem.value = undefined;
-  }
-});
 
 </script>
 <template>
@@ -101,7 +73,7 @@ watch(activeItem, () => {
         <div>
           <UiProgressBar
             class="w-60%"
-            :progress="50"
+            :progress="0"
           />
         </div>
       </div>
