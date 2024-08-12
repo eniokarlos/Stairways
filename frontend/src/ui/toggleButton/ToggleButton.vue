@@ -40,6 +40,6 @@ const emits = defineEmits<{
     background-color: var(--green);
   }
   .checked .button {
-    transform: translateX(20px);
+    transform: translateX(22px);
   }
 </style>

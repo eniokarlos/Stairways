@@ -8,7 +8,7 @@ export class UserApi{
     public password = '',
     public profileImage = '',
     public roadmaps = [],
-    public doneItemsHashs: string[] = [],
+    public doneItemsHashs: string[] = ['5240c74cf4cf73a96e716d75fb87bae46ce105ca'],
   ) {}
 }
 
@@ -47,7 +47,7 @@ const services = {
 
     return res;
   },
-  setDoneItems: async (id: string, items: string[]): Promise<UserApi> => {
+  setDoneItem: async (id: string, items: string[]): Promise<UserApi> => {
     const res = await fetch(url+`?userId=${id}`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'PATCH',

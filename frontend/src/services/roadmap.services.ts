@@ -1,4 +1,7 @@
-import { RenderFormat } from '@/components/canvas/RmCanvas.vue';
+import { EdgeStyle } from '@/components/canvas/RmEdge.vue';
+import { ItemContent, ItemType } from '@/components/canvas/RmItem.vue';
+import { EdgeRenderProps } from '@/components/RoadmapRender/RenderEdge';
+import { ItemRenderProps } from '@/components/RoadmapRender/RenderItem.vue';
 
 const url = 'http://localhost:5247/Roadmap';
 export interface RoadmapPost {
@@ -9,8 +12,36 @@ export interface RoadmapPost {
   privacy: 0 | 1,
   categoryId: string,
   imageURL: string,
-  jsonContent: RenderFormat,
+  jsonContent: RoadmapContent,
 }
+
+export interface RoadmapContent {
+  items: PostItem[];
+  edges: PostEdge[];
+}
+
+export interface ContentGet {
+  items: ItemRenderProps[];
+  edges: EdgeRenderProps[];
+}
+export interface PostItem {
+  signature: string,
+  x?: number,
+  y?: number,
+  width?: number,
+  height?: number,
+  content?: ItemContent,
+  type?: ItemType
+  linkTo?: string;
+  label?: string;
+  labelWidth?: number;
+}
+
+export interface PostEdge {
+  path?: string,
+  edgeStyle?: EdgeStyle
+}
+
 export interface RoadmapGet {
   id: string,
   authorName: string,
@@ -24,7 +55,7 @@ export interface RoadmapGet {
     id: string,
     name: string
   },
-  jsonContent: RenderFormat
+  jsonContent: ContentGet;
 }
 
 const services = {
@@ -57,8 +88,7 @@ const services = {
     const res = await fetch(url+`/${id}`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'GET',
-    }).then(res => res.json());
-
+    }).then(res => res.json()) as RoadmapGet;
     return res;
   },
 };

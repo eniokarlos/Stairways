@@ -6,7 +6,7 @@ import UiToggleButton from '@/ui/toggleButton/ToggleButton.vue';
 import UiProgressBar from '@/ui/progressBar/UiProgressBar.vue';
 import { onMounted, ref } from 'vue';
 import userService from '@/services/user.services';
-import { ItemRenderProps } from '@/components/RoadmapRender/RenderItem';
+import { ItemRenderProps } from '@/components/RoadmapRender/RenderItem.vue';
 import { useAuthStore } from '@/stores/auth.store';
 
 const props = defineProps<{
@@ -28,13 +28,27 @@ const levelColors = [
   'brand-magenta',
 ];
 
-async function setItem() {
+function addOrRemoveItem(add: boolean) {
   if (!(userStore.user && activeItem.value)) {
     return;
   }
+  if (add) {
+    userStore.user.doneItemsHashs.push(activeItem.value.signature);
+    userService.setDoneItem(userStore.user.id, userStore.user.doneItemsHashs)
+      .then(res => userStore.setUser(res));
 
-  await userService.setDoneItems(userStore.user.id, [`${activeItem.value.signature}`])
-    .then(res => userStore.setUser(res));
+    activeItem.value.isDone = true;
+  }
+  else {
+    userStore.user.doneItemsHashs.splice(
+      userStore.user.doneItemsHashs.indexOf(activeItem.value.signature),
+      1,
+    );
+    userService.setDoneItem(userStore.user.id, userStore.user.doneItemsHashs)
+      .then(res => userStore.setUser(res));
+
+    activeItem.value.isDone = false;
+  }
 }
 
 async function getRoadmap() {
@@ -43,6 +57,9 @@ async function getRoadmap() {
     return;
   }
   roadmap.value = res;
+  roadmap.value.jsonContent.items.forEach(i => {
+    i.isDone = userStore.user?.doneItemsHashs.includes(i.signature);
+  });
   roadmap.value!.jsonContent.edges = res.jsonContent.edges.map(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (e: any) => ({
@@ -55,7 +72,6 @@ function hasContent() {
   if (!activeItem.value) {
     return;
   }
-  
   return activeItem.value.content?.title || 
     activeItem.value.content?.description ||
     activeItem.value.content?.links.length;
@@ -121,9 +137,9 @@ onMounted(async () => {
     </header>
     <main>
       <RoadmapRender 
+        v-model:active-item="activeItem"
         :edges="roadmap.jsonContent.edges"
         :items="roadmap.jsonContent.items"
-        @item-clicked="activeItem = $event;"
       />
     </main>
     <div
@@ -135,7 +151,10 @@ onMounted(async () => {
         class="absolute top-0 z-102 right-0 bg-white w-35% h-full pa-24px" 
         @pointerdown.stop
       >
-        <UiToggleButton :change="setItem()" />
+        <UiToggleButton
+          :initial-value="activeItem.isDone"
+          @change="addOrRemoveItem($event)"
+        />
         <h1 class="font-size-36px font-800 mt-28px mb-10px">
           {{ activeItem.content?.title }}
         </h1>

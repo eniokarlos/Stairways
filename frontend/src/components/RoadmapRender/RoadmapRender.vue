@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import RenderItem, { ItemRenderProps } from '@/components/RoadmapRender/RenderItem';
+import RenderItem, { ItemRenderProps } from '@/components/RoadmapRender/RenderItem.vue';
 import RenderEdge, { EdgeRenderProps } from '@/components/RoadmapRender/RenderEdge';
 import { onMounted, ref } from 'vue';
 
@@ -11,9 +11,7 @@ defineProps<{
   edges: EdgeRenderProps[]
 }>();
 
-const emit = defineEmits<{
-  'itemClicked': [item: ItemRenderProps]
-}>();
+const activeItem = defineModel<ItemRenderProps>('activeItem');
 
 function centralizeSvgContent() {
   if (svg.value && content.value) {
@@ -52,9 +50,9 @@ onMounted(centralizeSvgContent);
         /> 
         <RenderItem 
           v-for="item in items"
-          :key="item"
+          :key="item.signature"
           v-bind="item"
-          @item-clicked="emit('itemClicked', $event)"
+          @click="activeItem = item"
         />
       </g>
     </svg>

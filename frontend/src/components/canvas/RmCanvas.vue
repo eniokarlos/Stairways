@@ -7,16 +7,9 @@ import RmSelectedBox from './RmSelectedBox.vue';
 import RmItemMenu from './RmItemMenu.vue';
 import RmEdgeMenu from './RmEdgeMenu.vue';
 import { Anchor, AnchorClickEvent } from './RmAnchors.vue';
-import { ItemRenderProps } from '../RoadmapRender/RenderItem';
-import { EdgeRenderProps } from '../RoadmapRender/RenderEdge';
 import { useRoadmapStore } from '@/stores/roadmap.store';
 import getItemContentHash from './Util/getItemContentHash';
-
-
-export interface RenderFormat {
-  items: ItemRenderProps[], 
-  edges: EdgeRenderProps[]
-}
+import { RoadmapContent } from '@/services/roadmap.services';
 
 export type RoadmapLevel = 0 | 1 | 2;
 
@@ -227,7 +220,7 @@ function setRenderFormat(){
   if (!svg.value) {
     return;
   }
-  const res: RenderFormat = {
+  const res: RoadmapContent = {
     items: [],
     edges: [], 
   };
