@@ -1,8 +1,8 @@
 import { SetupContext } from 'vue';
+import { useAuthStore } from '@/stores/auth.store';
 import { ItemContent, ItemType } from '../canvas/RmItem.vue';
-
 export interface ItemRenderProps{
-  id: string,
+  signature: string,
   x?: number,
   y?: number,
   width?: number,
@@ -38,6 +38,8 @@ export default function CanvasTopic(props: ItemRenderProps, context: SetupContex
       fg: '#2E2E2E',
     },
   };
+  const userStore = useAuthStore();
+  const isDone = userStore.user?.doneItemsHashs.includes(props.signature);
 
   const {
     x=0,
@@ -88,7 +90,7 @@ export default function CanvasTopic(props: ItemRenderProps, context: SetupContex
                 y={y}
                 width={width}
                 height={height}
-                fill={typeColors[type].bg}
+                fill={isDone ? '#7FB069' : typeColors[type].bg}
                 stroke={type === 'text' ? 'none' : 'black'}
                 rx="5"
               />

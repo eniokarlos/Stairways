@@ -56,6 +56,7 @@ public class RoadmapJsonValidator
         },
         'item-base': {
             'required': [
+                'signature',
                 'label', 
                 'labelWidth', 
                 'labelSize',
@@ -64,6 +65,9 @@ public class RoadmapJsonValidator
                 'x',
                 'y'],
             'properties': {
+                'signature': {
+                    'type': 'string'
+                },
                 'label': {
                     'type': 'string'
                 },

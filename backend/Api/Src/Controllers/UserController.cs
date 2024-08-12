@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Stairways.Api.Models;
@@ -65,6 +64,18 @@ public class UserController : ControllerBase
     if (res)
       return Ok("valid token");
     return Unauthorized("invalid token");
+  }
+
+
+  [HttpPatch]
+  public async Task<ActionResult> SetUserDoneItems(string userId, string[] doneItems)
+  {
+    var res = await _service.SetUserDoneItems(userId, doneItems);
+
+    if (res.IsFail)
+      return BadRequest(res.Error!.Message);
+
+    return Ok(res.Unwrap());
   }
 
   [HttpGet("{id}")]

@@ -12,6 +12,7 @@ public class UserEntity : Entity
   public byte[]? PasswordHash {get; private set;}
   public byte[]? PasswordSalt {get; private set;}
   public string ProfileImage {get; private set;}
+  public string[] DoneItemsHashs {get; set;}
   public virtual ICollection<RoadmapEntity> Roadmaps {get; set;}
   
   private UserEntity(Id id, string name, string email, string profileImage = "") 
@@ -21,6 +22,7 @@ public class UserEntity : Entity
     Email = email;
     ProfileImage = profileImage;
     Roadmaps = [];
+    DoneItemsHashs = [];
   }
 
   private UserEntity(string name, string email, string profileImage = "") 
@@ -30,6 +32,7 @@ public class UserEntity : Entity
     Email = email;
     ProfileImage = profileImage;
     Roadmaps = [];
+    DoneItemsHashs = [];
   }
 
   public static Result<UserEntity,EntityValidationException> Of(string name, string email, 

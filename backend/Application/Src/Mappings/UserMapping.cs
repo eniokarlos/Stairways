@@ -13,6 +13,7 @@ public static class UserMappings
       user.Id.Value,
       user.Name,
       user.ProfileImage,
+      user.DoneItemsHashs,
       user.Roadmaps.Select(r => r.ToInDTO()).ToList()
     );
 
@@ -24,7 +25,7 @@ public static class UserMappings
     var userResult = UserEntity.Of(
       dto.Name,
       dto.Email,
-      dto.profileImage
+      dto.ProfileImage
     );
 
     var roadmapList = dto.Roadmaps.ToResultList(rm => rm.ToEntity());
@@ -36,6 +37,7 @@ public static class UserMappings
 
     var newUser = userResult.Unwrap();
     newUser.Roadmaps = roadmapList.Unwrap();
+    newUser.DoneItemsHashs = dto.DoneItemsHashs;
     
     return Result<UserEntity, EntityValidationException>.Ok(newUser);
   }

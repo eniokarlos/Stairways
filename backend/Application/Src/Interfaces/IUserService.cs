@@ -8,6 +8,7 @@ public interface IUserService
 {
   Task<Result<UserOutDTO,EntityValidationException>> AddAsync(UserInDTO user);
   Task<Result<UserOutDTO, Exception>> GetByIdAsync(string id);
+  Task<Result<UserOutDTO,EntityNotFoundException>> SetUserDoneItems(string userId, string[] doneItems);
   Task<Result<UserOutDTO, Exception>> UpdateAsync(UserInDTO user);
   Task<Result<EntityNotFoundException>> DeleteAsync(string id);
 }

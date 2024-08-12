@@ -10,6 +10,7 @@ import { Anchor, AnchorClickEvent } from './RmAnchors.vue';
 import { ItemRenderProps } from '../RoadmapRender/RenderItem';
 import { EdgeRenderProps } from '../RoadmapRender/RenderEdge';
 import { useRoadmapStore } from '@/stores/roadmap.store';
+import getItemContentHash from './Util/getItemContentHash';
 
 
 export interface RenderFormat {
@@ -232,7 +233,7 @@ function setRenderFormat(){
   };
 
   res.items = roadmap.value.items.map(i => ({
-    id: crypto.randomUUID(),
+    signature: getItemContentHash(i.content),
     x: i.x,
     y: i.y,
     content: i.content,
@@ -244,7 +245,7 @@ function setRenderFormat(){
     type: i.type,
     linkTo: i.linkTo,
   }));
-  
+  console.log(res.items);
   const edges = svg.value.getElementsByClassName('edge');
   res.edges = Array.from(edges).map(
     (e) => { 
@@ -257,8 +258,6 @@ function setRenderFormat(){
   rmStore.toBePublished.edges = res.edges;
   rmStore.toBePublished.items = res.items;
 }
-
-
 document.addEventListener('pointermove', onMove);
 document.addEventListener('pointerup', stopGridMove);
 document.addEventListener('pointerup', stopAddEdge);

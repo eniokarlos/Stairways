@@ -5,7 +5,6 @@ using Stairways.Application.Interfaces;
 using Stairways.Application.Mappings;
 using Stairways.Core.Errors;
 using Stairways.Core.Interfaces;
-using Stairways.Core.Models;
 using Stairways.Core.Utils;
 
 namespace Stairways.Application.Services;
@@ -58,7 +57,19 @@ public class UserService : IUserService
     return Result<UserOutDTO, Exception>.Ok(result.Unwrap().ToOutDTO());
   }
 
-  public async Task<Result<UserOutDTO, Exception>> UpdateAsync(UserInDTO user)
+  public async Task<Result<UserOutDTO,EntityNotFoundException>> SetUserDoneItems(string userId, string[] doneItems)
+  {
+    var result = await _repository.SetUserDoneItems(userId, doneItems);
+
+    if (result.IsFail)
+      return Result<UserOutDTO, 
+      EntityNotFoundException>.Fail(EntityNotFoundException.Of(result.Error!.Message));
+
+    return Result<UserOutDTO, 
+    EntityNotFoundException>.Ok(result.Unwrap().ToOutDTO());
+  }
+
+    public async Task<Result<UserOutDTO, Exception>> UpdateAsync(UserInDTO user)
   {
     var userEntityResult = user.ToEntity();
 

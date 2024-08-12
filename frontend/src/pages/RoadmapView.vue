@@ -2,14 +2,17 @@
 import rmService, { RoadmapGet } from '@/services/roadmap.services';
 import RoadmapRender from '@/components/RoadmapRender/RoadmapRender.vue';
 import UiIcon from '@/ui/icon/UiIcon.vue';
+import UiToggleButton from '@/ui/toggleButton/ToggleButton.vue';
 import UiProgressBar from '@/ui/progressBar/UiProgressBar.vue';
 import { onMounted, ref } from 'vue';
+import userService from '@/services/user.services';
 import { ItemRenderProps } from '@/components/RoadmapRender/RenderItem';
+import { useAuthStore } from '@/stores/auth.store';
 
 const props = defineProps<{
   id:string
 }>();
-
+const userStore = useAuthStore();
 const roadmap = ref<RoadmapGet>();
 const activeItem = ref<ItemRenderProps | undefined>();
 
@@ -25,6 +28,14 @@ const levelColors = [
   'brand-magenta',
 ];
 
+async function setItem() {
+  if (!(userStore.user && activeItem.value)) {
+    return;
+  }
+
+  await userService.setDoneItems(userStore.user.id, [`${activeItem.value.signature}`])
+    .then(res => userStore.setUser(res));
+}
 
 async function getRoadmap() {
   const res = await rmService.getById(props.id);
@@ -40,9 +51,19 @@ async function getRoadmap() {
     }));
 }
 
+function hasContent() {
+  if (!activeItem.value) {
+    return;
+  }
+  
+  return activeItem.value.content?.title || 
+    activeItem.value.content?.description ||
+    activeItem.value.content?.links.length;
+}
 
-onMounted(getRoadmap);
-
+onMounted(async () => {
+  await getRoadmap();
+});
 </script>
 <template>
   <div
@@ -106,7 +127,7 @@ onMounted(getRoadmap);
       />
     </main>
     <div
-      v-if="activeItem"
+      v-if="activeItem && hasContent()"
       class="modal fixed top-0px right-0 h-full w-100vw z-100"
       @pointerdown="activeItem = undefined"
     >
@@ -114,6 +135,7 @@ onMounted(getRoadmap);
         class="absolute top-0 z-102 right-0 bg-white w-35% h-full pa-24px" 
         @pointerdown.stop
       >
+        <UiToggleButton :change="setItem()" />
         <h1 class="font-size-36px font-800 mt-28px mb-10px">
           {{ activeItem.content?.title }}
         </h1>

@@ -18,7 +18,7 @@ public static class RoadmapMapping
       roadmap.Meta.Level,
       roadmap.Meta.Privacy,
       roadmap.Meta.ImageURL,
-      roadmap.Category.Id.Value,
+      roadmap.CategoryId.Value,
       JsonSerializer.Deserialize<object>(roadmap.JsonContent)!
     );
     

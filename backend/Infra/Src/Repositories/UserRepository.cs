@@ -10,81 +10,94 @@ namespace Stairways.Infra.Repositories;
 
 public class UserRepository : IUserRespository
 {
-    private readonly ApplicationDbContext _context;
+  private readonly ApplicationDbContext _context;
 
-    public UserRepository(ApplicationDbContext context)
-    {
-      _context = context;
-    }
+  public UserRepository(ApplicationDbContext context)
+  {
+    _context = context;
+  }
 
-    public async Task<UserEntity> AddAsync(UserEntity user)
+  public async Task<UserEntity> AddAsync(UserEntity user)
+  {
+    _context.Add(user);
+    await _context.SaveChangesAsync();
+    return user;
+  }
+
+  public async Task<Result<EntityNotFoundException>> DeleteAsync(string userId)
+  {
+    var res = await GetByIdAsync(userId);
+
+    if (!res.IsFail)
     {
-      _context.Add(user);
+      _context.Remove(res.Unwrap());
       await _context.SaveChangesAsync();
-      return user;
+      return Result<EntityNotFoundException>.Ok();
     }
 
-    public async Task<Result<EntityNotFoundException>> DeleteAsync(string userId)
+    return Result<EntityNotFoundException>
+      .Fail(EntityNotFoundException.Of("User not found"));
+  }
+
+  public async Task<Result<UserEntity, Exception>> GetByIdAsync(string userId)
+  {
+    var givenId = UUID4.Of(userId);
+
+    if (givenId.IsFail)
+      return Result<UserEntity, Exception>.Fail(givenId.Error!);
+
+    var res  = await _context.Users.Include(u => u.Roadmaps).FirstOrDefaultAsync(
+      user => user.Id == givenId.Unwrap()
+    );
+
+    if (res != null)
+      return Result<UserEntity,Exception>.Ok(res);
+
+    return Result<UserEntity,Exception>
+      .Fail(EntityNotFoundException.Of("User not found"));
+  }
+
+  public async Task<Result<UserEntity,EntityNotFoundException>> SetUserDoneItems(string userId, string[] doneItems)
+  {
+    var res = await GetByIdAsync(userId);
+
+    if (res.IsFail)
+      return Result<UserEntity, EntityNotFoundException>.Fail(EntityNotFoundException.Of(res.Error!.Message));
+    
+    res.Unwrap().DoneItemsHashs = doneItems;
+    await _context.SaveChangesAsync();
+
+    return Result<UserEntity, EntityNotFoundException>.Ok(res.Unwrap());
+  }
+
+  public async Task<Result<UserEntity, EntityNotFoundException>> UpdateAsync(UserEntity user)
+  {
+    var res = await GetByIdAsync(user.Id.Value);
+
+    if (!res.IsFail)
     {
-      var res = await GetByIdAsync(userId);
-
-      if (!res.IsFail)
-      {
-        _context.Remove(res.Unwrap());
-        await _context.SaveChangesAsync();
-        return Result<EntityNotFoundException>.Ok();
-      }
-
-      return Result<EntityNotFoundException>
-        .Fail(EntityNotFoundException.Of("User not found"));
+      _context.Update(user);
+      await _context.SaveChangesAsync();
+      return Result<UserEntity, EntityNotFoundException>.Ok(user);
     }
 
-    public async Task<Result<UserEntity, Exception>> GetByIdAsync(string userId)
-    {
-      var givenId = UUID4.Of(userId);
+    return Result<UserEntity,EntityNotFoundException>
+      .Fail(EntityNotFoundException.Of("User not found"));
+  }
 
-      if (givenId.IsFail)
-        return Result<UserEntity, Exception>.Fail(givenId.Error!);
+  public async Task<Result<bool, InvalidUUID4Exception>> UserExists(string id)
+  {
+    var givenId = UUID4.Of(id);
 
-      var res  = await _context.Users.Include(u => u.Roadmaps).FirstOrDefaultAsync(
-        user => user.Id == givenId.Unwrap()
-      );
+    if (givenId.IsFail)
+      return Result<bool, InvalidUUID4Exception>.Fail(givenId.Error!);
 
-      if (res != null)
-        return Result<UserEntity,Exception>.Ok(res);
+    var result = await _context.Users.FirstOrDefaultAsync(user =>
+    user.Id == givenId.Unwrap());
 
-      return Result<UserEntity,Exception>
-        .Fail(EntityNotFoundException.Of("User not found"));
-    }
+    if (result != null)
+      return Result<bool, InvalidUUID4Exception>.Ok(true);
 
-    public async Task<Result<UserEntity, EntityNotFoundException>> UpdateAsync(UserEntity user)
-    {
-      var res = await GetByIdAsync(user.Id.Value);
-
-      if (!res.IsFail)
-      {
-        _context.Update(user);
-        await _context.SaveChangesAsync();
-        return Result<UserEntity, EntityNotFoundException>.Ok(user);
-      }
- 
-      return Result<UserEntity,EntityNotFoundException>
-        .Fail(EntityNotFoundException.Of("User not found"));
-    }
-
-    public async Task<Result<bool, InvalidUUID4Exception>> UserExists(string id)
-    {
-      var givenId = UUID4.Of(id);
-
-      if (givenId.IsFail)
-        return Result<bool, InvalidUUID4Exception>.Fail(givenId.Error!);
-
-      var result = await _context.Users.FirstOrDefaultAsync(user =>
-      user.Id == givenId.Unwrap());
-
-      if (result != null)
-        return Result<bool, InvalidUUID4Exception>.Ok(true);
-
-      return false;
-    }
+    return false;
+  }
 }
