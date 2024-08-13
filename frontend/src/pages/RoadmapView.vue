@@ -4,7 +4,7 @@ import RoadmapRender from '@/components/RoadmapRender/RoadmapRender.vue';
 import UiIcon from '@/ui/icon/UiIcon.vue';
 import UiToggleButton from '@/ui/toggleButton/ToggleButton.vue';
 import UiProgressBar from '@/ui/progressBar/UiProgressBar.vue';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import userService from '@/services/user.services';
 import { ItemRenderProps } from '@/components/RoadmapRender/RenderItem.vue';
 import { useAuthStore } from '@/stores/auth.store';
@@ -15,6 +15,11 @@ const props = defineProps<{
 const userStore = useAuthStore();
 const roadmap = ref<RoadmapGet>();
 const activeItem = ref<ItemRenderProps | undefined>();
+const progress = computed(() => {
+  const totalItems = roadmap.value?.jsonContent.items.filter(i => i.type !== 'link').length ?? 1;
+  const doneItems =  roadmap.value?.jsonContent.items.filter(i => i.isDone).length ?? 0;
+  return Math.round((doneItems/totalItems) * 100);
+});
 
 const levels = [
   'Iniciante',
@@ -107,10 +112,10 @@ onMounted(async () => {
         <span class="">
           Criador por: <b>{{ roadmap.authorName }}</b>
         </span>
-        <div>
+        <div v-if="userStore.isAuth">
           <UiProgressBar
             class="w-60%"
-            :progress="0"
+            :progress="progress"
           />
         </div>
       </div>
@@ -152,6 +157,7 @@ onMounted(async () => {
         @pointerdown.stop
       >
         <UiToggleButton
+          v-if="userStore.isAuth"
           :initial-value="activeItem.isDone"
           @change="addOrRemoveItem($event)"
         />

@@ -95,7 +95,8 @@ public class CategoryConfiguration : IEntityTypeConfiguration<CategoryEntity>
       CategoryEntity.Of("Ciência e Tecnologia Ambiental").Unwrap(),
       CategoryEntity.Of("Ciência e Tecnologia dos Materiais").Unwrap(),
       CategoryEntity.Of("Interdisciplinar").Unwrap(),
-      CategoryEntity.Of("Biotecnologia").Unwrap()
+      CategoryEntity.Of("Biotecnologia").Unwrap(),
+      CategoryEntity.Of("Gastronomia").Unwrap()
     );
   }
 }

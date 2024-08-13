@@ -79,7 +79,8 @@ const emits = defineEmits<{
         :font-size="labelSize"
         :font-weight="labelWidth"
         :fill="typeColors[type].fg"
-        x=""
+        :x="x+width / 2"
+        :y="y+height / 2"
       >
         {{ label }}
       </text>
@@ -91,7 +92,7 @@ const emits = defineEmits<{
         :width="width"
         :height="height"
         :fill="isDone ? '#7FB069' : typeColors[type].bg"
-        stroke="black"
+        :stroke="type === 'text' ? 'none': 'black'"
         rx="5"
       />
       <text
