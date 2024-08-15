@@ -19,7 +19,7 @@ export interface BoundingBox {
 }
 
 export interface RoadmapItem extends BoundingBox{
-  id: string;
+  id: string,
   content: ItemContent;
   type: ItemType;
   linkTo?: string;

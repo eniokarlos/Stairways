@@ -30,6 +30,14 @@ public class RoadmapController : ControllerBase
     return Ok();
   }
 
+  [HttpGet("suggestions")]
+  public async Task<ActionResult<string[]>> GetSuggestions([FromQuery]string title)
+  {
+    var res = await _service.GetSuggestions(title);
+
+    return Ok(res);
+  }
+
   [HttpGet("{id}")]
   public async Task<ActionResult<RoadmapOutDTO>> GetById(string id)
   {

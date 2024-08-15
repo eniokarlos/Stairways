@@ -63,8 +63,12 @@ public class RoadmapService : IRoadmapService
       (roadmapsDto, pageNumber, pageSize, roadmaps.TotalCount);
   }
 
+  public async Task<string[]> GetSuggestions(string title)
+  {
+    return await _repository.GetSuggestions(title);
+  }
 
-  public async Task<Result<Exception>> UpdateAsync(RoadmapInDTO roadmap)
+    public async Task<Result<Exception>> UpdateAsync(RoadmapInDTO roadmap)
   {
     var entityResult = roadmap.ToEntity();
 

@@ -226,6 +226,7 @@ function setRenderFormat(){
   };
 
   res.items = roadmap.value.items.map(i => ({
+    id: crypto.randomUUID(),
     signature: getItemContentHash(i.content),
     x: i.x,
     y: i.y,
@@ -238,7 +239,6 @@ function setRenderFormat(){
     type: i.type,
     linkTo: i.linkTo,
   }));
-  console.log(res.items);
   const edges = svg.value.getElementsByClassName('edge');
   res.edges = Array.from(edges).map(
     (e) => { 

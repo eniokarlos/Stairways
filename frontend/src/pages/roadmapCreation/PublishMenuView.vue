@@ -60,9 +60,9 @@ onMounted(async () => {
     await getCategories();
   }
 
-  if (!roadmapStore.roadmap.meta.categoryId) {
-    roadmapStore.roadmap.meta.categoryId = categoryStore.list[0].id;
-  }
+  // if (!roadmapStore.roadmap.meta.categoryId) {
+  //   roadmapStore.roadmap.meta.categoryId = categoryStore.list[0].id;
+  // }
 });
 </script>
   

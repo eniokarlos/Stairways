@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { inject, ref, watchEffect } from 'vue';
+import { inject, onMounted, ref, watchEffect } from 'vue';
 import UiDropDown from '@/ui/dropDown/UiDropDown.vue';
 import UiBtn from '@/ui/btn/UiBtn.vue';
 import UiIcon from '@/ui/icon/UiIcon.vue';
+import roadmapService, { PostItem, RoadmapContent } from '@/services/roadmap.services';
 import { RoadmapItem } from './RmItem.vue';
 import { alignToGrid } from './Util/alignToGrid';
 import { useRoadmapStore } from '@/stores/roadmap.store';
+import { useFocus, watchDebounced } from '@vueuse/core';
 
 
 const tabs = ref([
@@ -15,6 +17,9 @@ const tabs = ref([
 
 const activeTab = ref(0);
 const item = defineModel<RoadmapItem>({ required: true });
+const labelInput = ref<HTMLInputElement>();
+const { focused } = useFocus(labelInput);
+const suggestions = ref<PostItem[]>();
 const store = useRoadmapStore();
 const inputStep = ref(store.gridAlignment ? 8 : 1);
 
@@ -30,10 +35,36 @@ function toggleGridAlign() {
   inputStep.value = store.gridAlignment ? 8 : 1;
 }
 
+async function getSuggestions() {
+  const res =  await roadmapService.getSuggestions(item.value.label);
+  if (res) {
+    suggestions.value = res.reduce((res: PostItem[], current: RoadmapContent) => {
+      res.push(...current.items
+        .filter(i => i.label?.toLowerCase() === item.value.label.toLowerCase()));
+
+      return res;
+    }, []);
+    suggestions.value.forEach(s => {
+      s.x = 0;
+      s.y = 0;
+    });
+  }
+}
+
 watchEffect(() => {
   if (item.value.type !== 'link') {
     item.value.linkTo = '';
   }
+});
+
+watchDebounced(focused, async (focused) => {
+  if (!focused) {
+    await getSuggestions();
+  }
+}, { debounce: 400 });
+
+onMounted(async () => {
+  await getSuggestions();
 });
 
 </script>
@@ -161,11 +192,13 @@ watchEffect(() => {
             <label class="fg-foreground font-500">
               Legenda
               <input
-                v-model="item.label" 
+                ref="labelInput"
+                v-model="item.label"
                 class="prop-wrapper fg-foreground font-500
-                font-size-16px mt-4px py-6px pl-8px w-full"
+                font-size-16px mt-4px py-6px pl-8px w-full" 
                 type="text"
                 maxlength="35"
+                @input="suggestions = []"
               >
             </label>
             <div class="flex gap-10px">
@@ -223,6 +256,25 @@ watchEffect(() => {
           </div>
         </div>
       </section>
+      <Transition name="appear">
+        <section v-if="suggestions?.length">
+          <div class="w-90% bg-#E2E2E2 mx-auto mt-20px rd-10px pa-10px flex flex-col items-center gap-8px">
+            <span class="font-size-14px">
+              Encontramos algumas sugestões para: <b>{{ item.label }}.</b>
+              Deseja ver?
+            </span>
+            <UiBtn
+              class="w-80%"
+              @click="
+                store.roadmap.items.push(...suggestions ?? []);
+                suggestions = [];
+              "
+            >
+              Carregar {{ suggestions?.length ?? 0 }} sugestões
+            </UiBtn>
+          </div>
+        </section>
+      </Transition>
     </main>
     <main
       v-else
@@ -359,5 +411,14 @@ watchEffect(() => {
     height: 10px;
     background-color: white;
     clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+  }
+
+  .appear-enter-from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  .appear-enter-active {
+    transition: all .8s;
   }
 </style>

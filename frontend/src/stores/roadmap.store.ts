@@ -1,4 +1,5 @@
-import { RenderFormat, Roadmap } from '@/components/canvas/RmCanvas.vue';
+import { Roadmap } from '@/components/canvas/RmCanvas.vue';
+import { RoadmapContent } from '@/services/roadmap.services';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
@@ -18,8 +19,7 @@ export const useRoadmapStore = defineStore('roadmaps', () => {
     edges: [], 
   });
 
-
-  const toBePublished = ref<RenderFormat>({
+  const toBePublished = ref<RoadmapContent>({
     edges: [],
     items: [],
   });

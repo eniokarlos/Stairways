@@ -67,6 +67,14 @@ public class RoadmapRepository : IRoadmapRepository
     return await PaginationHelper.CreateAsync(query, pageNumber, pageSize);
   }
 
+  public async Task<string[]> GetSuggestions(string title)
+  {
+    var res = await _context.Roadmaps.Where(
+      r => r.JsonContent.ToLower().Contains($"\"label\":\"{title.ToLower()}\"")
+    ).Take(5).ToListAsync();
+
+    return res.Select(r => r.JsonContent).ToArray();
+  }
   public async Task<Result<RoadmapEntity, EntityNotFoundException>> UpdateAsync(RoadmapEntity roadmap)
   {
     var res = await GetByIdAsync(roadmap.Id.Value);
@@ -80,6 +88,5 @@ public class RoadmapRepository : IRoadmapRepository
 
     return Result<RoadmapEntity, EntityNotFoundException>
       .Fail(EntityNotFoundException.Of("Roadmap not found"));
-
   }
 }

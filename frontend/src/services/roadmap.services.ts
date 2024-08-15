@@ -25,16 +25,18 @@ export interface ContentGet {
   edges: EdgeRenderProps[];
 }
 export interface PostItem {
+  id: string,
   signature: string,
-  x?: number,
-  y?: number,
-  width?: number,
-  height?: number,
-  content?: ItemContent,
-  type?: ItemType
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  content: ItemContent,
+  type: ItemType
   linkTo?: string;
-  label?: string;
-  labelWidth?: number;
+  label: string;
+  labelWidth: number;
+  labelSize: number;
 }
 
 export interface PostEdge {
@@ -90,6 +92,14 @@ const services = {
       method: 'GET',
     }).then(res => res.json()) as RoadmapGet;
     return res;
+  },
+  
+  getSuggestions: async (title: string): Promise<RoadmapContent[]> => {
+    const res =  await fetch(url+`/suggestions?title=${title}`, {
+      headers: { 'Content-Type': 'application/json' },
+      method: 'GET',
+    }).then(res => res.json()) as string[];
+    return res.map(i => JSON.parse(i) ?? []);
   },
 };
 
