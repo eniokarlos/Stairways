@@ -1,12 +1,13 @@
 import { Roadmap } from '@/components/canvas/RmCanvas.vue';
 import { RoadmapContent } from '@/services/roadmap.services';
+import { useStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
 export const useRoadmapStore = defineStore('roadmaps', () => {
   const gridAlignment = ref<boolean>(true);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const roadmap = ref<Roadmap>({
+  const roadmap = useStorage<Roadmap>('roadmap',{
     meta: {
       title: '',
       description: '',

@@ -52,6 +52,7 @@ const props = defineProps({
     default: false,
   },
 });
+
 const svg = ref<SVGSVGElement>();
 const rmStore = useRoadmapStore();
 const selectedItem = ref<RoadmapItem>();
@@ -59,7 +60,7 @@ const hoveredItem = ref<RoadmapItem>();
 const selectedEdge = ref<RoadmapEdge>();
 const lastEvent = ref<PointerEvent>();
 const selectionEvent = ref<PointerEvent>();
-const addEdgeEvent = ref<AddEdgeEvent| undefined>();
+const addEdgeEvent = ref<AddEdgeEvent | undefined>();
 
 const emit = defineEmits<{
   (name: 'on-move', data: GridMoveEvent): void,
@@ -77,8 +78,6 @@ const grid = reactive({
   x: 0,
   y: 0,
 });
-
-const roadmap = defineModel<Roadmap>('roadmap', { required: true });
 
 function onWheel(event: WheelEvent) {   
   if (!svg.value) {
@@ -125,7 +124,27 @@ function startAddEdge(e: AnchorClickEvent) {
   };
   
   addEdgeEvent.value.lastEvent = e.event;
+}
+
+function stopAddEdge() {
+  if (addEdgeEvent.value?.endItem && 
+  addEdgeEvent.value?.endItemAnchor) {
+    
+    const newEdge: RoadmapEdge = {
+      id: crypto.randomUUID(),
+      startItemId: addEdgeEvent.value.startItem.id,
+      endItemId: addEdgeEvent.value.endItem.id,
+      startItemAnchor: addEdgeEvent.value.startItemAnchor,
+      endItemAnchor: addEdgeEvent.value.endItemAnchor,
+      format: 'curve',
+      style: 'solid',
+      selected: false,
+    };
+    
+    rmStore.roadmap.edges.push(newEdge); 
+  }
   
+  addEdgeEvent.value = undefined;
 }
 
 function onMove(e: PointerEvent) {
@@ -160,27 +179,6 @@ function stopGridMove() {
   }
 }
 
-function stopAddEdge() {
-  if (addEdgeEvent.value?.endItem && 
-  addEdgeEvent.value?.endItemAnchor) {
-    
-    const newEdge: RoadmapEdge = {
-      id: crypto.randomUUID(),
-      startItem: addEdgeEvent.value.startItem,
-      endItem: addEdgeEvent.value.endItem,
-      startItemAnchor: addEdgeEvent.value.startItemAnchor,
-      endItemAnchor: addEdgeEvent.value.endItemAnchor,
-      format: 'curve',
-      style: 'solid',
-      selected: false,
-    };
-    
-    roadmap.value.edges.push(newEdge); 
-  }
-  
-  addEdgeEvent.value = undefined;
-}
-
 function deleteItem(e: KeyboardEvent) {
   if (e.key !== 'Delete' && e.key !== 'Backspace') {
     return;
@@ -193,26 +191,26 @@ function deleteItem(e: KeyboardEvent) {
   }
 
   if (selectedItem.value) {
-    const edges = roadmap.value.edges.filter(
-      edge => edge.startItem.id !== selectedItem.value?.id &&
-      edge.endItem.id !== selectedItem.value?.id,
+    const edges = rmStore.roadmap.edges.filter(
+      edge => edge.startItemId !== selectedItem.value?.id &&
+      edge.endItemId !== selectedItem.value?.id,
     );
     
-    const items = roadmap.value.items.filter(
+    const items = rmStore.roadmap.items.filter(
       (item) => item.id !== selectedItem.value?.id,
     );
 
-    roadmap.value.items = items;
-    roadmap.value.edges = edges;
+    rmStore.roadmap.items = items;
+    rmStore.roadmap.edges = edges;
 
     selectedItem.value = undefined;
   }
   else if (selectedEdge.value) {
-    const edges = roadmap.value.edges.filter(
+    const edges = rmStore.roadmap.edges.filter(
       edge => edge.id !== selectedEdge.value!.id,
     );
 
-    roadmap.value.edges = edges;
+    rmStore.roadmap.edges = edges;
   }
 }
 
@@ -225,7 +223,7 @@ function setRenderFormat(){
     edges: [], 
   };
 
-  res.items = roadmap.value.items.map(i => ({
+  res.items = rmStore.roadmap.items.map(i => ({
     id: crypto.randomUUID(),
     signature: getItemContentHash(i.content),
     x: i.x,
@@ -251,6 +249,15 @@ function setRenderFormat(){
   rmStore.toBePublished.edges = res.edges;
   rmStore.toBePublished.items = res.items;
 }
+
+function clear() {
+  selectedItem.value = undefined;
+  if (selectedEdge.value) {
+    selectedEdge.value.selected = false;
+    selectedEdge.value = undefined;
+  }
+}
+
 document.addEventListener('pointermove', onMove);
 document.addEventListener('pointerup', stopGridMove);
 document.addEventListener('pointerup', stopAddEdge);
@@ -270,7 +277,6 @@ watchEffect(() => {
 });
 
 provide('scale', { scale });
-provide('roadmapItems', roadmap.value.items);
 </script>
 
 <template>
@@ -283,14 +289,8 @@ provide('roadmapItems', roadmap.value.items);
       xmlns="http://www.w3.org/2000/svg"
       @pointerdown.middle="startGridMove"
       @wheel.prevent="onWheel"
-      @pointerenter="emit('on-enter', {event: $event, grid: {x: grid.x, y: grid.y}})"
-      @pointerdown="
-        selectedItem = undefined;
-        if (selectedEdge) {
-          selectedEdge.selected = false;
-          selectedEdge = undefined;
-        }
-      "
+      @pointerenter="emit('on-enter', {event: $event, grid: {x: grid.x, y: grid.y}});"
+      @pointerdown="clear"
     >
       <RmGrid
         grid-id="grid"
@@ -313,36 +313,30 @@ provide('roadmapItems', roadmap.value.items);
           />
         </g>
 
-        <template
-          v-for="edge in roadmap.edges"
+        <RmEdge
+          v-for="edge in rmStore.roadmap.edges"
           :key="edge.id"
-        >
-          <RmEdge
-            :edge="edge"
-            @pointerdown.left.stop="
-              selectedItem = undefined; 
-              selectedEdge = edge;
-            "
-          />
-          
-        </template>
-        <template
-          v-for="item in roadmap.items"
+          :edge="edge"
+          @pointerdown.left.stop="
+            selectedItem = undefined; 
+            selectedEdge = edge;
+          "
+        />
+        
+        <RmItem
+          v-for="item in rmStore.roadmap.items"
           :key="item.id"
-        >
-          <RmItem
-            :item="item"
-            @pointerdown.left.stop="
-              selectedItem = item; 
-              selectionEvent = $event;
-              if (selectedEdge) {
-                selectedEdge.selected = false;
-                selectedEdge = undefined;
-              };"
-            @mouseenter="hoveredItem = item"
-          />
+          :item="item"
+          @pointerdown.left.stop="
+            selectedItem = item; 
+            selectionEvent = $event;
+            if (selectedEdge) {
+              selectedEdge.selected = false;
+              selectedEdge = undefined;
+            };"
+          @mouseenter="hoveredItem = item"
+        />
 
-        </template>
       </g>
       <g
         v-if="selectedItem"

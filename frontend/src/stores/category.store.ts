@@ -1,10 +1,9 @@
 import { RoadmapCategory } from '@/services/category.services';
+import { useStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
-
 
 export const useCategoryStore = defineStore('categories', () => {
-  const list = ref<RoadmapCategory[]>([]);
+  const list = useStorage<RoadmapCategory[]>('categories',[]);
   function set(values: RoadmapCategory[]) {
     list.value = values;
   }

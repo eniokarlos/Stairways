@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { inject, onMounted, ref, watchEffect } from 'vue';
+import { onMounted, ref, watchEffect } from 'vue';
 import UiDropDown from '@/ui/dropDown/UiDropDown.vue';
 import UiBtn from '@/ui/btn/UiBtn.vue';
 import UiIcon from '@/ui/icon/UiIcon.vue';
@@ -8,7 +8,6 @@ import { RoadmapItem } from './RmItem.vue';
 import { alignToGrid } from './Util/alignToGrid';
 import { useRoadmapStore } from '@/stores/roadmap.store';
 import { useFocus, watchDebounced } from '@vueuse/core';
-
 
 const tabs = ref([
   'Design',
@@ -23,12 +22,9 @@ const suggestions = ref<PostItem[]>();
 const store = useRoadmapStore();
 const inputStep = ref(store.gridAlignment ? 8 : 1);
 
-const roadmapItems = inject('roadmapItems') as RoadmapItem[];
-
 function toggleGridAlign() {
   store.toggleGridAlignment();
-
-  roadmapItems.forEach(item => {
+  store.roadmap.items.forEach(item => {
     item.x = alignToGrid(item.x);
     item.y = alignToGrid(item.y);
   });

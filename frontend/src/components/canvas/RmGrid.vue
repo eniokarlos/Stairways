@@ -27,8 +27,6 @@ const props = withDefaults(
 
 const scaledSize = computed(() => props.size * props.scale);
 const scaledSubSize = computed(() => props.subGridSize * props.scale);
-
-
 </script>
 
 <template>

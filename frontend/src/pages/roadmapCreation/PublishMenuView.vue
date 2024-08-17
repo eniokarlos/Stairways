@@ -1,19 +1,17 @@
 <script setup lang="ts">
-import categoryService from '@/services/category.services';
 import UiDropDown from '@/ui/dropDown/UiDropDown.vue';
 import { useRoadmapStore } from '@/stores/roadmap.store';
 import UiIcon from '@/ui/icon/UiIcon.vue';
 import { onMounted, ref } from 'vue';
 import UiBtn from '@/ui/btn/UiBtn.vue';
 import UiInput from '@/ui/input/UiInput.vue';
-
 import { useCategoryStore } from '@/stores/category.store';
 
-const categoryStore = useCategoryStore();
 const roadmapStore = useRoadmapStore();
+const categoryStore = useCategoryStore();
 const imageSearch = ref<string>('');
 const isOnFirstStep = ref<boolean>(true);
-const isActive = defineModel<boolean>();
+const isActive = defineModel<boolean>({ default: false });
 const title = ref<HTMLTextAreaElement>();
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const imageResult = ref<Array<any>>();
@@ -49,20 +47,8 @@ async function getImages() {
     });
 }
 
-async function getCategories() {
-  categoryStore.list = await categoryService.get();
-}
-
 onMounted(async () => {
-  getImages();
-
-  if (!categoryStore.list) {
-    await getCategories();
-  }
-
-  // if (!roadmapStore.roadmap.meta.categoryId) {
-  //   roadmapStore.roadmap.meta.categoryId = categoryStore.list[0].id;
-  // }
+  await getImages();
 });
 </script>
   

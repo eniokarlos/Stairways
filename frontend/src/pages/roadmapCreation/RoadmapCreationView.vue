@@ -4,7 +4,9 @@ import UiDropDown from '@/ui/dropDown/UiDropDown.vue';
 import UiBtn from '@/ui/btn/UiBtn.vue';
 import PublishMenu from './PublishMenuView.vue';
 import RmCanvas, { GridMoveEvent } from '@/components/canvas/RmCanvas.vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
+import categoryService from '@/services/category.services';
+import { useCategoryStore } from '@/stores/category.store';
 import { ItemType, RoadmapItem } from '@/components/canvas/RmItem.vue';
 import { alignToGrid } from '@/components/canvas/Util/alignToGrid';
 import { useRoadmapStore } from '@/stores/roadmap.store';
@@ -24,6 +26,7 @@ const privacyIcons: string[] = [
 ];
 
 const canvas = ref();
+const categoryStore = useCategoryStore();
 const authStore = useAuthStore();
 const rmStore = useRoadmapStore();
 const scale = ref<number>(1);
@@ -140,6 +143,16 @@ async function publish() {
 
   router.push('/');
 }
+
+async function getCategories() {
+  categoryStore.list = await categoryService.get();
+}
+
+onMounted(async () => {
+  if (!categoryStore.list) {
+    await getCategories();
+  }
+});
 </script>
 
 <template>
@@ -258,7 +271,6 @@ async function publish() {
         <RmCanvas
           ref="canvas"
           v-model:scale="scale"
-          v-model:roadmap="rmStore.roadmap"
           :is-on-publish="showPublishMenu"
           @on-move="onMove"
           @on-enter="onEnter"

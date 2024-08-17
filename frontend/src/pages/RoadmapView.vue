@@ -16,7 +16,8 @@ const userStore = useAuthStore();
 const roadmap = ref<RoadmapGet>();
 const activeItem = ref<ItemRenderProps | undefined>();
 const progress = computed(() => {
-  const totalItems = roadmap.value?.jsonContent.items.filter(i => i.type !== 'link').length ?? 1;
+  const totalItems = roadmap.value?.jsonContent.items.filter(i => 
+    i.type !== 'link' && i.type !== 'text').length ?? 1;
   const doneItems =  roadmap.value?.jsonContent.items.filter(i => i.isDone).length ?? 0;
   return Math.round((doneItems/totalItems) * 100);
 });
@@ -63,7 +64,9 @@ async function getRoadmap() {
   }
   roadmap.value = res;
   roadmap.value.jsonContent.items.forEach(i => {
-    i.isDone = userStore.user?.doneItemsHashs.includes(i.signature);
+    if (i.type !== 'text') {
+      i.isDone = userStore.user?.doneItemsHashs.includes(i.signature);
+    }
   });
   roadmap.value!.jsonContent.edges = res.jsonContent.edges.map(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

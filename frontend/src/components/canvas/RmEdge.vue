@@ -3,13 +3,14 @@ import { computed, ref, watchEffect } from 'vue';
 import { Anchor } from './RmAnchors.vue';
 import { RoadmapItem } from './RmItem.vue';
 import { Point } from './RmCanvas.vue';
+import { useRoadmapStore } from '@/stores/roadmap.store';
 
 export type EdgeStyle = 'solid' | 'dashed' | 'dotted';
 export type EdgeFormat = 'line' | 'curve' | 'straight';
 export interface RoadmapEdge {
   id: string;
-  startItem: RoadmapItem;
-  endItem: RoadmapItem;
+  startItemId: string;
+  endItemId: string;
   startItemAnchor: Anchor;
   endItemAnchor: Anchor;
   format?: EdgeFormat;
@@ -30,7 +31,9 @@ const styleProps: Record<EdgeStyle, object> = {
     'stroke-linecap': 'round',
   },
 };
-
+const roadmapStore = useRoadmapStore();
+const startItem = findItem(props.edge.startItemId);
+const endItem = findItem(props.edge.endItemId);
 const anchorOffset = 6;
 const anchorsCords = {
   top: (item: RoadmapItem) => ({
@@ -52,14 +55,34 @@ const anchorsCords = {
 };
 
 const start = computed(() => {
-  const cords = anchorsCords[props.edge.startItemAnchor](props.edge.startItem);
-  return cords;
+  return anchorsCords[props.edge.startItemAnchor](startItem);
 });
 
 const end = computed(() => {
-  return anchorsCords[props.edge.endItemAnchor](props.edge.endItem);
+  return anchorsCords[props.edge.endItemAnchor](endItem);
 });
+
 const shadow = ref<string>();
+
+function findItem(id: string): RoadmapItem{
+  const res = roadmapStore.roadmap.items.find(i => i.id == id) ?? {
+    content: {
+      description: '',
+      links: [],
+      title: '', 
+    },
+    height: 0,
+    id: '',
+    label: '',
+    labelSize: 0,
+    labelWidth: 0,
+    type: 'topic',
+    width: 0,
+    x: 0,
+    y: 0,
+  } as RoadmapItem; 
+  return res;
+}
 
 function getLinePath(start: Point, end: Point) {
   let format = props.edge.format === 'curve' ? 'C' : 'L';
@@ -115,12 +138,11 @@ watchEffect(() => {
   shadow.value = props.edge.selected ?
     'drop-shadow(2px 2px 2px rgb(0 0 0 / 0.6))' : '';
 });
-
 </script>
 
 <template>
   <g
-    v-if="edge"
+    v-if="props"
   >
     <path
       :d="getLinePath(start, end)"
