@@ -25,6 +25,13 @@ const privacyIcons: string[] = [
   'earth',
 ];
 
+defineProps({
+  /** Define se a pagina foi aberta para POST ou PUT de roadmaps */
+  forPut: {
+    type: Boolean,
+    default: false,
+  },
+});
 const canvas = ref();
 const categoryStore = useCategoryStore();
 const authStore = useAuthStore();
@@ -144,6 +151,24 @@ async function publish() {
   router.push('/');
 }
 
+async function put() {
+  if (!authStore.user || !canvas.value) {
+    return;
+  }
+
+  const requestBody: RoadmapPost = {
+    userId: authStore.user.id,
+    title: rmStore.roadmap.meta.title,
+    description: rmStore.roadmap.meta.description,
+    level: rmStore.roadmap.meta.level,
+    privacy: rmStore.roadmap.meta.privacy,
+    imageURL: rmStore.roadmap.meta.imageURL,
+    categoryId: rmStore.roadmap.meta.categoryId,
+    jsonContent: rmStore.toBePublished,
+  };
+  await rmService.put(requestBody);
+}
+
 async function getCategories() {
   categoryStore.list = await categoryService.get();
 }
@@ -214,9 +239,9 @@ onMounted(async () => {
         />
         <UiBtn
           class="font-size-16px"
-          @pointerdown="showPublishMenu = true"
+          @pointerdown="forPut ? put() : showPublishMenu = true"
         >
-          Publicar
+          {{ forPut ? 'Salvar' : 'Pulicar' }}
         </UiBtn>
       </div>
     </nav>  

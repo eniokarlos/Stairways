@@ -1,4 +1,23 @@
+import { EdgeRenderProps } from '@/components/RoadmapRender/RenderEdge';
+import { ItemRenderProps } from '@/components/RoadmapRender/RenderItem.vue';
+
 const url = 'http://localhost:5247/user';
+
+export interface UserRoadmap {
+  userId: string,
+  title: string,
+  description: string,
+  level: 0 | 1 | 2,
+  privacy: 0 | 1,
+  categoryId: string,
+  imageURL: string,
+  jsonContent: UserRoadmapContent,
+}
+
+export interface UserRoadmapContent {
+  items: Required<ItemRenderProps>[],
+  edges: Required<EdgeRenderProps>[],
+}
 
 export class UserApi{
   constructor(
@@ -7,7 +26,7 @@ export class UserApi{
     public email = '',
     public password = '',
     public profileImage = '',
-    public roadmaps = [],
+    public roadmaps: UserRoadmap[] = [],
     public doneItemsHashs: string[] = ['5240c74cf4cf73a96e716d75fb87bae46ce105ca'],
   ) {}
 }

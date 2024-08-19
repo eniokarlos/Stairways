@@ -41,8 +41,8 @@ async function getSuggestions() {
       return res;
     }, []);
     suggestions.value.forEach(s => {
-      s.x = 0;
-      s.y = 0;
+      s.x = item.value.x;
+      s.y = item.value.y + 100;
     });
   }
 }

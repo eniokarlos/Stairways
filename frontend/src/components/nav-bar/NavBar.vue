@@ -80,7 +80,7 @@ const categories = useCategoryStore();
         Meu Progresso
       </RouterLink>
       <RouterLink
-        to="/"
+        to="/my-roadmaps"
         class="font-size-15px fg-foreground decoration-none flex items-center"
       >
         Meus Roadmaps

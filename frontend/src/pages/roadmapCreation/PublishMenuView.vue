@@ -178,10 +178,10 @@ onMounted(async () => {
             v-for="image in imageResult"
             :key="image.id"
             :class="{'selected-img': 
-              image.webformatURL === roadmapStore.roadmap.meta.imageURL}"
+              image.previewURL === roadmapStore.roadmap.meta.imageURL}"
             class="cursor-pointer relative 
             w-180px h-120px"
-            @pointerdown="roadmapStore.roadmap.meta.imageURL = image.webformatURL;"
+            @pointerdown="roadmapStore.roadmap.meta.imageURL = image.previewURL;"
           >
             <img 
               :src="image.webformatURL"

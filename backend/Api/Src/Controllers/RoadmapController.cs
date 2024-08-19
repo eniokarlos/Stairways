@@ -49,6 +49,17 @@ public class RoadmapController : ControllerBase
     return Ok(result.Unwrap());
   }
 
+  [HttpPut]
+  public async Task<ActionResult> UpdateRoadmap(RoadmapInDTO dto) 
+  {
+    var result = await _service.UpdateAsync(dto);
+
+    if (result.IsFail)
+      return NotFound(result.Error!.Message);
+
+    return Ok();
+  }
+
   [HttpGet]
   public async Task<ActionResult> getRoadmaps([FromQuery]PaginationParams pagination)
   {

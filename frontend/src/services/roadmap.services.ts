@@ -77,7 +77,13 @@ const services = {
 
     return res;
   },
-
+  put: async (body: RoadmapPost) => {
+    await fetch(url, {
+      headers: { 'Content-Type': 'application/json' },
+      method: 'PUT',
+      body: JSON.stringify(body),
+    });
+  },
   get: async (): Promise<RoadmapGet[]> => {
     const res = await fetch(url+'?PageNumber=1&PageSize=20', {
       headers: { 'Content-Type': 'application/json' },
@@ -93,7 +99,6 @@ const services = {
     }).then(res => res.json()) as RoadmapGet;
     return res;
   },
-  
   getSuggestions: async (title: string): Promise<RoadmapContent[]> => {
     const res =  await fetch(url+`/suggestions?title=${title}`, {
       headers: { 'Content-Type': 'application/json' },

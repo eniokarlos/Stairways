@@ -33,6 +33,10 @@ const router = createRouter({
           props: true,
           component: () => import('@/pages/RoadmapView.vue'),
         },
+        {
+          path: '/my-roadmaps',
+          component: () => import('@/pages/MyRoadmapsView.vue'),
+        },
       ],
     },
     {
