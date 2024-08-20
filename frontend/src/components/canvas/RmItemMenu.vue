@@ -40,6 +40,7 @@ async function getSuggestions() {
 
       return res;
     }, []);
+
     suggestions.value.forEach(s => {
       s.x = item.value.x;
       s.y = item.value.y + 100;

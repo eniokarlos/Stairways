@@ -4,7 +4,7 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
 export const useAuthStore = defineStore('auth', () => {
-  const user = useStorage<UserApi| null>('user',JSON.parse(localStorage.getItem('user')!));
+  const user = useStorage<UserApi| null>('user', JSON.parse(localStorage.getItem('user') ?? '{}'));
   const token = useStorage('token',localStorage.getItem('token'));
   const isAuth = ref<boolean>(false);
 
