@@ -10,11 +10,38 @@ public class RoadmapJsonValidator
   @"{
     '$schema': 'http://json-schema.org/draft-07/schema#',
     'definitions': {
+        'anchor': {
+            'type': 'string',
+            'enum': ['left', 'right', 'top', 'bottom']
+        },
         'edge': {
-            'required': ['path'],
+            'required': [
+                'id', 
+                'startItemId', 
+                'endItemId', 
+                'startItemAnchor', 
+                'endItemAnchor',
+                'format',
+                'style'],
             'properties': {
-                'path': {
+                'id': {
+                    'type': 'string'    
+                },
+                'startItemId': {
                     'type': 'string'
+                },
+                'endItemId': {
+                    'type': 'string'
+                },
+                'startItemAnchor': {
+                    '$ref': '#/definitions/anchor'
+                },
+                'endItemAnchor': {
+                    '$ref': '#/definitions/anchor'
+                },
+                'format': {
+                    'type': 'string',
+                    'enum': ['line', 'curve', 'straight']
                 },
                 'style': {
                     'type': 'string',

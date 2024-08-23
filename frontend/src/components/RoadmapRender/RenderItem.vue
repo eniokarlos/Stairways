@@ -2,13 +2,14 @@
 import { ItemContent, ItemType } from '../canvas/RmItem.vue';
 
 export interface ItemRenderProps{
+  id: string,
   signature: string,
-  x?: number,
-  y?: number,
-  width?: number,
-  height?: number,
-  content?: ItemContent,
-  type?: ItemType
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  content: ItemContent,
+  type: ItemType
   linkTo?: string;
   label?: string;
   labelWidth?: number;

@@ -14,11 +14,15 @@ const tabs = ref([
   'Conteúdo',
 ]);
 
+let matchedItem: PostItem | undefined;
 const activeTab = ref(0);
 const item = defineModel<RoadmapItem>({ required: true });
 const labelInput = ref<HTMLInputElement>();
 const { focused } = useFocus(labelInput);
-const suggestions = ref<PostItem[]>();
+const suggestions = ref<RoadmapContent>({
+  items: [],
+  edges: [], 
+});
 const store = useRoadmapStore();
 const inputStep = ref(store.gridAlignment ? 8 : 1);
 
@@ -32,20 +36,57 @@ function toggleGridAlign() {
 }
 
 async function getSuggestions() {
-  const res =  await roadmapService.getSuggestions(item.value.label);
-  if (res) {
-    suggestions.value = res.reduce((res: PostItem[], current: RoadmapContent) => {
-      res.push(...current.items
-        .filter(i => i.label?.toLowerCase() === item.value.label.toLowerCase()));
-
-      return res;
-    }, []);
-
-    suggestions.value.forEach(s => {
-      s.x = item.value.x;
-      s.y = item.value.y + 100;
-    });
+  if (item.value.type !== 'topic') {
+    return;
   }
+  const res =  await roadmapService.getSuggestions(item.value.label);
+
+  if (!res.length) {
+    return;
+  }
+  
+  matchedItem = res[0].items
+    .find(i => i.type === 'topic' && i.label?.toLowerCase().includes(item.value.label.toLocaleLowerCase()));
+
+  if (!matchedItem) {
+    return;
+  }
+
+  suggestions.value.edges.push(...res[0].edges
+    .filter(e => e.startItemId === matchedItem!.id || e.endItemId === matchedItem!.id));
+
+  suggestions.value.items.push(...res[0].items
+    .filter(i => 
+      i.id !== matchedItem!.id && 
+      i.type === 'subTopic' && 
+      suggestions.value.edges.some(e => e.startItemId === i.id || e.endItemId === i.id)));
+
+  suggestions.value.edges = suggestions.value.edges.filter(e => 
+    suggestions.value.items.some(i => 
+      i.id === e.startItemId || 
+      i.id === e.endItemId));
+}
+
+function setSuggestions() {
+  if (!matchedItem) {
+    return;
+  }
+  item.value.id = matchedItem.id;
+  item.value.label = matchedItem.label;
+  item.value.content = matchedItem.content;
+  store.roadmap.items.push(...suggestions.value.items);
+  store.roadmap.edges.push(...suggestions.value.edges);
+  
+  let newY = item.value.y - 50;
+  suggestions.value.items.forEach(i => {
+    i.x = item.value.x + 400;
+    i.y = newY;
+    
+    newY += 100;
+  });
+
+  suggestions.value.items = [];
+  suggestions.value.edges = [];
 }
 
 watchEffect(() => {
@@ -195,7 +236,10 @@ onMounted(async () => {
                 font-size-16px mt-4px py-6px pl-8px w-full" 
                 type="text"
                 maxlength="35"
-                @input="suggestions = []"
+                @input="
+                  suggestions.items = [];
+                  suggestions.edges = [];
+                "
               >
             </label>
             <div class="flex gap-10px">
@@ -254,20 +298,17 @@ onMounted(async () => {
         </div>
       </section>
       <Transition name="appear">
-        <section v-if="suggestions?.length">
+        <section v-if="suggestions.items.length">
           <div class="w-90% bg-#E2E2E2 mx-auto mt-20px rd-10px pa-10px flex flex-col items-center gap-8px">
             <span class="font-size-14px">
-              Encontramos algumas sugestões para: <b>{{ item.label }}.</b>
+              Encontramos algumas sugestões para o tópico: <b>{{ item.label }}.</b>
               Deseja ver?
             </span>
             <UiBtn
               class="w-80%"
-              @click="
-                store.roadmap.items.push(...suggestions ?? []);
-                suggestions = [];
-              "
+              @click="setSuggestions"
             >
-              Carregar {{ suggestions?.length ?? 0 }} sugestões
+              Carregar sugestões
             </UiBtn>
           </div>
         </section>

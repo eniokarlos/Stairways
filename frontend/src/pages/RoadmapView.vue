@@ -68,21 +68,6 @@ async function getRoadmap() {
       i.isDone = userStore.user?.doneItemsHashs.includes(i.signature);
     }
   });
-  roadmap.value!.jsonContent.edges = res.jsonContent.edges.map(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (e: any) => ({
-      path: e.path,
-      edgeStyle: e.style,
-    }));
-}
-
-function hasContent() {
-  if (!activeItem.value) {
-    return;
-  }
-  return activeItem.value.content?.title || 
-    activeItem.value.content?.description ||
-    activeItem.value.content?.links.length;
 }
 
 onMounted(async () => {
@@ -151,7 +136,7 @@ onMounted(async () => {
       />
     </main>
     <div
-      v-if="activeItem && hasContent()"
+      v-if="activeItem"
       class="modal fixed top-0px right-0 h-full w-100vw z-100"
       @pointerdown="activeItem = undefined"
     >

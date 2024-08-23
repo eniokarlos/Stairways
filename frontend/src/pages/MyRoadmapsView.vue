@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import Card from '@/components/card/Card.vue';
 import { useAuthStore } from '@/stores/auth.store';
-import { onBeforeMount } from 'vue';
 
 const user = useAuthStore().user;
-onBeforeMount(() => {
-  console.log(user);
-});
+
 </script>
 
 <template>

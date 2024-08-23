@@ -224,7 +224,7 @@ function setRenderFormat(){
   };
 
   res.items = rmStore.roadmap.items.map(i => ({
-    id: crypto.randomUUID(),
+    id: i.id,
     signature: getItemContentHash(i.content),
     x: i.x,
     y: i.y,
@@ -237,15 +237,17 @@ function setRenderFormat(){
     type: i.type,
     linkTo: i.linkTo,
   }));
-  const edges = svg.value.getElementsByClassName('edge');
-  res.edges = Array.from(edges).map(
-    (e) => { 
-      return {
-        path: e.getAttribute('d')!.replace(/(\s+|\r\n|\n|\r)/gm, ' '),
-        style: e.classList[1],
-      };
-    },
-  );
+
+  res.edges = rmStore.roadmap.edges.map(e => ({
+    id: e.id,
+    startItemId: e.startItemId,
+    endItemId: e.endItemId,
+    startItemAnchor: e.startItemAnchor,
+    endItemAnchor: e.endItemAnchor,
+    format: e.format,
+    style: e.style,
+  }));
+
   rmStore.toBePublished.edges = res.edges;
   rmStore.toBePublished.items = res.items;
 }

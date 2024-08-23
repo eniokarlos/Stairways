@@ -252,7 +252,7 @@ onMounted(async () => {
       @pointerup="stopAddElement"
     >
       <div
-        class="rm-creation__side-menu select-none w-250px h-full
+        class="rm-creation__side-menu relative select-none w-250px h-full
       b-1px-solid-light-gray flex flex-col items-center gap-15px" 
       >
         <span class="w-68% block mt-15px text-center fg-gray font-500">
@@ -287,6 +287,19 @@ onMounted(async () => {
           @pointerdown.left="onGrab('text')"
         >
           Texto
+        </UiBtn>
+
+        <UiBtn
+          color="pink"
+          class="absolute bottom-10"
+          @click="rmStore.clear()"
+        >
+          <span class="fg-red flex justify-center">
+            <UiIcon 
+              name="trash-can-outline mr-5px"
+            />
+            Limpar
+          </span>
         </UiBtn>
       </div>
       <div 

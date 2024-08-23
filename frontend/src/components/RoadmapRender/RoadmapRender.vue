@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import RenderItem, { ItemRenderProps } from '@/components/RoadmapRender/RenderItem.vue';
-import RenderEdge, { EdgeRenderProps } from '@/components/RoadmapRender/RenderEdge';
 import { onMounted, ref } from 'vue';
+import RenderEdge from './RenderEdge.vue';
+import { RoadmapEdge } from '../canvas/RmEdge.vue';
 
 const content = ref<SVGElement>();
 const svg = ref<SVGElement>();
 
 defineProps<{
   items: ItemRenderProps[],
-  edges: EdgeRenderProps[]
+  edges: RoadmapEdge[]
 }>();
 
 const activeItem = defineModel<ItemRenderProps>('activeItem');
@@ -19,9 +20,9 @@ function centralizeSvgContent() {
     const contentBox = content.value.getBoundingClientRect();
     
     svg.value.setAttribute('height', `${contentBox.height}`);
-    svg.value.setAttribute('viewBox', '0 0' +
+    svg.value.setAttribute('viewBox', '0 -10' +
     ` ${contentBox.width} `+
-    `${contentBox.height}`);
+    `${contentBox.height + 15}`);
   
     const offsetLeft = svgBox.left - contentBox.left;
     const offsetTop = svgBox.top - contentBox.top;
@@ -37,7 +38,7 @@ onMounted(centralizeSvgContent);
   <div class="w-full flex justify-center">
     <svg
       ref="svg"
-      width="90%"
+      width="100%"
       preserveAspectRatio="xMidYMin meet"
     >
       <g
@@ -45,8 +46,9 @@ onMounted(centralizeSvgContent);
       >
         <RenderEdge 
           v-for="edge in edges"
-          :key="edge"
-          v-bind="edge"
+          :key="edge.id"
+          :edge="edge"
+          :items="items"
         /> 
         <RenderItem 
           v-for="item in items"

@@ -1,6 +1,6 @@
-import { EdgeStyle } from '@/components/canvas/RmEdge.vue';
+import { Anchor } from '@/components/canvas/RmAnchors.vue';
+import { EdgeFormat, EdgeStyle, RoadmapEdge } from '@/components/canvas/RmEdge.vue';
 import { ItemContent, ItemType } from '@/components/canvas/RmItem.vue';
-import { EdgeRenderProps } from '@/components/RoadmapRender/RenderEdge';
 import { ItemRenderProps } from '@/components/RoadmapRender/RenderItem.vue';
 
 const url = 'http://localhost:5247/Roadmap';
@@ -22,8 +22,9 @@ export interface RoadmapContent {
 
 export interface ContentGet {
   items: ItemRenderProps[];
-  edges: EdgeRenderProps[];
+  edges: RoadmapEdge[];
 }
+
 export interface PostItem {
   id: string,
   signature: string,
@@ -40,8 +41,13 @@ export interface PostItem {
 }
 
 export interface PostEdge {
-  path?: string,
-  edgeStyle?: EdgeStyle
+  id: string,
+  startItemId: string;
+  endItemId: string;
+  startItemAnchor: Anchor;
+  endItemAnchor: Anchor;
+  format?: EdgeFormat;
+  style?: EdgeStyle;
 }
 
 export interface RoadmapGet {

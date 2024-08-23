@@ -70,7 +70,7 @@ public class RoadmapRepository : IRoadmapRepository
   public async Task<string[]> GetSuggestions(string title)
   {
     var res = await _context.Roadmaps.Where(
-      r => r.JsonContent.ToLower().Contains($"\"label\":\"{title.ToLower()}\"")
+      r => r.JsonContent.ToLower().Contains(title.ToLower())
     ).Take(5).ToListAsync();
 
     return res.Select(r => r.JsonContent).ToArray();

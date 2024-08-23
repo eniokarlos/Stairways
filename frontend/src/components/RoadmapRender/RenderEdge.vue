@@ -1,25 +1,16 @@
 <script setup lang="ts">
-import { computed, ref, watchEffect } from 'vue';
-import { Anchor } from './RmAnchors.vue';
-import { RoadmapItem } from './RmItem.vue';
-import { Point } from './RmCanvas.vue';
-import { useRoadmapStore } from '@/stores/roadmap.store';
+import { computed } from 'vue';
+import { EdgeStyle, RoadmapEdge } from '../canvas/RmEdge.vue';
+import { Point } from '../canvas/RmCanvas.vue';
+import { Anchor } from '../canvas/RmAnchors.vue';
+import { ItemRenderProps } from './RenderItem.vue';
 
-export type EdgeStyle = 'solid' | 'dashed' | 'dotted';
-export type EdgeFormat = 'line' | 'curve' | 'straight';
-
-export interface RoadmapEdge {
-  id: string;
-  startItemId: string;
-  endItemId: string;
-  startItemAnchor: Anchor;
-  endItemAnchor: Anchor;
-  format?: EdgeFormat;
-  style?: EdgeStyle;
-  selected?: boolean;
+export interface RenderEdgeProps {
+  items: ItemRenderProps[],
+  edge: RoadmapEdge
 }
 
-const props = defineProps<{edge: RoadmapEdge}>();
+const props = defineProps<RenderEdgeProps>();
 const styleProps: Record<EdgeStyle, object> = {
   solid: { 'stroke-width': '4' },
   dashed: {
@@ -32,24 +23,24 @@ const styleProps: Record<EdgeStyle, object> = {
     'stroke-linecap': 'round',
   },
 };
-const roadmapStore = useRoadmapStore();
+
 const startItem = findItem(props.edge.startItemId);
 const endItem = findItem(props.edge.endItemId);
 const anchorOffset = 6;
 const anchorsCords = {
-  top: (item: RoadmapItem) => ({
+  top: (item: ItemRenderProps) => ({
     x: item.x + item.width/2,
     y: item.y + anchorOffset,
   }),
-  right: (item: RoadmapItem) => ({
+  right: (item: ItemRenderProps) => ({
     x: item.x + item.width - anchorOffset,
     y: item.y + item.height/2,
   }),
-  bottom: (item: RoadmapItem) => ({
+  bottom: (item: ItemRenderProps) => ({
     x: item.x + item.width/2,
     y: item.y + item.height - anchorOffset,
   }),
-  left: (item: RoadmapItem) => ({
+  left: (item: ItemRenderProps) => ({
     x: item.x + anchorOffset,
     y: item.y + item.height/2,  
   }),
@@ -63,15 +54,14 @@ const end = computed(() => {
   return anchorsCords[props.edge.endItemAnchor](endItem);
 });
 
-const shadow = ref<string>();
-
-function findItem(id: string): RoadmapItem{
-  const res = roadmapStore.roadmap.items.find(i => i.id == id) ?? {
+function findItem(id: string): ItemRenderProps{
+  const res = props.items.find(i => i.id == id) ?? {
     content: {
       description: '',
       links: [],
       title: '', 
     },
+    signature: '',
     height: 0,
     id: '',
     label: '',
@@ -81,7 +71,7 @@ function findItem(id: string): RoadmapItem{
     width: 0,
     x: 0,
     y: 0,
-  } as RoadmapItem; 
+  } as ItemRenderProps; 
   return res;
 }
 
@@ -134,26 +124,12 @@ function getLinePath(start: Point, end: Point) {
     ${end.x},${end.y}`;
   }
 }
-
-watchEffect(() => {
-  shadow.value = props.edge.selected ?
-    'drop-shadow(2px 2px 2px rgb(0 0 0 / 0.6))' : '';
-});
-
 </script>
 
 <template>
   <g
     v-if="props"
   >
-    <path
-      :d="getLinePath(start, end)"
-      fill="none"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke="transparent"
-      stroke-width="40"
-    />
     <path
       class="edge"
       :class="edge.style"
@@ -163,7 +139,6 @@ watchEffect(() => {
       stroke-linecap="round"
       stroke-linejoin="round"
       stroke="#009FB7"
-      :filter="shadow"
     />
   </g>
 </template>

@@ -25,6 +25,11 @@ export const useRoadmapStore = defineStore('roadmaps', () => {
     items: [],
   });
 
+  function clear() {
+    roadmap.value.items = [];
+    roadmap.value.edges = [];
+  }
+
   function toggleGridAlignment() {
     gridAlignment.value = !gridAlignment.value;
   }
@@ -33,6 +38,7 @@ export const useRoadmapStore = defineStore('roadmaps', () => {
     roadmap,
     gridAlignment,
     toBePublished,
+    clear,
     toggleGridAlignment,
   };
 });
