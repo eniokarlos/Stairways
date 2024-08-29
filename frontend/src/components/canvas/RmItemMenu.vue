@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watchEffect } from 'vue';
+import { onMounted, ref, watch, watchEffect } from 'vue';
 import UiDropDown from '@/ui/dropDown/UiDropDown.vue';
 import UiBtn from '@/ui/btn/UiBtn.vue';
 import UiIcon from '@/ui/icon/UiIcon.vue';
@@ -8,21 +8,18 @@ import { RoadmapItem } from './RmItem.vue';
 import { alignToGrid } from './Util/alignToGrid';
 import { useRoadmapStore } from '@/stores/roadmap.store';
 import { useFocus, watchDebounced } from '@vueuse/core';
+import RoadmapRender from '../RoadmapRender/RoadmapRender.vue';
 
 const tabs = ref([
   'Design',
   'Conteúdo',
 ]);
 
-let matchedItem: PostItem | undefined;
 const activeTab = ref(0);
 const item = defineModel<RoadmapItem>({ required: true });
 const labelInput = ref<HTMLInputElement>();
 const { focused } = useFocus(labelInput);
-const suggestions = ref<RoadmapContent>({
-  items: [],
-  edges: [], 
-});
+const suggestions = ref<RoadmapContent[]>([]);
 const store = useRoadmapStore();
 const inputStep = ref(store.gridAlignment ? 8 : 1);
 
@@ -44,55 +41,100 @@ async function getSuggestions() {
   if (!res.length) {
     return;
   }
-  
-  matchedItem = res[0].items
-    .find(i => i.type === 'topic' && i.label?.toLowerCase().includes(item.value.label.toLocaleLowerCase()));
 
-  if (!matchedItem) {
-    return;
-  }
+  suggestions.value = res.reduce((result: RoadmapContent[], current, index) => {
 
-  suggestions.value.edges.push(...res[0].edges
-    .filter(e => e.startItemId === matchedItem!.id || e.endItemId === matchedItem!.id));
+    result[index] = {
+      edges: [],
+      items: [],
+    };
+    
+    const matchedItem = current.items.find(i => i.type === 'topic' 
+      && i.label?.toLowerCase().includes(item.value.label.toLowerCase()));
 
-  suggestions.value.items.push(...res[0].items
-    .filter(i => 
-      i.id !== matchedItem!.id && 
-      i.type === 'subTopic' && 
-      suggestions.value.edges.some(e => e.startItemId === i.id || e.endItemId === i.id)));
+    if (!matchedItem) {
+      return [];
+    }
 
-  suggestions.value.edges = suggestions.value.edges.filter(e => 
-    suggestions.value.items.some(i => 
-      i.id === e.startItemId || 
-      i.id === e.endItemId));
+    // map edges
+    result[index].edges = current.edges
+      .filter(e => (e.startItemId === matchedItem.id || 
+        e.endItemId === matchedItem.id) && 
+        current.items.some(i => i.type === 'subTopic' && 
+        (i.id === e.startItemId || i.id === e.endItemId)));
+
+    // map items
+    result[index].items = current.items
+      .filter(i => i.id === matchedItem.id || 
+        i.type === 'subTopic' && 
+        result[index].edges.some(e => e.startItemId === i.id || e.endItemId === i.id));
+
+    return result;
+  }, []);
 }
 
-function setSuggestions() {
+function setSuggestions(suggestion: RoadmapContent) {
+  const matchedItem = suggestion.items.find(i => i.type === 'topic' 
+  && i.label?.toLowerCase().includes(item.value.label.toLowerCase()));
+
   if (!matchedItem) {
     return;
-  }
+  }  
+
   item.value.id = matchedItem.id;
   item.value.label = matchedItem.label;
   item.value.content = matchedItem.content;
-  store.roadmap.items.push(...suggestions.value.items);
-  store.roadmap.edges.push(...suggestions.value.edges);
-  
-  let newY = item.value.y - 50;
-  suggestions.value.items.forEach(i => {
-    i.x = item.value.x + 400;
-    i.y = newY;
+
+  suggestion.items = formatItemsPosition(suggestion.items, 100,60, item.value);
+
+  store.roadmap.edges.push(...suggestion.edges);
+  store.roadmap.items.push(...suggestion.items.filter(i => i.id !== matchedItem.id));
+
+  suggestions.value = [];
+}
+
+
+function formatItemsPosition(items: PostItem[], gapX = 100, gapY = 60, mainTopic?: RoadmapItem)
+  : PostItem[] {
     
-    newY += 100;
+  const topic = mainTopic ?? items.find(i => i.type === 'topic');
+  if (!topic) {
+    return [];
+  }
+
+  const res = items.map(i => {
+    return { ...i };
   });
 
-  suggestions.value.items = [];
-  suggestions.value.edges = [];
+  let newY = topic.y - topic.height;
+
+  res.forEach(i => {
+    if (i.id === topic.id) {
+      return;
+    }
+
+    if (i.x < topic.x) {
+      i.x = topic.x - i.width - gapX;
+    }
+    else if (i.x > topic.x){
+      i.x = topic.x + topic.width + gapX;
+    }
+
+    i.y = newY;
+    newY += gapY;
+  });
+
+  return res;
 }
 
 watchEffect(() => {
   if (item.value.type !== 'link') {
     item.value.linkTo = '';
   }
+});
+
+watch(item, () => {
+  suggestions.value = [];
 });
 
 watchDebounced(focused, async (focused) => {
@@ -110,7 +152,7 @@ onMounted(async () => {
 <template>
   <aside
     class="side-menu absolute top-0 right-0 bg-white 
-    w-300px h-full flex flex-col"
+    w-20vw h-full flex flex-col"
   >
     <nav class="flex">
       <div
@@ -236,10 +278,7 @@ onMounted(async () => {
                 font-size-16px mt-4px py-6px pl-8px w-full" 
                 type="text"
                 maxlength="35"
-                @input="
-                  suggestions.items = [];
-                  suggestions.edges = [];
-                "
+                @input="suggestions = []"
               >
             </label>
             <div class="flex gap-10px">
@@ -298,18 +337,28 @@ onMounted(async () => {
         </div>
       </section>
       <Transition name="appear">
-        <section v-if="suggestions.items.length">
-          <div class="w-90% bg-#E2E2E2 mx-auto mt-20px rd-10px pa-10px flex flex-col items-center gap-8px">
+        <section
+          v-if="suggestions.length"
+          class="overflow-hidden"
+        >
+          <div class="w-96% mx-auto mt-20px pa-10px flex flex-col items-center gap-8px">
             <span class="font-size-14px">
               Encontramos algumas sugestões para o tópico: <b>{{ item.label }}.</b>
-              Deseja ver?
             </span>
-            <UiBtn
-              class="w-80%"
-              @click="setSuggestions"
-            >
-              Carregar sugestões
-            </UiBtn>
+            <div class="max-h-30vh overflow-auto ">
+              <div
+                v-for="s, i in suggestions"
+                :key="i"
+                class="cursor-pointer transition-all-300 hover:bg-#ececec rd-10px pa-8px"
+                @click="setSuggestions(s)"
+              >
+                <RoadmapRender
+                  :items="formatItemsPosition(s.items)"
+                  :edges="s.edges"
+                  ratio="xMidYMid meet"
+                />
+              </div>
+            </div>
           </div>
         </section>
       </Transition>

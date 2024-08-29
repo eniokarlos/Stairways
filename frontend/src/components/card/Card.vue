@@ -133,7 +133,6 @@ watchEffect(() => {
   .card__description {
     display: inline-block;
     word-wrap: break-word;
-    word-break: break-all;
     white-space: normal;
   }
 

@@ -9,9 +9,10 @@ const svg = ref<SVGElement>();
 
 defineProps<{
   items: ItemRenderProps[],
-  edges: RoadmapEdge[]
+  edges: RoadmapEdge[],
+  scale?: number,
+  ratio?: string
 }>();
-
 const activeItem = defineModel<ItemRenderProps>('activeItem');
 
 function centralizeSvgContent() {
@@ -20,8 +21,8 @@ function centralizeSvgContent() {
     const contentBox = content.value.getBoundingClientRect();
     
     svg.value.setAttribute('height', `${contentBox.height}`);
-    svg.value.setAttribute('viewBox', '0 -10' +
-    ` ${contentBox.width} `+
+    svg.value.setAttribute('viewBox', '-10 -10' +
+    ` ${contentBox.width + 20} `+
     `${contentBox.height + 15}`);
   
     const offsetLeft = svgBox.left - contentBox.left;
@@ -39,10 +40,11 @@ onMounted(centralizeSvgContent);
     <svg
       ref="svg"
       width="100%"
-      preserveAspectRatio="xMidYMin meet"
+      :preserveAspectRatio="ratio ?? 'xMidYMin meet'"
     >
       <g
         ref="content"
+        :transform="`scale(${scale ?? 1})`"
       >
         <RenderEdge 
           v-for="edge in edges"

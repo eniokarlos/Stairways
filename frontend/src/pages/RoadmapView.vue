@@ -136,7 +136,7 @@ onMounted(async () => {
       />
     </main>
     <div
-      v-if="activeItem"
+      v-if="activeItem && activeItem.type !== 'text'"
       class="modal fixed top-0px right-0 h-full w-100vw z-100"
       @pointerdown="activeItem = undefined"
     >
